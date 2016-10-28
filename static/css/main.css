@@ -1,0 +1,17 @@
+.search-bar .form-group {
+    margin-top: 0;
+    padding-bottom: 0;
+}
+
+.search-bar .form-group input {
+    margin-bottom: 0;
+}
+
+.search-bar .input-group-btn {
+    padding-right: 0;
+}
+
+.search-bar .input-group-btn .btn {
+    padding: 8px 16px;
+    margin-bottom: 0;
+}
