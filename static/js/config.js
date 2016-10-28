@@ -2,12 +2,11 @@ require.config({
     baseUrl: '/static',
     paths: {
         app: 'js/app',
-        lib: 'js/lib',
-        material: 'js/lib/material-design/material.min'
+        lib: 'js/lib'
     }
 });
 
-require(['material'], function() {
+require(['lib/material-design/material.min'], function() {
     $(document).ready(function() {
         // Initialize Material Design
         $.material.init();

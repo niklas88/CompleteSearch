@@ -1,4 +1,6 @@
+/*
 // Category Module
+*/
 define(['app/category'], function (Category) {
 
     var CategoryCollection = Backbone.Collection.extend({
@@ -31,8 +33,20 @@ define(['app/category'], function (Category) {
         }
     });
 
-    return {
-        CategoryCollection: CategoryCollection,
-        CategoryView: CategoryView
+    var renderCategories = function($categories) {
+        var categoryCollection = new CategoryCollection();
+        categoryCollection.fetch({
+            success: function(categories) {
+                categories.each(function(category) {
+                    var view = new CategoryView({
+                        id: 'cat-' + category.cid,
+                        model: category
+                    });
+                    $categories.append(view.render());
+                }, this);
+            }
+        });
     };
+
+    return renderCategories;
 });

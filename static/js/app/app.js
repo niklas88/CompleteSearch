@@ -1,32 +1,39 @@
 $(document).ready(function() {
     'use strict';
-    require(['app/category'], function(Category) {
+    require(['app/category'], function(renderCategories) {
 
         var CompleteSearchAppView = Backbone.View.extend({
             el: $('#completesearchapp'),
 
+            events: {
+                'click #searchBtn': 'search',
+                'enter #search': 'search'
+            },
+
             initialize: function () {
-                var me = this;
+                this.$search = $('#search');
+                this.$sidebar = $('#sidebar');
+                this.$categories = $('#categories');
 
-                me.search = $('#search');
-                // me.sidebar = $('#sidebar');
-                me.categories = $('#categories');
-
-                // Render all categories
-                var categoryCollection = new Category.CategoryCollection();
-                categoryCollection.fetch({
-                    success: function(categories) {
-                        categories.each(function(category) {
-                            var view = new Category.CategoryView({
-                                id: 'cat-' + category.cid,
-                                model: category
-                            });
-                            me.categories.append(view.render());
-                        }, this);
+                // Search on Enter press
+                this.$search.keyup(function(e) {
+                    if (e.keyCode == 13) {
+                        $(this).trigger('enter');
                     }
                 });
 
-                me.render();
+                // Render all categories
+                renderCategories(this.$categories);
+
+                this.render();
+            },
+
+            search: function() {
+                var query = this.$search.val();
+
+                if (query) {
+                    // TODO: perform search using CompleteSearch
+                }
             },
 
             render: function() {
