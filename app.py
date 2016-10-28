@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
-debug = True
+DEBUG = True
 
 
 @app.route('/')
@@ -29,5 +29,5 @@ def get_categories():
     return jsonify(categories)
 
 if __name__ == '__main__':
-    app.debug = debug
+    app.DEBUG = DEBUG
     app.run()

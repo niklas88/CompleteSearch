@@ -1,6 +1,6 @@
 $(document).ready(function() {
     'use strict';
-    require(['app/category'], function(renderCategories) {
+    require(['app/category', 'app/hit'], function(Category, Hit) {
 
         var CompleteSearchAppView = Backbone.View.extend({
             el: $('#completesearchapp'),
@@ -12,6 +12,9 @@ $(document).ready(function() {
 
             initialize: function () {
                 this.$search = $('#search');
+                this.$hits = $('#hits');
+                this.$emptyText = $('#empty-text');
+                this.$loader = $('#loader');
                 this.$sidebar = $('#sidebar');
                 this.$categories = $('#categories');
 
@@ -22,18 +25,36 @@ $(document).ready(function() {
                     }
                 });
 
-                // Render all categories
-                renderCategories(this.$categories);
+                // Show all categories
+                Category.showAll(this.$categories);
 
                 this.render();
             },
 
             search: function() {
-                var query = this.$search.val();
+                var query = this.$search.val(),
+                    hits = [];
 
                 if (query) {
+                    this.$emptyText.hide();
+                    this.$loader.show();
+
                     // TODO: perform search using CompleteSearch
+                    // hits = ...
                 }
+
+                // Temporary
+                for (var i = 0; i < parseInt(query); i++) {
+                    hits.push({title: 'Hit ' + (i+1), description: 'Description ' + (i+1)});
+                }
+
+                this.$hits.html('');
+                if (hits.length > 0) {
+                    Hit.showAll(this.$hits, hits);
+                } else {
+                    this.$emptyText.show();
+                }
+                this.$loader.hide();
             },
 
             render: function() {

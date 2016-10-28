@@ -33,7 +33,7 @@ define(['app/category'], function (Category) {
         }
     });
 
-    var renderCategories = function($categories) {
+    var showAll = function($categories) {
         var categoryCollection = new CategoryCollection();
         categoryCollection.fetch({
             success: function(categories) {
@@ -48,5 +48,7 @@ define(['app/category'], function (Category) {
         });
     };
 
-    return renderCategories;
+    return {
+        showAll: showAll
+    };
 });
