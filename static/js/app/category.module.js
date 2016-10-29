@@ -1,7 +1,7 @@
 /*
 // Category Module
 */
-define(['app/category'], function (Category) {
+define([], function () {
 
     var CategoryCollection = Backbone.Collection.extend({
         url: 'get_categories/'

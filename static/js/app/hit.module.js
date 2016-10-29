@@ -1,7 +1,7 @@
 /*
 // Hit Module
 */
-define(['app/hit'], function (Hit) {
+define([], function () {
 
     var HitView = Backbone.View.extend({
         tagName: 'div',

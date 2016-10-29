@@ -10,8 +10,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/material-design/bootstrap-material-design.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/material-design/ripples.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <script type="text/javascript">
+        // Global variables from back-end
+        var VIEW = '{{ view }}';
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-default">
@@ -34,56 +38,25 @@
     </nav>
 
     <div class="container">
-
         <!-- intro -->
         <div class="row">
             <div class="col-xs-12">
                 <div class="jumbotron">
                     <h1>Welcome to CompleteSearch</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus scelerisque est nec nisi efficitur, ut mattis odio porttitor. Pellentesque tempus vitae nibh non lobortis. Integer sagittis massa non diam ultrices ultricies.</p>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Vivamus scelerisque est nec nisi efficitur, ut mattis odio
+                        porttitor. Pellentesque tempus vitae nibh non lobortis.
+                        Integer sagittis massa non diam ultrices ultricies.
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- main app  -->
-        <div id="completesearchapp">
-            <div class="row">
-                <div class="col-xs-12 col-sm-8">
-
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="search-bar">
-                                <div class="input-group">
-                                    <input type="search" id="search" class="form-control" placeholder="Search...">
-                                    <span class="input-group-btn">
-                                        <button id="searchBtn" class="btn btn-raised btn-primary" type="button">
-                                            <i class="fa fa-search" aria-hidden="true"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div><!--/.panel-->
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Result</div>
-                        <div class="panel-body search-result">
-                            <div id="hits"></div>
-                            <div id="empty-text">Nothing to show.</div>
-                            <div id="loader"></div>
-                        </div>
-                    </div><!--/.panel-->
-
-                </div><!--/.col-xs-12.col-sm-9-->
-
-                <div class="col-sm-4 hidden-xs" id="sidebar">
-                    <div id="categories"></div>
-                </div><!--/.sidebar-->
-
-            </div><!--/.row-->
-        </div><!--/#completesearch-->
-
-    </div><!--/.container-->
+        <div class="row">
+            <div id="completesearchapp"></div>
+        </div>
+    </div>
 
     <a href="#" id="scrollToTop" class="btn btn-primary btn-fab">
         <i class="fa fa-arrow-up" aria-hidden="true"></i>
@@ -95,6 +68,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js"></script>
     <script src="{{ url_for('static', filename='js/require.js') }}"></script>
     <script src="{{ url_for('static', filename='js/config.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/app/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

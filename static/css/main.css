@@ -62,3 +62,11 @@
 #scrollToTop i.fa {
     margin-top: 15px;
 }
+
+#upload-form button i.fa {
+    color: #757575;
+}
+
+#uploadBtn {
+    margin-bottom: 0;
+}
