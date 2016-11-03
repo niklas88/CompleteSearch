@@ -1,7 +1,7 @@
-# CompleteSearch WebApp
+# CompleteSearch Web Application
 
 ### How to run
 ```
 pip install -r requirements.txt
-python app.py
+python run.py
 ```
