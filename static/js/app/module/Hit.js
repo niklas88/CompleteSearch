@@ -1,20 +1,19 @@
-/*
-// Hit Module
-*/
-define([], function () {
+"use strict";
+
+define(['underscore', 'backbone'], function (_, Backbone) {
 
     var HitView = Backbone.View.extend({
         tagName: 'div',
         className: 'hit',
 
-        template: _.template(`
-            <div class="hit-title">
-                <h4><%= title %></h4>
-            </div>
-            <div class="hit-description">
-                <%= description %>
-            </div>
-        `),
+        template: _.template([
+            '<div class="hit-title">',
+                '<h4><%= title %></h4>',
+            '</div>',
+            '<div class="hit-description">',
+                '<%= description %>',
+            '</div>'
+        ].join('')),
 
         render: function() {
             return this.$el.html(this.template(this.model));

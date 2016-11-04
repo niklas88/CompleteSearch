@@ -6,7 +6,12 @@ from app import app
 def index():
     # TODO: check if database exists. If not, show the upload form
     view = 'upload'  # Temporary
-    return render_template('index.html', view=view)
+
+    return render_template(
+        'index.html',
+        VIEW=view,
+        DEBUG=app.config['DEBUG']
+    )
 
 
 @app.route('/get_categories/', methods=['GET'])

@@ -1,24 +1,19 @@
-/*
-// Category Module
-*/
-define([], function () {
+"use strict";
 
-    var CategoryCollection = Backbone.Collection.extend({
-        url: 'get_categories/'
-    });
+define(['jquery', 'underscore', 'backbone', 'app/collection/CategoryCollection'], function ($, _, Backbone, CategoryCollection) {
 
     var CategoryView = Backbone.View.extend({
         tagName: 'div',
         className: 'panel panel-primary',
 
-        template: _.template(`
-            <div class="panel-heading">
-                <h3 class="panel-title">Refine by <%= title %></h3>
-            </div>
-            <div class="panel-body">
-                <%= content %>
-            </div>
-        `),
+        template: _.template([
+            '<div class="panel-heading">',
+                '<h3 class="panel-title">Refine by <%= title %></h3>',
+            '</div>',
+            '<div class="panel-body">',
+                '<%= content %>',
+            '</div>'
+        ].join('')),
 
         initialize: function() {
             this.listenTo(this.model, 'remove', this.remove);

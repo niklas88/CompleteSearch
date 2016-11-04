@@ -1,39 +1,36 @@
-/*
-// Search View
-*/
-define(['app/category.module', 'app/hit.module'], function(Category, Hit) {
+"use strict";
+
+define(['jquery', 'underscore', 'backbone', 'app/module/Category', 'app/module/Hit'], function($, _, Backbone, Category, Hit) {
     var SearchView = Backbone.View.extend({
-        template: _.template(`
-            <div class="col-xs-12 col-sm-8">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="search-bar">
-                            <div class="input-group">
-                                <input type="search" id="search" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                    <button id="searchBtn" class="btn btn-raised btn-primary" type="button">
-                                        <i class="fa fa-search" aria-hidden="true"></i>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">Result</div>
-                    <div class="panel-body search-result">
-                        <div id="hits"></div>
-                        <div id="empty-text">Nothing to show.</div>
-                        <div id="loader"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-4 hidden-xs" id="sidebar">
-                <div id="categories"></div>
-            </div>
-        `),
+        template: _.template([
+            '<div class="col-xs-12 col-sm-8">',
+                '<div class="panel panel-default">',
+                    '<div class="panel-body">',
+                        '<div class="search-bar">',
+                            '<div class="input-group">',
+                                '<input type="search" id="search" class="form-control" placeholder="Search...">',
+                                '<span class="input-group-btn">',
+                                    '<button id="searchBtn" class="btn btn-raised btn-primary" type="button">',
+                                        '<i class="fa fa-search" aria-hidden="true"></i>',
+                                    '</button>',
+                                '</span>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                '</div>',
+                '<div class="panel panel-default">',
+                    '<div class="panel-heading">Result</div>',
+                    '<div class="panel-body search-result">',
+                        '<div id="hits"></div>',
+                        '<div id="empty-text">Nothing to show.</div>',
+                        '<div id="loader"></div>',
+                    '</div>',
+                '</div>',
+            '</div>',
+            '<div class="col-sm-4 hidden-xs" id="sidebar">',
+                '<div id="categories"></div>',
+            '</div>'
+        ].join('')),
 
         events: {
             'click #searchBtn': 'search',
@@ -98,5 +95,5 @@ define(['app/category.module', 'app/hit.module'], function(Category, Hit) {
         },
     });
 
-    return SearchView;
+    return (SearchView);
 });
