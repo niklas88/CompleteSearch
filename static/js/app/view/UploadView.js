@@ -53,9 +53,9 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
                     $('#fileName').val(data.files[0].name);
 
                     data.context = $('#uploadBtn').click(function() {
-                        $(this)
-                            .text('Uploading...')
-                            .prop('disabled', true);
+                        // $(this)
+                        //     .text('Uploading...')
+                        //     .prop('disabled', true);
                         data.submit();
                     });
                 },
@@ -68,9 +68,9 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
 
                         // TODO: change view 'upload' -> 'search'
                     } else {
-                        $('#uploadBtn')
-                            .text('Upload')
-                            .prop('disabled', false);
+                        // $('#uploadBtn')
+                        //     .text('Upload')
+                        //     .prop('disabled', false);
 
                         noty({
                             type: 'error',

@@ -1,31 +1,31 @@
 requirejs.config({
-	baseUrl: '/static/js/lib',
-	paths: {
-		app: '../app',
-		jquery: 'jquery',
-		underscore: 'underscore',
-		backbone: 'backbone',
+    baseUrl: '/static/js/lib',
+    paths: {
+        app: '../app',
+        jquery: 'jquery',
+        underscore: 'underscore',
+        backbone: 'backbone',
         fileupload: 'fileupload/fileupload',
         'iframe-transport': 'fileupload/iframe-transport',
         widget: 'fileupload/widget',
         material: 'material-design/material.min',
-		noty: 'noty'
-	},
-	shim: {
+        noty: 'noty'
+    },
+    shim: {
         underscore: {
-			exports: '_'
-		},
-		backbone: {
-			deps: ['jquery', 'underscore'],
-			exports: 'Backbone'
-		},
+            exports: '_'
+        },
+        backbone: {
+            deps: ['jquery', 'underscore'],
+            exports: 'Backbone'
+        },
         material: {
             deps: ['jquery']
         },
         fileupload: {
             deps: ['jquery', 'widget', 'iframe-transport']
         }
-	}
+    }
 });
 
 requirejs([
@@ -48,7 +48,7 @@ requirejs([
         $('#scrollToTop').click(function(){
             $('html, body').animate({
                 scrollTop : 0
-            }, 800);
+            }, 500);
             return false;
         });
 

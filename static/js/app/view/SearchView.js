@@ -1,6 +1,6 @@
 "use strict";
 
-define(['jquery', 'underscore', 'backbone', 'app/module/Category', 'app/module/Hit'], function($, _, Backbone, Category, Hit) {
+define(['jquery', 'underscore', 'backbone', 'app/module/Facet', 'app/module/Hit'], function($, _, Backbone, Facet, Hit) {
     var SearchView = Backbone.View.extend({
         template: _.template([
             '<div class="col-xs-12 col-sm-8">',
@@ -28,7 +28,7 @@ define(['jquery', 'underscore', 'backbone', 'app/module/Category', 'app/module/H
                 '</div>',
             '</div>',
             '<div class="col-sm-4 hidden-xs" id="sidebar">',
-                '<div id="categories"></div>',
+                '<div id="facets"></div>',
             '</div>'
         ].join('')),
 
@@ -55,7 +55,7 @@ define(['jquery', 'underscore', 'backbone', 'app/module/Category', 'app/module/H
             this.$emptyText = $('#empty-text');
             this.$loader = $('#loader');
             this.$sidebar = $('#sidebar');
-            this.$categories = $('#categories');
+            this.$facets = $('#facets');
 
             // Search on Enter press
             this.$search.keyup(function(e) {
@@ -64,8 +64,8 @@ define(['jquery', 'underscore', 'backbone', 'app/module/Category', 'app/module/H
                 }
             });
 
-            // Show all categories
-            Category.showAll(this.$categories);
+            // Show all facets
+            Facet.showAll(this.$facets);
         },
 
         search: function() {
@@ -92,7 +92,7 @@ define(['jquery', 'underscore', 'backbone', 'app/module/Category', 'app/module/H
                 this.$emptyText.show();
             }
             this.$loader.hide();
-        },
+        }
     });
 
     return (SearchView);
