@@ -7,14 +7,26 @@ function ($, _, Backbone, FacetCollection) {
         tagName: 'div',
         className: 'panel panel-primary panel-facet',
 
+        events: {
+            'click .top-5': 'topBtnClick',
+            'click .top-50': 'topBtnClick',
+            'click .top-100': 'topBtnClick',
+            'click .top-all': 'topAllBtnClick'
+        },
+
         template: _.template([
             '<div class="panel-heading">',
                 '<h3 class="panel-title">Refine by <%= name %></h3>',
             '</div>',
             '<div class="panel-body">',
                 '<ul class="facet-items">',
-                    '<% facetItems.each(function(item) { %>',
-                        '<li><a id="facet-item-<%= item.cid %>" href="javascript:void(0)"><%= item.attributes.name %></a> (<%= item.attributes.count %>)</li>',
+                    '<% facetItems.each(function(item, idx) { %>',
+                        '<% if (idx > 4) { %>',
+                            '<li class="hidden">',
+                        '<% } else { %>',
+                            '<li>',
+                        '<% } %>',
+                        '<a id="facet-item-<%= item.cid %>" href="javascript:void(0)"><%= item.attributes.name %></a> <span class="label label-default pull-right"><%= item.attributes.count %></span></li>',
                     '<% }); %>',
                 '</ul>',
                 '<div class="facet-items-top">',
@@ -35,8 +47,64 @@ function ($, _, Backbone, FacetCollection) {
             $('#facet-' + model.cid).remove();
         },
 
-        render: function() {
-            return this.$el.html(this.template(this.model.toJSON()));
+        render: function($parent) {
+            this.$el.html(this.template(this.model.toJSON()));
+            $parent.append(this.$el);
+            this.afterRender();
+            return this;
+        },
+
+        afterRender: function() {
+            // Initialize Top buttons for each view
+            this.$itemsTop = $('#' + this.id + ' .facet-items-top');
+            this.$top5 = $('#' + this.id + ' .facet-items-top .top-5');
+            this.$top50 = $('#' + this.id + ' .facet-items-top .top-50');
+            this.$top100 = $('#' + this.id + ' .facet-items-top .top-100');
+            this.$topAll = $('#' + this.id + ' .facet-items-top .top-all');
+            this.showTopButtons();
+        },
+
+        showTopButtons: function() {
+            var length = this.model.attributes.facetItems.length;
+
+            if (length > 5) {
+                this.$itemsTop.show();
+                this.$top5.show();
+
+                if (length < 50) {
+                    this.$topAll.text('All (' + length +')').show();
+                } else if (length == 50) {
+                    this.$top50.show();
+                } else if (length > 50 && length < 100 ) {
+                    this.$top50.show();
+                    this.$topAll.text('All (' + length +')').show();
+                } else if (length == 100) {
+                    this.$top50.show();
+                    this.$top100.show();
+                } else {
+                    this.$top50.show();
+                    this.$top100.show();
+                    this.$topAll.text('All (' + length +')').show();
+                }
+            }
+        },
+
+        topBtnClick: function(e) {
+            var limit = parseInt(e.target.text.split(' ')[1]);
+            this.model.attributes.facetItems.each(function(facetItem, idx) {
+                var $item = $('#facet-item-' + facetItem.cid).parent();
+                if (idx < limit) {
+                    $item.toggleClass('hidden', false);
+                } else {
+                    $item.toggleClass('hidden', true);
+                }
+            });
+        },
+
+        topAllBtnClick: function() {
+            this.model.attributes.facetItems.each(function(item) {
+                $('#facet-item-' + item.cid).parent().toggleClass('hidden', false);
+            });
         }
     });
 
@@ -54,7 +122,7 @@ function ($, _, Backbone, FacetCollection) {
                         model: facet
                     });
 
-                    $facets.append(view.render());
+                    view.render($facets);
                 }, this);
             }
         });
