@@ -4,7 +4,7 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
     var UploadView = Backbone.View.extend({
         template: _.template([
             '<div class="col-xs-12">',
-                '<div class="panel panel-default">',
+                '<div id="panel-upload" class="panel panel-default">',
                     '<div class="panel-body">',
                         '<div class="col-md-6 col-md-offset-3">',
                             '<h4>You can upload your own database, using the form below:</h4>',
@@ -53,13 +53,18 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
                     $('#fileName').val(data.files[0].name);
 
                     data.context = $('#uploadBtn').click(function() {
-                        // $(this)
-                        //     .text('Uploading...')
-                        //     .prop('disabled', true);
+                        $('#panel-upload').waitMe({
+                            effect: 'win8_linear',
+                            text: 'Uploading and processing...',
+                            bg: 'rgba(158,158,158,0.9)',
+                            color: '#f5f5f5'
+                        });
                         data.submit();
                     });
                 },
                 done: function (e, data) {
+                    $('#panel-upload').waitMe('hide');
+
                     if (data.result.success) {
                         noty({
                             type: 'success',
@@ -68,10 +73,6 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
 
                         // TODO: change view 'upload' -> 'search'
                     } else {
-                        // $('#uploadBtn')
-                        //     .text('Upload')
-                        //     .prop('disabled', false);
-
                         noty({
                             type: 'error',
                             text: data.result.error

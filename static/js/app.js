@@ -9,7 +9,8 @@ requirejs.config({
         'iframe-transport': 'fileupload/iframe-transport',
         widget: 'fileupload/widget',
         material: 'material-design/material.min',
-        noty: 'noty'
+        noty: 'noty',
+        waitme: 'waitme'
     },
     shim: {
         underscore: {
@@ -22,6 +23,12 @@ requirejs.config({
         material: {
             deps: ['jquery']
         },
+        noty: {
+            deps: ['jquery']
+        },
+        waitme: {
+            deps: ['jquery']
+        },
         fileupload: {
             deps: ['jquery', 'widget', 'iframe-transport']
         }
@@ -30,7 +37,7 @@ requirejs.config({
 
 requirejs([
     'jquery', 'underscore', 'backbone', 'app/view/UploadView',
-    'app/view/SearchView', 'noty', 'material'
+    'app/view/SearchView', 'noty', 'material', 'waitme'
 ], function($, _, Backbone, UploadView, SearchView) {
     $(function () {
         // Scroll to top
