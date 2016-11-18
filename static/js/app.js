@@ -153,19 +153,52 @@ requirejs([
         ******************** Main App ********************
         *************************************************/
 
+        var SettingsModel = Backbone.Model.extend({
+            defaults: {
+                name: '',
+                value: ''
+            }
+        });
+
+        var SettingsCollection = Backbone.Collection.extend({
+            model: SettingsModel,
+
+            localStorage: new Backbone.LocalStorage('completesearch-settings'),
+
+            getValue: function(name) {
+                var setting = this.findWhere({name: name});
+                if (setting) {
+                    return setting.attributes.value;
+                } else {
+                    return;
+                }
+            },
+
+            setValue: function(name, value) {
+                var setting = this.findWhere({name: name});
+                if (setting) {
+                    setting.set('value', value);
+                    setting.save();
+                } else {
+                    this.create({name: name, value: value});
+                }
+            }
+        });
+
         var CompleteSearchAppView = Backbone.View.extend({
             el: $('#completesearchapp'),
 
             initialize: function () {
-                var defaultSettings = {
-                    databaseUploaded: DATABASE_UPLOADED
-                };
+                // Fetch settings from localStorage
+                this.settings = new SettingsCollection();
+                this.settings.fetch();
 
-                if (!localStorage.getItem('completesearch-settings')) {
-                    localStorage.setItem('completesearch-settings', JSON.stringify(defaultSettings));
+                // Initial (default) setting
+                if (!this.settings.getValue('databaseUploaded')) {
+                    this.settings.setValue('databaseUploaded', DATABASE_UPLOADED);
                 }
 
-                if (this.getSettings().databaseUploaded) {
+                if (this.settings.getValue('databaseUploaded')) {
                     this.renderSearchView();
                 } else {
                     this.renderUploadView();
@@ -191,22 +224,6 @@ requirejs([
                 uploadView.remove();
                 new SearchView({$parent: this.$el});
                 this.afterRender();
-            },
-
-            getSettings: function() {
-                var settings = localStorage.getItem('completesearch-settings');
-                return (settings !== '') ? JSON.parse(settings) : {};
-            },
-
-            setSettings: function(key, value) {
-                var settings = localStorage.getItem('completesearch-settings');
-
-                settings = (settings !== '') ? JSON.parse(settings) : {};
-
-                if (key && value) {
-                    settings[key] = value;
-                    localStorage.setItem('completesearch-settings', JSON.stringify(settings));
-                }
             }
         });
 

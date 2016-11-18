@@ -74,7 +74,7 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
                         });
 
                         var app = $('#completesearchapp').backboneView();
-                        app.setSettings('databaseUploaded', true);
+                        app.settings.setValue('databaseUploaded', true);
 
                         // Change view 'Upload' -> 'Search'
                         app.changeView(me);
