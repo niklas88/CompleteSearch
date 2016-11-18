@@ -44,6 +44,12 @@ requirejs([
     'app/view/SearchView', 'localstorage', 'noty', 'material', 'waitme'
 ], function($, _, Backbone, UploadView, SearchView) {
     $(function () {
+        // Remove Loading animation when the page is fully loaded
+        $(document).ready(function() {
+            $('body').addClass('loaded');
+        });
+
+
         // Scroll to top
         // Check if the window is on the top. If not, then display the button
         $(window).scroll(function(){
@@ -62,6 +68,7 @@ requirejs([
             }, 500);
             return false;
         });
+
 
         // Set Noty default options
         $.noty.defaults.layout = 'bottomRight';
