@@ -194,7 +194,7 @@ requirejs([
                 this.settings.fetch();
 
                 // Initial (default) setting
-                if (!this.settings.getValue('databaseUploaded')) {
+                if (typeof this.settings.getValue('databaseUploaded') == 'undefined') {
                     this.settings.setValue('databaseUploaded', DATABASE_UPLOADED);
                 }
 
