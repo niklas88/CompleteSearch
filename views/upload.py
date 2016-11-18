@@ -74,11 +74,33 @@ def process_csv(file, delimiter, path):
             if items:
                 facets.append({'name': column, 'items': items})
 
+    facets = sorted(facets, key=lambda x: x['name'])
+
     # Write facets to the file
     with open(os.path.join(path, 'facets.json'), 'w') as f:
         f.write(json.dumps(
-            {'facets': sorted(facets, key=lambda x: x['name'])}
+            {'facets': facets}
         ))
+
+    # Construct a command for genereating CompleteSearch input files
+    facets_ = ','.join([f['name'] for f in facets])
+    DB = 'input/input'
+    PARSER_OPTIONS = '--base-name=input/input ' + \
+                     '--write-docs-file ' + \
+                     '--write-words-file-ascii ' + \
+                     '--full-text=Autor,Titel ' + \
+                     '--allow-multiple-items=Autor ' + \
+                     '--show=Titel ' + \
+                     '--excerpts=Titel,Autor,Jahr ' + \
+                     '--facets=' + facets_ + ' ' + \
+                     '--normalize-words ' + \
+                     '--encoding=utf8 ' + \
+                     '--maps-directory=parser/'
+
+    command = 'make pall DB="%s" PARSER_OPTIONS="%s"' % (DB, PARSER_OPTIONS)
+
+    with open(os.path.join(path, 'make_command.txt'), 'w') as f:
+        f.write(command)
 
     # Write the input file and send it to CompleteSearch
     data.to_csv(
