@@ -8,6 +8,7 @@
 		jquery: 'jquery',
 		underscore: 'underscore',
 		backbone: 'backbone',
+        localstorage: 'backbone.localstorage',
         fileupload: 'fileupload/fileupload',
         'iframe-transport': 'fileupload/iframe-transport',
         widget: 'fileupload/widget',
@@ -25,6 +26,9 @@
 		},
         material: {
             deps: ['jquery']
+        },
+        localstorage: {
+            deps: ['underscore']
         },
         fileupload: {
             deps: ['jquery', 'widget', 'iframe-transport']

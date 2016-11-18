@@ -5,6 +5,7 @@ requirejs.config({
         jquery: 'jquery',
         underscore: 'underscore',
         backbone: 'backbone',
+        localstorage: 'backbone.localstorage',
         fileupload: 'fileupload/fileupload',
         'iframe-transport': 'fileupload/iframe-transport',
         widget: 'fileupload/widget',
@@ -29,6 +30,9 @@ requirejs.config({
         waitme: {
             deps: ['jquery']
         },
+        localstorage: {
+            deps: ['underscore']
+        },
         fileupload: {
             deps: ['jquery', 'widget', 'iframe-transport']
         }
@@ -37,7 +41,7 @@ requirejs.config({
 
 requirejs([
     'jquery', 'underscore', 'backbone', 'app/view/UploadView',
-    'app/view/SearchView', 'noty', 'material', 'waitme'
+    'app/view/SearchView', 'localstorage', 'noty', 'material', 'waitme'
 ], function($, _, Backbone, UploadView, SearchView) {
     $(function () {
         // Scroll to top
