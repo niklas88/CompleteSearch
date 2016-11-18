@@ -69,29 +69,37 @@ define(['jquery', 'underscore', 'backbone', 'app/module/Facet', 'app/module/Hit'
         },
 
         search: function() {
-            var query = this.$search.val(),
-                hits = [];
+            var me = this,
+                query = this.$search.val();
 
             if (query) {
-                this.$emptyText.hide();
-                this.$loader.show();
+                me.$emptyText.hide();
+                me.$loader.show();
 
-                // TODO: perform search using CompleteSearch
-                // hits = ...
+                // Perform search using CompleteSearch
+                $.getJSON('search/?query=' + query, function(obj) {
+                    me.$hits.html('');
 
-                // Temporary
-                for (var i = 0; i < parseInt(query); i++) {
-                    hits.push({title: 'Hit ' + (i+1), description: 'Description ' + (i+1)});
-                }
+                    if (obj.success) {
+                        if (obj.data.length > 0) {
+                            Hit.showAll(me.$hits, obj.data);
+                        } else {
+                            me.$emptyText.show();
+                            noty({
+                                type: 'warning',
+                                text: 'No hits.'
+                            });
+                        }
+                    } else {
+                        noty({
+                            type: 'error',
+                            text: obj.error
+                        });
+                    }
+
+                    me.$loader.hide();
+                });
             }
-
-            this.$hits.html('');
-            if (hits.length > 0) {
-                Hit.showAll(this.$hits, hits);
-            } else {
-                this.$emptyText.show();
-            }
-            this.$loader.hide();
         }
     });
 
