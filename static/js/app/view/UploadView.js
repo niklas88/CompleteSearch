@@ -44,6 +44,8 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
         },
 
         afterRender: function() {
+            var me = this;
+
             // Initialize File Uploading
             $('#inputFile').fileupload({
                 url: 'upload_file/',
@@ -71,7 +73,11 @@ define(['jquery', 'underscore', 'backbone', 'fileupload'], function($, _, Backbo
                             text: 'File has been uploaded!'
                         });
 
-                        // TODO: change view 'upload' -> 'search'
+                        var app = $('#completesearchapp').backboneView();
+                        app.setSettings('databaseUploaded', true);
+
+                        // Change view 'Upload' -> 'Search'
+                        app.changeView(me);
                     } else {
                         noty({
                             type: 'error',
