@@ -14,4 +14,5 @@ app.logger.addHandler(handler)
 # Import all views (modules)
 from views import common
 from views import upload
+from views import config
 from views import search

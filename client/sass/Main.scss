@@ -22,7 +22,19 @@
 }
 
 .completesearch-upload {
-    padding: 80px 0;
+    padding: 70px 0 85px;
+}
+
+.completesearch-configure {
+    padding: 70px 0 85px;
+}
+
+#config-form .form-group label.control-label {
+    font-size: 13px;
+}
+
+#save-database-config-button {
+    margin-top: 45px;
 }
 
 .how-to-search {
@@ -126,6 +138,7 @@ a#scrollToTop {
 	bottom: 15px;
 	right: 15px;
 	display: none;
+    z-index: 1000;
 }
 
 a#scrollToTop:hover,
@@ -142,7 +155,7 @@ a#scrollToTop i.fa {
 }
 
 #upload-button {
-    margin-top: 35px 0 30px;
+    margin-top: 45px;
 }
 
 #preloader-wrapper {

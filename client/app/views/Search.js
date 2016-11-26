@@ -10,7 +10,7 @@ export default Marionette.View.extend({
     },
 
     ui: {
-        searchBtn: '#searchBtn',
+        searchBtn: '#search-button',
         search: '#search',
         emptyText: '#empty-text',
         loader: '#loader'

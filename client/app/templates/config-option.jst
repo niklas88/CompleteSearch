@@ -1,0 +1,26 @@
+<div class="form-group">
+    <label class="col-md-5 control-label" for="<%= name %>">
+        <%= label %>
+        <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="<%= tooltip %>">[?]</span>
+    </label>
+    <div class="col-md-7">
+        <% if (type == 'select') { %>
+            <select id="<%= name %>" name="<%= name %>" class="form-control">
+                <% _.each(fields, (field) => { %>
+                    <option value="<%= field %>"><%= field %></option>
+                <% }); %>
+            </select>
+        <% } else if (type == 'checkbox') { %>
+            <% _.each(fields, (field) => { %>
+                <div class="checkbox">
+                    <label for="<%= name + '_' + field.replace(' ', '-') %>">
+                        <input type="checkbox" name="<%= name %>" id="<%= name + '_' + field.replace(' ', '-') %>" value="<%= field %>">
+                        <%= field %>
+                    </label>
+                </div>
+            <% }); %>
+        <% } else if (type == 'textfield') { %>
+            <input id="<%= name %>" name="<%= name %>" type="text" class="form-control">
+        <% } %>
+    </div>
+</div>

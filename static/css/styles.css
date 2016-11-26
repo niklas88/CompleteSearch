@@ -12331,7 +12331,16 @@ body.waitMe_body .waitMe_container.text > div {
   padding: 40px 0 80px; }
 
 .completesearch-upload {
-  padding: 80px 0; }
+  padding: 70px 0 85px; }
+
+.completesearch-configure {
+  padding: 70px 0 85px; }
+
+#config-form .form-group label.control-label {
+  font-size: 13px; }
+
+#save-database-config-button {
+  margin-top: 45px; }
 
 .how-to-search {
   padding: 20px 0 25px; }
@@ -12412,7 +12421,8 @@ a#scrollToTop {
   position: fixed;
   bottom: 15px;
   right: 15px;
-  display: none; }
+  display: none;
+  z-index: 1000; }
 
 a#scrollToTop:hover,
 a#scrollToTop:focus {
@@ -12425,7 +12435,7 @@ a#scrollToTop i.fa {
   font-size: 20px; }
 
 #upload-button {
-  margin-top: 35px 0 30px; }
+  margin-top: 45px; }
 
 #preloader-wrapper {
   position: fixed;
