@@ -6,12 +6,12 @@ export default Marionette.View.extend({
     template: template,
 
     ui: {
-        upload: '#uploadBtn',
-        inputFile: '#inputFile'
+        uploadButton: '#upload-button',
+        inputFile: '#input-file'
     },
 
     events: {
-        'click @ui.upload': 'upload'
+        'click @ui.uploadButton': 'upload'
     },
 
     onRender() {
@@ -27,52 +27,67 @@ export default Marionette.View.extend({
 
     upload() {
         let inputFile = this.getUI('inputFile');
+        const supportedFileTypes = [
+            'text/tab-separated-values',
+            'text/csv',
+            'text/plain',
+            'text/xml'
+        ];
 
         if (inputFile[0].files.length == 1) {
-            let data = new FormData();
-            data.append('file', inputFile[0].files[0]);
+            const file = inputFile[0].files[0];
 
-            // TODO: set loader
+            if (supportedFileTypes.indexOf(file.type) > -1) {
+                let data = new FormData();
+                data.append('file', file);
 
-            $.ajax({
-                url: 'upload_file/',
-                type: 'POST',
-                data: data,
-                cache: false,
-                dataType: 'json',
-                processData: false,
-                contentType: false,
-                success: (data) => {
-                    // TODO: stop loader
+                // TODO: set loader
 
-                    if (data.success) {
-                        noty({
-                            type: 'success',
-                            text: 'File has been uploaded!'
-                        });
-
-                        // Change the view (UploadView -> SearchView)
-                        const contentRegion = app.getRegion('app').currentView.getRegion('content');
-                        contentRegion.empty();
-                        contentRegion.show(new SearchView());
-                    } else {
+                $.ajax({
+                    url: 'upload_file/',
+                    type: 'POST',
+                    data: data,
+                    cache: false,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: (data) => {
                         // TODO: stop loader
 
+                        if (data.success) {
+                            noty({
+                                type: 'success',
+                                text: 'File has been uploaded!'
+                            });
+
+                            // Change the view (UploadView -> SearchView)
+                            const contentRegion = app.getContentRegion();
+                            contentRegion.empty();
+                            contentRegion.show(new SearchView());
+                        } else {
+                            // TODO: stop loader
+
+                            noty({
+                               type: 'error',
+                               text: data.error
+                            });
+                        }
+                    },
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        // TODO: set loader
                         noty({
                            type: 'error',
-                           text: data.error
+                           text: textStatus
                         });
+                        // console.error('[ERROR]: ' + textStatus);
                     }
-                },
-                error: (jqXHR, textStatus, errorThrown) => {
-                    // TODO: set loader
-                    noty({
-                       type: 'error',
-                       text: textStatus
-                    });
-                    // console.error('[ERROR]: ' + textStatus);
-                }
-            });
+                });
+            } else {
+                noty({
+                    type: 'error',
+                    text: 'This file type is not supported.'
+                });
+            }
         } else {
             noty({
                 type: 'warning',

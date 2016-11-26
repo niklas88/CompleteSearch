@@ -23,7 +23,7 @@ const dirs = {
 const sassPaths = {
   src: [
       `${dirs.nm}/bootstrap/dist/css/bootstrap.min.css`,
-      `${dirs.nm}/bootstrap-material-design/dist/css/bootstrap-material-design.min.css`,
+    //   `${dirs.nm}/bootstrap-material-design/dist/css/bootstrap-material-design.min.css`,
       `${dirs.lib}/**/*.css`,
       `${dirs.src}/Main.scss`
   ],

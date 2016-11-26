@@ -3,7 +3,6 @@ import template from '../templates/facet.jst';
 
 export default Marionette.View.extend({
     tagName: 'div',
-    className: 'panel panel-primary panel-facet',
     template: template,
 
     regions: {

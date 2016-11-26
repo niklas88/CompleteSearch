@@ -52,6 +52,9 @@ export default Marionette.View.extend({
     onAttach() {
         // Initialize Material Design
         $.material.init();
+
+        // $('.main.main-raised').css('background', '#e5e5e5');
+        $('footer').toggleClass('footer-white', true);
     },
 
     search() {

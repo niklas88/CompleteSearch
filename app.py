@@ -3,7 +3,7 @@ from config.logging import handler
 
 
 # Create main Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_path='/static')
 
 # Load settings
 app.config.from_object('config.settings.Config')
