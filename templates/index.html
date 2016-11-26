@@ -14,16 +14,15 @@
     <link rel="mask-icon" href="{{ url_for('static', filename='img/safari-pinned-tab.svg') }}" color="#009688">
     <meta name="theme-color" content="#ffffff">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/lib/material-design/bootstrap-material-design.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/lib/waitme.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <script type="text/javascript">
         // Global variables from back-end
         var DATABASE_UPLOADED = '{{ DATABASE_UPLOADED }}' == 'True';
     </script>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </head>
 <body>
     <!-- page loader -->
@@ -33,54 +32,10 @@
         <div class="preloader-section section-right"></div>
     </div>
 
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href=".">CompleteSearch</a>
-            </div>
-            <div class="navbar-collapse collapse navbar-responsive-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="javascript:void(0)">Help</a></li>
-                    <li><a href="javascript:void(0)">About</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- intro -->
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="jumbotron">
-                    <h1>Welcome to CompleteSearch</h1>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Vivamus scelerisque est nec nisi efficitur, ut mattis odio
-                        porttitor. Pellentesque tempus vitae nibh non lobortis.
-                        Integer sagittis massa non diam ultrices ultricies.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div id="completesearchapp"></div>
-        </div>
-    </div>
+    <div id="app"></div>
 
     <a href="#" id="scrollToTop" class="btn btn-primary btn-fab">
         <i class="fa fa-arrow-up" aria-hidden="true"></i>
     </a>
-
-    {% if DEBUG %}
-        <script data-main="{{ url_for('static', filename='js/app.js') }}" src="{{ url_for('static', filename='js/lib/require.js') }}"></script>
-    {% else %}
-        <script data-main="{{ url_for('static', filename='js/build/app-built.js') }}" src="{{ url_for('static', filename='js/lib/require.js') }}"></script>
-    {% endif %}
 </body>
 </html>
