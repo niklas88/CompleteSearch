@@ -12337,7 +12337,11 @@ body.waitMe_body .waitMe_container.text > div {
   padding: 70px 0 85px; }
 
 #config-form .form-group label.control-label {
-  font-size: 13px; }
+  font-size: 13px;
+  margin: 8px 0 0 0; }
+
+#config-form .config-tooltip {
+  font-weight: bold; }
 
 #save-database-config-button {
   margin-top: 45px; }

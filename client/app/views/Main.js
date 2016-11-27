@@ -2,6 +2,9 @@ import {Marionette} from '../../vendor/vendor';
 import template from '../templates/main.jst';
 import IndexView from './Index';
 import SearchView from './Search';
+
+// TODO: move it to UploadView
+import ConfigsModel from '../models/Configs';
 import ConfigureView from './Configure';
 
 export default Marionette.View.extend({
@@ -18,6 +21,14 @@ export default Marionette.View.extend({
         //     this.showChildView('content', new IndexView());
         // }
 
-        this.showChildView('content', new ConfigureView());
+        // TODO: move it to UploadView
+        const configsModel = new ConfigsModel();
+        configsModel.fetch({
+            success: () => {
+                this.showChildView('content', new ConfigureView({
+                    model: configsModel
+                }));
+            }
+        });
     }
 });

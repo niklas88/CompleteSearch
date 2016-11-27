@@ -9,102 +9,99 @@
                     </h5>
 
                     <form id="config-form" class="form-horizontal text-left">
-                        <div id="config-options"></div>
 
-                        <!-- <div class="form-group">
-                            <label class="col-md-5 control-label" for="selectbasic">Title Field [?]</label>
+                        <div class="form-group">
+                            <label class="col-md-5 control-label" for="--title-field">
+                                Title Field
+                                <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
+                            </label>
                             <div class="col-md-7">
-                                <select id="selectbasic" name="selectbasic" class="form-control">
-                                    <option value="1">Option one</option>
-                                    <option value="2">Option two</option>
+                                <select id="--title-field" name="--title-field" class="form-control">
+                                    <option value="--">--</option>
+                                    <% _.each(fields, (field) => { %>
+                                        <option value="<%= field %>"><%= field %></option>
+                                    <% }); %>
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-5 control-label" for="checkboxes">Search by [?]</label>
+                            <label class="col-md-5 control-label" for="--show">
+                                Search by
+                                <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
+                            </label>
                             <div class="col-md-7">
-                                <div class="checkbox">
-                                    <label for="checkboxes-0">
-                                        <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1">
-                                        Option one
-                                    </label>
-                                </div>
-                                <div class="checkbox">
-                                    <label for="checkboxes-1">
-                                        <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2">
-                                        Option two
-                                    </label>
-                                </div>
-                                <div class="checkbox">
-                                    <label for="checkboxes-6">
-                                        <input type="checkbox" name="checkboxes" id="checkboxes-6" value="2">
-                                        Option three
-                                    </label>
-                                </div>
+                                <% _.each(fields, (field) => { %>
+                                    <div class="checkbox">
+                                        <label for="<%= '--show-' + field.replace(' ', '-') %>">
+                                            <input type="checkbox" name="--show" id="<%= '--show-' + field.replace(' ', '-') %>" value="<%= field %>">
+                                            <%= field %>
+                                        </label>
+                                    </div>
+                                <% }); %>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-5 control-label" for="Multiple items Fields">Multiple Items Fields [?]</label>
+                            <label class="col-md-5 control-label" for="--allow-multiple-items">
+                                Multiple Items Fields
+                                <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
+                            </label>
                             <div class="col-md-7">
-                                <div class="checkbox">
-                                    <label for="Multiple items Fields-0">
-                                        <input type="checkbox" name="Multiple items Fields" id="Multiple items Fields-0" value="1">
-                                        Option one
-                                    </label>
-                                </div>
-                                <div class="checkbox">
-                                    <label for="Multiple items Fields-1">
-                                        <input type="checkbox" name="Multiple items Fields" id="Multiple items Fields-1" value="2">
-                                        Option two
-                                    </label>
-                                </div>
+                                <% _.each(fields, (field) => { %>
+                                    <div class="checkbox">
+                                        <label for="<%= '--allow-multiple-items-' + field.replace(' ', '-') %>">
+                                            <input type="checkbox" name="--allow-multiple-items" id="<%= '--allow-multiple-items-' + field.replace(' ', '-') %>" value="<%= field %>">
+                                            <%= field %>
+                                        </label>
+                                    </div>
+                                <% }); %>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-5 control-label" for="textinput">Multiple Items Fields Separator [?]</label>
+                            <label class="col-md-5 control-label" for="textinput">
+                                Multiple Items Fields Separator
+                                <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
+                            </label>
                             <div class="col-md-7">
-                                <input id="textinput" name="textinput" type="text" class="form-control">
+                                <input id="--within-field-separator" name="--within-field-separator" type="text" class="form-control" placeholder=";">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-5 control-label" for="checkboxes">Excerpts [?]</label>
+                            <label class="col-md-5 control-label" for="--filter">
+                                Filters
+                                <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
+                            </label>
                             <div class="col-md-7">
-                                <div class="checkbox">
-                                    <label for="checkboxes-2">
-                                        <input type="checkbox" name="checkboxes" id="checkboxes-2" value="1">
-                                        Option one
-                                    </label>
-                                </div>
-                                <div class="checkbox">
-                                    <label for="checkboxes-3">
-                                        <input type="checkbox" name="checkboxes" id="checkboxes-3" value="2">
-                                        Option two
-                                    </label>
-                                </div>
+                                <% _.each(fields, (field) => { %>
+                                    <div class="checkbox">
+                                        <label for="<%= '--filter-' + field.replace(' ', '-') %>">
+                                            <input type="checkbox" name="--filter" id="<%= '--filter-' + field.replace(' ', '-') %>" value="<%= field %>">
+                                            <%= field %>
+                                        </label>
+                                    </div>
+                                <% }); %>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-5 control-label" for="checkboxes">Facets [?]</label>
+                            <label class="col-md-5 control-label" for="--facets">
+                                Facets
+                                <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
+                            </label>
                             <div class="col-md-7">
-                                <div class="checkbox">
-                                    <label for="checkboxes-4">
-                                        <input type="checkbox" name="checkboxes" id="checkboxes-4" value="1">
-                                        Option one
-                                    </label>
-                                </div>
-                                <div class="checkbox">
-                                    <label for="checkboxes-5">
-                                        <input type="checkbox" name="checkboxes" id="checkboxes-5" value="2">
-                                        Option two
-                                    </label>
-                                </div>
+                                <% _.each(fields, (field) => { %>
+                                    <div class="checkbox">
+                                        <label for="<%= '--facets-' + field.replace(' ', '-') %>">
+                                            <input type="checkbox" name="--facets" id="<%= '--facets-' + field.replace(' ', '-') %>" value="<%= field %>">
+                                            <%= field %>
+                                        </label>
+                                    </div>
+                                <% }); %>
                             </div>
-                        </div> -->
+                        </div>
 
                     </form>
 

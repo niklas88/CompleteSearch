@@ -1,17 +1,8 @@
 import {Marionette} from '../../vendor/vendor';
 import template from '../templates/configure.jst';
-import ConfigListView from './ConfigList';
 
 export default Marionette.View.extend({
     template: template,
-
-    regions: {
-        // config: '#config-options'
-        config: {
-            el: '#config-options',
-            replaceElement: true
-        }
-    },
 
     ui: {
         saveBtn: '#save-database-config-button',
@@ -20,16 +11,6 @@ export default Marionette.View.extend({
 
     events: {
         'click @ui.saveBtn': 'save'
-    },
-
-    onRender() {
-        const configListView = new ConfigListView();
-
-        configListView.collection.fetch({
-            success: () => {
-                this.showChildView('config', configListView);
-            }
-        });
     },
 
     onAttach() {
@@ -41,6 +22,41 @@ export default Marionette.View.extend({
     },
 
     save() {
-        // debugger;
+        const values = this.getFormValues();
+
+        if (this.checkValues(values)) {
+            // debugger;
+        }
+    },
+
+    getFormValues() {
+        const data = this.getUI('form').serializeArray();
+
+        let values = {
+            '--title-field': [],
+            '--show': [],
+            '--allow-multiple-items': [],
+            '--within-field-separator': [],
+            '--filter': [],
+            '--facets': []
+        };
+
+        for (let item of data) {
+            values[item.name].push(item.value);
+        }
+
+        return values;
+    },
+
+    checkValues(values) {
+        if (values['--show'].length === 0) {
+            noty({
+                type: 'error',
+                text: 'You did not select any "Search by" fields.'
+            });
+            return false;
+        }
+
+        return true;
     }
 });
