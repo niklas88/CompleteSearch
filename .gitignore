@@ -93,3 +93,5 @@ uploads/
 data/
 
 node_modules/
+static/css/*
+static/js/*

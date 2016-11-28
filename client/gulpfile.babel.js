@@ -14,9 +14,8 @@ const gulp = gulpHelp(_gulp);
 const bs = browserSync.create();
 
 const dirs = {
-    src: './sass',
+    src: './resources',
     nm: './node_modules',
-    lib: '../static/css/lib',
     dest: '../static/css'
 };
 
@@ -24,8 +23,8 @@ const sassPaths = {
   src: [
       `${dirs.nm}/bootstrap/dist/css/bootstrap.min.css`,
     //   `${dirs.nm}/bootstrap-material-design/dist/css/bootstrap-material-design.min.css`,
-      `${dirs.lib}/**/*.css`,
-      `${dirs.src}/Main.scss`
+      `${dirs.src}/css/lib/**/*.css`,
+      `${dirs.src}/css/Main.scss`
   ],
   dest: `${dirs.dest}`
 };
@@ -80,7 +79,7 @@ gulp.task('browser-sync', false, () => {
 
 gulp.task('watch', 'Watch script and styles changes.', ['browser-sync'], () => {
     // Watch script changes
-    gulp.watch('./sass/**/*', ['styles']);
+    gulp.watch('./resources/css/**/*', ['styles']);
     gulp.watch('../static/css/*').on('change', bs.reload);
 
     // Watch styles changes/
