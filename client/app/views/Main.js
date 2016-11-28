@@ -1,10 +1,11 @@
 import {Marionette} from '../../vendor/vendor';
+import {Backbone} from '../../vendor/vendor';
 import template from '../templates/main.jst';
 import IndexView from './Index';
 import SearchView from './Search';
 
 // TODO: move it to UploadView
-import ConfigsModel from '../models/Configs';
+import ConfigCollection from '../collections/Config';
 import ConfigureView from './Configure';
 
 export default Marionette.View.extend({
@@ -22,11 +23,11 @@ export default Marionette.View.extend({
         // }
 
         // TODO: move it to UploadView
-        const configsModel = new ConfigsModel();
-        configsModel.fetch({
+        const configCollection = new ConfigCollection();
+        configCollection.fetch({
             success: () => {
                 this.showChildView('content', new ConfigureView({
-                    model: configsModel
+                    collection: configCollection
                 }));
             }
         });

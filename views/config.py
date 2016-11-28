@@ -13,7 +13,7 @@ def get_configs():
     try:
         # TODO: get fields from a json file
         fields = ['Titel', 'Autor', 'Jahr', 'Preis']
-        data = {'fields': fields}
+        data = [{'name': field} for field in fields]
 
     except Exception as e:
         error = str(e)
