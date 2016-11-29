@@ -1,5 +1,4 @@
-from flask import request, jsonify
-from app import app
+from flask import Blueprint, request, current_app as app, jsonify
 
 import os
 import csv
@@ -7,8 +6,10 @@ import io
 import pandas as pd
 import json
 
+bp = Blueprint('upload', __name__)
 
-@app.route('/upload_file/', methods=['POST'])
+
+@bp.route('/upload_file/', methods=['POST'])
 def upload_file():
     """ Check the uploaded file, process and feed it to CompleteSearch """
     error = ''
@@ -112,3 +113,21 @@ def process_csv(file, delimiter, path):
     )
 
     # TODO: send to CompleteSearch
+
+
+@bp.route('/get_fields/', methods=['GET'])
+def get_fields():
+    """ Get fields for database configuration. """
+    error = ''
+    data = []
+
+    try:
+        # TODO: get fields from a json file
+        fields = ['Titel', 'Autor', 'Jahr', 'Preis']
+        data = [{'name': field} for field in fields]
+
+    except Exception as e:
+        error = str(e)
+        app.logger.exception(error)
+
+    return jsonify(data)

@@ -1,11 +1,12 @@
-from flask import request, jsonify
-from app import app
+from flask import Blueprint, request, current_app as app, jsonify
 
 import urllib
 import json
 
+bp = Blueprint('search', __name__)
 
-@app.route('/search/', methods=['GET'])
+
+@bp.route('/search/', methods=['GET'])
 def search():
     """  """
     error = ''

@@ -1,11 +1,12 @@
-from flask import render_template, jsonify
-from app import app
+from flask import Blueprint, render_template, current_app as app, jsonify
 
 import os
 import json
 
+bp = Blueprint('common', __name__)
 
-@app.route('/')
+
+@bp.route('/')
 def index():
     """ Show index page. """
 
@@ -20,7 +21,7 @@ def index():
     )
 
 
-@app.route('/get_facets/', methods=['GET'])
+@bp.route('/get_facets/', methods=['GET'])
 def get_facets():
     """ Return all facets. """
     facets_file = os.path.join(app.config['BASE_DIR'], 'data/facets.json')
