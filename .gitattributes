@@ -1,3 +1,2 @@
-static/css/lib/* linguist-vendored
-static/js/lib/* linguist-vendored
-static/js/build/* linguist-vendored
+client/resources/css/lib/* linguist-vendored
+client/resources/js/* linguist-vendored
