@@ -6,6 +6,7 @@ export default Marionette.View.extend({
     template: template,
 
     regions: {
+        hits: '#hits',
         facets: '#facets'
     },
 
@@ -26,9 +27,8 @@ export default Marionette.View.extend({
         this.$el.unwrap();
         this.setElement(this.$el);
 
-        const facetListView = new FacetListView();
-
         // Show all facets
+        const facetListView = new FacetListView();
         facetListView.collection.fetch({
             success: () => {
                 facetListView.collection.each((facet) => {
@@ -41,10 +41,10 @@ export default Marionette.View.extend({
         });
 
         // Search on Enter
-        const search = this.getUI('search');
-        search.keyup((e) => {
+        const $search = this.getUI('search');
+        $search.keyup((e) => {
             if (e.keyCode == 13) {
-                search.trigger('enter');
+                $search.trigger('enter');
             }
         });
     },
@@ -53,14 +53,13 @@ export default Marionette.View.extend({
         // Initialize Material Design
         $.material.init();
 
-        // $('.main.main-raised').css('background', '#e5e5e5');
         $('footer').toggleClass('footer-white', true);
     },
 
     search() {
-        let query = this.getUI('search').val(),
-            $emptyText = this.getUI('emptyText'),
-            $loader = this.getUI('loader');
+        const query = this.getUI('search').val();
+        const $emptyText = this.getUI('emptyText');
+        const $loader = this.getUI('loader');
 
         // TODO: query: trim, remove js code
 
@@ -68,7 +67,30 @@ export default Marionette.View.extend({
             $emptyText.hide();
             $loader.show();
 
-            // debugger;
+            // Perform search using CompleteSearch
+            $.getJSON('search/?query=' + query, (obj) => {
+                // me.$hits.html('');
+
+                if (obj.success) {
+                    if (obj.data.length > 0) {
+                        // Hit.showAll(me.$hits, obj.data);
+                    } else {
+                        $emptyText.show();
+                        noty({
+                            type: 'warning',
+                            text: 'No hits.'
+                        });
+                    }
+                } else {
+                    $emptyText.show();
+                    noty({
+                        type: 'error',
+                        text: obj.error
+                    });
+                }
+
+                $loader.hide();
+            });
         }
     }
 });

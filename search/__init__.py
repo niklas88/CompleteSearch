@@ -1,6 +1,7 @@
 from flask import Blueprint, request, current_app as app, jsonify
 
-import urllib
+from urllib.request import urlopen
+from urllib.error import URLError
 import json
 
 bp = Blueprint('search', __name__)
@@ -16,7 +17,7 @@ def search():
     query = request.args.get('query')
 
     try:
-        response = urllib.request.urlopen(url % query)
+        response = urlopen(url % query)
         content = response.read().decode('utf-8').replace('\r\n', '')
         result = json.loads(content)['result']
         hits = result['hits']
@@ -42,8 +43,11 @@ def search():
         #     })
 
     except Exception as e:
-        error = str(e)
-        app.logger.exception(error)
+        if e.__class__ == URLError:
+            error = 'CompleteSearch server is not running or responding.'
+        else:
+            error = str(e)
+        app.logger.exception(e)
 
     return jsonify({
         'success': not error,
