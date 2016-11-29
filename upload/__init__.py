@@ -83,26 +83,6 @@ def process_csv(file, delimiter, path):
             {'facets': facets}
         ))
 
-    # Construct a command for genereating CompleteSearch input files
-    facets_ = ','.join([f['name'] for f in facets])
-    DB = 'input/input'
-    PARSER_OPTIONS = '--base-name=input/input ' + \
-                     '--write-docs-file ' + \
-                     '--write-words-file-ascii ' + \
-                     '--full-text=Autor,Titel ' + \
-                     '--allow-multiple-items=Autor ' + \
-                     '--show=Titel ' + \
-                     '--excerpts=Titel,Autor,Jahr ' + \
-                     '--facets=' + facets_ + ' ' + \
-                     '--normalize-words ' + \
-                     '--encoding=utf8 ' + \
-                     '--maps-directory=parser/'
-
-    command = 'make pall DB="%s" PARSER_OPTIONS="%s"' % (DB, PARSER_OPTIONS)
-
-    with open(os.path.join(path, 'make_command.txt'), 'w') as f:
-        f.write(command)
-
     # Write the input file and send it to CompleteSearch
     data.to_csv(
         os.path.join(path, 'input.csv'),
@@ -131,3 +111,55 @@ def get_fields():
         app.logger.exception(error)
 
     return jsonify(data)
+
+
+@bp.route('/configure_database/', methods=['POST'])
+def configure_database():
+    """  """
+    error = ''
+    params = json.loads(request.data.decode('utf-8'))
+
+    full_text = params['--full-text']
+    show = params['--show']
+    facets = params['--facets']
+    filters = params['--filter']
+    multiple_items = params['--allow-multiple-items']
+    title_field = params['--title-field'][0]
+    within_field_separator = params['--within-field-separator'][0]
+
+    # TODO: checks
+
+    # Construct a command for genereating CompleteSearch input files
+    DB = 'input/input'
+    PARSER_OPTIONS = '--base-name=input/input ' + \
+                     '--write-docs-file ' + \
+                     '--write-words-file-ascii ' + \
+                     '--show=' + ','.join(show) + ' ' + \
+                     '--normalize-words ' + \
+                     '--encoding=utf8 ' + \
+                     '--maps-directory=parser/'
+
+    if any(multiple_items) and within_field_separator != '':
+        PARSER_OPTIONS += ' --allow-multiple-items=' + ','.join(multiple_items)
+        PARSER_OPTIONS += ' --within-field-separator=' + within_field_separator
+
+    if any(full_text):
+        PARSER_OPTIONS += ' --full-text=' + ','.join(full_text)
+
+    if any(facets):
+        PARSER_OPTIONS += ' --facets=' + ','.join(facets)
+
+    if any(filters):
+        PARSER_OPTIONS += ' --filter=' + ','.join(filters)
+
+    command = 'make pall DB="%s" PARSER_OPTIONS="%s"' % (DB, PARSER_OPTIONS)
+
+    # with open(os.path.join(path, 'make_command.txt'), 'w') as f:
+    #     f.write(command)
+
+    # TODO: send the command to CompleteSearch and generate files
+
+    return jsonify(
+        success=not error,
+        error=error
+    )

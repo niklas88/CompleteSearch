@@ -54,7 +54,23 @@ export default Marionette.View.extend({
         const values = this.getFormValues();
 
         if (this.checkValues(values)) {
-            // debugger;
+            $.ajax({
+                url: 'configure_database/',
+                method: 'POST',
+                contentType: false,
+                processData: false,
+                data: JSON.stringify(values),
+                success: (obj) => {
+                    // debugger;
+                },
+                error: (jqXHR, textStatus, errorThrown) => {
+                    console.error(jqXHR);
+                    noty({
+                        type: 'error',
+                        text: errorThrown
+                    });
+                }
+            });
         }
     },
 
