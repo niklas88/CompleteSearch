@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll to top
     // Check if the window is on the top. If not, then display the button
-    $(window).scroll(function(){
+    $(window).scroll(() => {
         const level = $('.page-header').height();
         if ($(this).scrollTop() > level) {
             $('#scrollToTop').fadeIn();

@@ -64,7 +64,7 @@ export default Marionette.View.extend({
         const $emptyText = this.getUI('emptyText');
         const $loader = this.getUI('loader');
 
-        // TODO: query: trim, remove js code
+        // TODO: query: trim, remove js code from the query
 
         if (query) {
             $emptyText.hide();
@@ -72,16 +72,14 @@ export default Marionette.View.extend({
 
             // Perform search using CompleteSearch
             $.getJSON('search/?query=' + query, (obj) => {
-                // me.$hits.html('');
-
                 if (obj.success) {
                     if (obj.data.length > 0) {
-                        const hits = new HitCollection();
-                        hits.add(obj.data);
+                        // Save all fetched hits
+                        me.hits = new HitCollection(obj.data);
 
-                        // Show all hits
+                        // Show hits for the 1st page
                         me.showChildView('hits', new HitListView({
-                            collection: hits
+                            collection: new HitCollection(me.getData(me.hits.page))
                         }));
                     } else {
                         me.getRegion('hits').empty();
@@ -103,5 +101,18 @@ export default Marionette.View.extend({
                 $loader.hide();
             });
         }
+    },
+
+    getData(page) {
+        const hitsPerPage = this.hits.hitsPerPage;
+        const start = page * hitsPerPage;
+        const end = start + hitsPerPage;
+        return this.hits.slice(start, end);
+    },
+
+    showMore() {
+        const hits = this.getData(++this.hits.page);
+        const hitCollection = this.getRegion('hits').currentView.collection;
+        hitCollection.add(hits);
     }
 });

@@ -6,7 +6,6 @@ import ConfigureView from './Configure';
 import ConfigCollection from '../collections/Config';
 import SearchView from './Search';
 
-
 export default Marionette.View.extend({
     template: template,
 
