@@ -118,44 +118,46 @@ def configure_database():
     """  """
     error = ''
     params = json.loads(request.data.decode('utf-8'))
-
-    full_text = params['--full-text']
-    show = params['--show']
-    facets = params['--facets']
-    filters = params['--filter']
-    multiple_items = params['--allow-multiple-items']
-    title_field = params['--title-field'][0]
-    within_field_separator = params['--within-field-separator'][0]
-
-    # TODO: checks
+    separator = params['--within-field-separator'][0]
+    settings = {}
 
     # Construct a command for genereating CompleteSearch input files
     DB = 'input/input'
     PARSER_OPTIONS = '--base-name=input/input ' + \
                      '--write-docs-file ' + \
                      '--write-words-file-ascii ' + \
-                     '--show=' + ','.join(show) + ' ' + \
                      '--normalize-words ' + \
                      '--encoding=utf8 ' + \
                      '--maps-directory=parser/'
 
-    if any(multiple_items) and within_field_separator != '':
-        PARSER_OPTIONS += ' --allow-multiple-items=' + ','.join(multiple_items)
-        PARSER_OPTIONS += ' --within-field-separator=' + within_field_separator
+    for p_name, p_value in params.items():
+        settings[p_name] = p_value
+        if p_name == '--title-field':
+            pass
+        elif p_name == '--allow-multiple-items':
+            PARSER_OPTIONS += ' %s=%s' % (p_name, ','.join(p_value))
+            sep = separator if separator != '' else ';'
+            PARSER_OPTIONS += ' --within-field-separator="%s"' % sep
+        else:
+            if any(p_value):
+                PARSER_OPTIONS += ' %s=%s' % (p_name, ','.join(p_value))
 
-    if any(full_text):
-        PARSER_OPTIONS += ' --full-text=' + ','.join(full_text)
+    command = ''' make pall DB="%s" PARSER_OPTIONS=\'%s\' &&
+                  cp input/{input.hybrid,input.vocabulary,input.docs.DB} server
+              ''' % (DB, PARSER_OPTIONS)
 
-    if any(facets):
-        PARSER_OPTIONS += ' --facets=' + ','.join(facets)
+    # command = 'make pall DB="%s" PARSER_OPTIONS=\'%s\' && ' + \
+    #     'cp input/{input.hybrid,input.vocabulary,input.docs.DB} server' % \
+    #     (DB, PARSER_OPTIONS)
 
-    if any(filters):
-        PARSER_OPTIONS += ' --filter=' + ','.join(filters)
+    path = os.path.join(app.config['BASE_DIR'], 'data')
+    with open(os.path.join(path, 'make_command.txt'), 'w') as f:
+        f.write(command)
 
-    command = 'make pall DB="%s" PARSER_OPTIONS="%s"' % (DB, PARSER_OPTIONS)
-
-    # with open(os.path.join(path, 'make_command.txt'), 'w') as f:
-    #     f.write(command)
+    # Save DB settings
+    app.config['SETTINGS'] = settings
+    with open(os.path.join(path, 'settings.json'), 'w') as f:
+        f.write(json.dumps(settings))
 
     # TODO: send the command to CompleteSearch and generate files
 

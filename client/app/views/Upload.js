@@ -1,6 +1,7 @@
 import {Marionette} from '../../vendor/vendor';
 import template from '../templates/upload.jst';
-import SearchView from './Search';
+import ConfigureView from './Configure';
+import ConfigCollection from '../collections/Config';
 
 export default Marionette.View.extend({
     template: template,
@@ -60,10 +61,18 @@ export default Marionette.View.extend({
                                 text: 'File has been uploaded!'
                             });
 
-                            // Change the view (UploadView -> SearchView)
-                            const contentRegion = app.getContentRegion();
-                            contentRegion.empty();
-                            contentRegion.show(new SearchView());
+                            // Change the view (UploadView -> ConfigureView)
+                            const configCollection = new ConfigCollection();
+                            configCollection.fetch({
+                                success: () => {
+                                    const contentRegion = app.getContentRegion();
+                                    contentRegion.empty();
+                                    contentRegion.show(new ConfigureView({
+                                        collection: configCollection
+                                    }));
+                                }
+                            });
+
                         } else {
                             // TODO: stop loader
 

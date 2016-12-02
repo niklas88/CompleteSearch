@@ -1,5 +1,6 @@
 import {Marionette} from '../../vendor/vendor';
 import template from '../templates/configure.jst';
+import SearchView from './Search';
 
 export default Marionette.View.extend({
     template: template,
@@ -61,7 +62,15 @@ export default Marionette.View.extend({
                 processData: false,
                 data: JSON.stringify(values),
                 success: (obj) => {
-                    // debugger;
+                    noty({
+                        type: 'success',
+                        text: 'Database has been configured!'
+                    });
+
+                    // Change the view (ConfigureView -> SearchView)
+                    const contentRegion = app.getContentRegion();
+                    contentRegion.empty();
+                    contentRegion.show(new SearchView());
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.error(jqXHR);

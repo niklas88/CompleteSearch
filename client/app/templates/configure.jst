@@ -39,7 +39,7 @@
                                 <% _.each(fields, (field) => { %>
                                     <div class="checkbox">
                                         <label for="<%= '--allow-multiple-items-' + field.name.replace(' ', '-') %>">
-                                            <input type="checkbox" name="--allow-multiple-items" id="<%= '--allow-multiple-items-' + field.name.replace(' ', '-') %>" value="<%= field %>">
+                                            <input type="checkbox" name="--allow-multiple-items" id="<%= '--allow-multiple-items-' + field.name.replace(' ', '-') %>" value="<%= field.name %>">
                                             <%= field.name %>
                                         </label>
                                     </div>
@@ -69,7 +69,7 @@
                                 <% _.each(fields, (field) => { %>
                                     <div class="checkbox">
                                         <label for="<%= '--filter-' + field.name.replace(' ', '-') %>">
-                                            <input type="checkbox" name="--filter" id="<%= '--filter-' + field.name.replace(' ', '-') %>" value="<%= field %>">
+                                            <input type="checkbox" name="--filter" id="<%= '--filter-' + field.name.replace(' ', '-') %>" value="<%= field.name %>">
                                             <%= field.name %>
                                         </label>
                                     </div>
@@ -89,7 +89,7 @@
                                 <% _.each(fields, (field) => { %>
                                     <div class="checkbox">
                                         <label for="<%= '--facets-' + field.name.replace(' ', '-') %>">
-                                            <input type="checkbox" name="--facets" id="<%= '--facets-' + field.name.replace(' ', '-') %>" value="<%= field %>">
+                                            <input type="checkbox" name="--facets" id="<%= '--facets-' + field.name.replace(' ', '-') %>" value="<%= field.name %>">
                                             <%= field.name %>
                                         </label>
                                     </div>

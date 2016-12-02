@@ -2,11 +2,10 @@ import {Marionette} from '../../vendor/vendor';
 import {Backbone} from '../../vendor/vendor';
 import template from '../templates/main.jst';
 import IndexView from './Index';
+import ConfigureView from './Configure';
+import ConfigCollection from '../collections/Config';
 import SearchView from './Search';
 
-// TODO: move it to UploadView
-import ConfigCollection from '../collections/Config';
-import ConfigureView from './Configure';
 
 export default Marionette.View.extend({
     template: template,
@@ -16,20 +15,21 @@ export default Marionette.View.extend({
     },
 
     onRender() {
-        // if (DATABASE_UPLOADED) {
-        //     this.showChildView('content', new SearchView());
-        // } else {
-        //     this.showChildView('content', new IndexView());
-        // }
-
-        // TODO: move it to UploadView
-        const configCollection = new ConfigCollection();
-        configCollection.fetch({
-            success: () => {
-                this.showChildView('content', new ConfigureView({
-                    collection: configCollection
-                }));
-            }
-        });
+        if (VIEW == 'index') {
+            this.showChildView('content', new IndexView());
+        }
+        else if (VIEW == 'configure') {
+            const configCollection = new ConfigCollection();
+            configCollection.fetch({
+                success: () => {
+                    this.showChildView('content', new ConfigureView({
+                        collection: configCollection
+                    }));
+                }
+            });
+        }
+        else if (VIEW == 'search') {
+            this.showChildView('content', new SearchView());
+        }
     }
 });
