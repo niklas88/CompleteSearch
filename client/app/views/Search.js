@@ -1,6 +1,8 @@
 import {Marionette} from '../../vendor/vendor';
 import template from '../templates/search.jst';
 import FacetListView from './FacetList';
+import HitCollection from '../collections/Hit';
+import HitListView from './HitList';
 
 export default Marionette.View.extend({
     template: template,
@@ -57,6 +59,7 @@ export default Marionette.View.extend({
     },
 
     search() {
+        const me = this;
         const query = this.getUI('search').val();
         const $emptyText = this.getUI('emptyText');
         const $loader = this.getUI('loader');
@@ -73,8 +76,15 @@ export default Marionette.View.extend({
 
                 if (obj.success) {
                     if (obj.data.length > 0) {
-                        // Hit.showAll(me.$hits, obj.data);
+                        const hits = new HitCollection();
+                        hits.add(obj.data);
+
+                        // Show all hits
+                        me.showChildView('hits', new HitListView({
+                            collection: hits
+                        }));
                     } else {
+                        me.getRegion('hits').empty();
                         $emptyText.show();
                         noty({
                             type: 'warning',
@@ -82,6 +92,7 @@ export default Marionette.View.extend({
                         });
                     }
                 } else {
+                    me.getRegion('hits').empty();
                     $emptyText.show();
                     noty({
                         type: 'error',

@@ -28,17 +28,20 @@ def search():
 
         if int(hits['@total']) > 0:
             for hit in result['hits']['hit']:
-                items = [
+                fields = [
                     {
                         'name': field,
-                        'value': hit['info'][field]
+                        'value':
+                            hit['info'][field]
+                            if field in hit['info'].keys()
+                            else ''
                     }
                     for field in settings['--show']
                 ]
 
                 hit_data = {
                     'titleField': settings['--title-field'][0],
-                    'items': items
+                    'fields': fields
                 }
 
                 data.append(hit_data)
