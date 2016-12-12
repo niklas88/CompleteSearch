@@ -1,4 +1,5 @@
 from flask import Blueprint, request, current_app as app, jsonify
+from common.utils import load_settings
 
 from urllib.request import urlopen
 from urllib.error import URLError
@@ -14,7 +15,7 @@ def search():
     data = []
     query = request.args.get('query')
 
-    settings = app.config['SETTINGS']
+    settings = load_settings(app)
     ip = app.config['DOCKER_MACHINE_IP']
     port = app.config['DOCKER_MACHINE_PORT']
 

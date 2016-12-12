@@ -23,7 +23,7 @@ omit =
     client/
     env/*
     */__init__.py
-    tests.py
+    *tests.py
     manage.py
     fabfile.py
 

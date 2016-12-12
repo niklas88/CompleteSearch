@@ -1,9 +1,9 @@
-from app import app
+from app import create_app
 from flask_script import Manager
 
 import unittest
 
-manager = Manager(app)
+manager = Manager(create_app())
 
 
 @manager.command

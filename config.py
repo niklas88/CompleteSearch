@@ -1,5 +1,4 @@
 import subprocess
-import json
 import os
 
 
@@ -21,13 +20,6 @@ if proc.stderr != b'':
 IP = proc.stdout.decode('utf-8').replace('\n', '')
 
 
-# Get DB settings
-settings_file = os.path.join(BASE_DIR, 'data/settings.json')
-if os.path.isfile(settings_file):
-    with open(settings_file, 'r') as f:
-        SETTINGS = json.loads(f.read())
-
-
 class Config:
     TESTING = False
     BASE_DIR = BASE_DIR
@@ -35,7 +27,11 @@ class Config:
     ALLOWED_EXTENSIONS = ('txt', 'xml', 'csv', 'tsv',)
     DOCKER_MACHINE_IP = IP
     DOCKER_MACHINE_PORT = '8888'
-    SETTINGS = SETTINGS if SETTINGS else {}
+
+    # File paths
+    INPUT_CSV_PATH = os.path.join(BASE_DIR, 'data/input.csv')
+    SETTINGS_PATH = os.path.join(BASE_DIR, 'data/settings.json')
+    FACETS_PATH = os.path.join(BASE_DIR, 'data/facets.json')
 
 
 class DevelopmentConfig(Config):
