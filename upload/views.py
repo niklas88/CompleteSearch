@@ -37,7 +37,7 @@ def upload_file():
                         process_csv(file_obj, dialect.delimiter, path)
 
                 except Exception as e:
-                    app.logger.exception(error)
+                    app.logger.exception(e)
                     error = str(e)
             else:
                 error = 'The file is empty.'
