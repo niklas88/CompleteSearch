@@ -11,32 +11,40 @@ bp = Blueprint('upload', __name__)
 
 @bp.route('/upload_file/', methods=['POST'])
 def upload_file():
-    """ Check the uploaded file, process and feed it to CompleteSearch """
+    """
+    Upload a file, validate and process it, and "feed" it to CompleteSearch.
+    """
     error = ''
 
-    try:
-        if 'file' in request.files:
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                if file.filename.split('.')[1] == 'xml':
-                    # TODO: process xml
-                    pass
+    if 'file' in request.files:
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            file_str = str(file.read(), encoding='utf8')
+            file_obj = io.StringIO(file_str)
+            if file_str != '':
+                try:
+                    if file.filename.split('.')[1] == 'xml':
+                        # TODO: process xml
+                        pass
 
-                else:
-                    file_str = file.read().decode('utf-8')
-                    file_obj = io.StringIO(file_str)
-                    dialect = csv.Sniffer().sniff(file_str, delimiters='\t,')
-                    path = os.path.join(app.config['BASE_DIR'], 'data')
+                    else:
+                        # TODO: define all possible delimiters
+                        dialect = csv.Sniffer().sniff(
+                            file_str,
+                            delimiters=',;\t'
+                        )
+                        path = os.path.join(app.config['BASE_DIR'], 'data')
+                        process_csv(file_obj, dialect.delimiter, path)
 
-                    process_csv(file_obj, dialect.delimiter, path)
+                except Exception as e:
+                    app.logger.exception(error)
+                    error = str(e)
             else:
-                error = 'Wrong file type.'
+                error = 'The file is empty.'
         else:
-            error = 'You did not select any file.'
-
-    except Exception as e:
-        error = str(e)
-        app.logger.exception(error)
+            error = 'Wrong file type.'
+    else:
+        error = 'You did not select any file.'
 
     return jsonify(
         success=not error,
