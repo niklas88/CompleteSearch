@@ -150,17 +150,12 @@ def configure_database():
             if any(p_value):
                 PARSER_OPTIONS += ' %s=%s' % (p_name, ','.join(p_value))
 
-    command = ''' make pall DB="%s" PARSER_OPTIONS=\'%s\' &&
-                  cp input/{input.hybrid,input.vocabulary,input.docs.DB} server
-              ''' % (DB, PARSER_OPTIONS)
-
-    # command = 'make pall DB="%s" PARSER_OPTIONS=\'%s\' && ' + \
-    #     'cp input/{input.hybrid,input.vocabulary,input.docs.DB} server' % \
-    #     (DB, PARSER_OPTIONS)
+    comm = 'make pall DB="%s" PARSER_OPTIONS=\'%s\' && ' % (DB, PARSER_OPTIONS)
+    comm += 'cp input/{input.hybrid,input.vocabulary,input.docs.DB} server'
 
     path = os.path.join(app.config['BASE_DIR'], 'data')
     with open(os.path.join(path, 'make_command.txt'), 'w') as f:
-        f.write(command)
+        f.write(comm)
 
     # Save DB settings
     app.config['SETTINGS'] = settings
