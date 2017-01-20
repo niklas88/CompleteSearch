@@ -24,7 +24,7 @@ class Config:
     TESTING = False
     BASE_DIR = BASE_DIR
     UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
-    ALLOWED_EXTENSIONS = ('txt', 'xml', 'csv', 'tsv',)
+    ALLOWED_EXTENSIONS = ('txt', 'csv', 'tsv',)
     # DOCKER_MACHINE_IP = IP
     # DOCKER_MACHINE_PORT = '8888'
 

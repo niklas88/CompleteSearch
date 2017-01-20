@@ -13,13 +13,10 @@ def search():
     """ Perform a search using CompleteSearch. """
     error = ''
     data = []
-    query = request.args.get('query')
-
     settings = load_settings(app)
-    ip = app.config['DOCKER_MACHINE_IP']
-    port = app.config['DOCKER_MACHINE_PORT']
 
-    url = 'http://%s:%s/?q=%s&format=json' % (ip, port, query)
+    query = request.args.get('query')
+    url = 'http://0.0.0.0:8888/?q=%s&format=json' % query
 
     try:
         response = urlopen(url)

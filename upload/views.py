@@ -5,6 +5,7 @@ import csv
 import io
 import pandas as pd
 import json
+import subprocess
 
 bp = Blueprint('upload', __name__)
 
@@ -23,18 +24,59 @@ def upload_file():
             file_obj = io.StringIO(file_str)
             if file_str != '':
                 try:
-                    if file.filename.split('.')[1] == 'xml':
-                        # TODO: process xml
-                        pass
+                    # TODO: define all possible delimiters
+                    dialect = csv.Sniffer().sniff(
+                        file_str,
+                        delimiters=',;\t'
+                    )
+                    path = os.path.join(app.config['BASE_DIR'], 'data')
+                    data = process_csv(file_obj, dialect.delimiter, path)
 
-                    else:
-                        # TODO: define all possible delimiters
-                        dialect = csv.Sniffer().sniff(
-                            file_str,
-                            delimiters=',;\t'
-                        )
-                        path = os.path.join(app.config['BASE_DIR'], 'data')
-                        process_csv(file_obj, dialect.delimiter, path)
+                    # Save the uploaded file
+                    data.to_csv(
+                        os.path.join('../data', 'input.csv'),
+                        sep='\t',
+                        encoding='utf-8',
+                        escapechar='\\',  # test this
+                        index=False
+                    )
+
+                    opts = "--within-field-separator=';' " + \
+                           '--full-text=Titel,Autor,Jahr,Preis ' + \
+                           '--allow-multiple-items=Autor ' + \
+                           '--show=Titel,Autor,Jahr,Preis ' + \
+                           '--filter=Titel,Autor,Jahr,Preis ' + \
+                           '--facets=Titel,Autor,Jahr,Preis'
+
+                    command = 'make OPTIONS="%s" prepare_input' % opts
+
+                    # Generate necessary files
+                    os.chdir('../completesearch')
+                    output1, err1 = subprocess.Popen(
+                        [command],
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    ).communicate()
+                    app.logger.debug('Prepare input:\n%s' % err1)
+
+                    # Stop CompleteSearch server
+                    output2, err2 = subprocess.Popen(
+                        ['make stop_server'],
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    ).communicate()
+                    app.logger.debug('Stop CS server:\n%s' % output2)
+
+                    # Start CompleteSearch server
+                    output3, err3 = subprocess.Popen(
+                        ['make start_server'],
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    ).communicate()
+                    app.logger.debug('Start CS server:\n%s' % output3)
 
                 except Exception as e:
                     app.logger.exception(e)
@@ -91,16 +133,7 @@ def process_csv(file, delimiter, path):
             {'facets': facets}
         ))
 
-    # Write the input file and send it to CompleteSearch
-    data.to_csv(
-        os.path.join(path, 'input.csv'),
-        sep='\t',
-        encoding='utf-8',
-        escapechar='\\',  # test this
-        index=False
-    )
-
-    # TODO: send to CompleteSearch
+    return data
 
 
 @bp.route('/get_fields/', methods=['GET'])

@@ -1,7 +1,8 @@
 import {Marionette} from '../../vendor/vendor';
 import template from '../templates/upload.jst';
-import ConfigureView from './Configure';
-import ConfigCollection from '../collections/Config';
+// import ConfigureView from './Configure';
+// import ConfigCollection from '../collections/Config';
+import SearchView from './Search';
 
 export default Marionette.View.extend({
     template: template,
@@ -61,17 +62,22 @@ export default Marionette.View.extend({
                                 text: 'File has been uploaded!'
                             });
 
-                            // Change the view (UploadView -> ConfigureView)
-                            const configCollection = new ConfigCollection();
-                            configCollection.fetch({
-                                success: () => {
-                                    const contentRegion = app.getContentRegion();
-                                    contentRegion.empty();
-                                    contentRegion.show(new ConfigureView({
-                                        collection: configCollection
-                                    }));
-                                }
-                            });
+                            // // Change the view (UploadView -> ConfigureView)
+                            // const configCollection = new ConfigCollection();
+                            // configCollection.fetch({
+                            //     success: () => {
+                            //         const contentRegion = app.getContentRegion();
+                            //         contentRegion.empty();
+                            //         contentRegion.show(new ConfigureView({
+                            //             collection: configCollection
+                            //         }));
+                            //     }
+                            // });
+
+                            // Change the view (UploadView -> SearchView)
+                            const contentRegion = app.getContentRegion();
+                            contentRegion.empty();
+                            contentRegion.show(new SearchView());
 
                         } else {
                             // TODO: stop loader
