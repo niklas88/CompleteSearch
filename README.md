@@ -1,7 +1,4 @@
 # CompleteSearch Web Application
 
-### How to run
-```
-pip install -r requirements.txt
-python app.py
-```
+### Installation
+See [this link](https://github.com/anatskiy/docker-completesearch).
