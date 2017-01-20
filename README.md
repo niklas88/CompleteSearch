@@ -1,4 +1,4 @@
 # CompleteSearch Web Application
 
 ### Installation
-See [this link](https://github.com/anatskiy/docker-completesearch).
+The easiest way is to use [this](https://github.com/anatskiy/docker-completesearch) Docker image. 
