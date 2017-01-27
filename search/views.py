@@ -1,5 +1,4 @@
 from flask import Blueprint, request, current_app as app, jsonify
-from common.utils import load_settings
 
 from urllib.request import urlopen
 from urllib.error import URLError
@@ -13,14 +12,14 @@ def search():
     """ Perform a search using CompleteSearch. """
     error = ''
     data = []
-    settings = load_settings(app)
+    settings = app.settings.to_dict()
 
     query = request.args.get('query')
     url = 'http://0.0.0.0:8888/?q=%s&format=json' % query
 
     try:
         response = urlopen(url)
-        content = response.read().decode('utf-8').replace('\r\n', '')
+        content = str(response.read(), 'utf-8').replace('\r\n', '')
         result = json.loads(content)['result']
         hits = result['hits']
 
@@ -34,11 +33,11 @@ def search():
                             if field in hit['info'].keys()
                             else ''
                     }
-                    for field in settings['--show']
+                    for field in settings['show']
                 ]
 
                 hit_data = {
-                    'titleField': settings['--title-field'][0],
+                    'titleField': settings['title_field'],
                     'fields': fields
                 }
 

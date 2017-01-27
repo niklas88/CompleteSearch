@@ -15,6 +15,7 @@ def upload_file():
     """
     Upload a file, validate and process it, and "feed" it to CompleteSearch.
     """
+    settings = app.settings.to_dict()
     error = ''
 
     if 'file' in request.files:
@@ -29,8 +30,19 @@ def upload_file():
                         file_str,
                         delimiters=',;\t'
                     )
-                    path = os.path.join(app.config['BASE_DIR'], 'data')
-                    data = process_csv(file_obj, dialect.delimiter, path)
+                    data, facets = process_csv(file_obj, dialect.delimiter)
+                    facets_fields = [f['name'] for f in facets]
+                    facets_fields_str = ','.join(facets_fields)
+                    all_fields = data.columns.values.tolist()
+                    all_fields_str = ','.join(all_fields)
+
+                    # Update settings
+                    settings['database_uploaded'] = True
+                    settings['facets'] = facets_fields
+                    settings['full_text'] = all_fields
+                    settings['show'] = facets_fields
+                    settings['filter'] = facets_fields
+                    app.settings.save()
 
                     # Save the uploaded file
                     data.to_csv(
@@ -41,14 +53,17 @@ def upload_file():
                         index=False
                     )
 
+                    # TODO@me: define allow-multiple-items automatically
                     opts = "--within-field-separator=';' " + \
-                           '--full-text=Titel,Autor,Jahr,Preis ' + \
+                           '--full-text=%s ' % all_fields_str + \
                            '--allow-multiple-items=Autor ' + \
-                           '--show=Titel,Autor,Jahr,Preis ' + \
-                           '--filter=Titel,Autor,Jahr,Preis ' + \
-                           '--facets=Titel,Autor,Jahr,Preis'
+                           '--show=%s ' % facets_fields_str + \
+                           '--filter=%s ' % facets_fields_str + \
+                           '--facets=%s' % facets_fields_str
 
                     command = 'make OPTIONS="%s" prepare_input' % opts
+
+                    print(command)
 
                     # Generate necessary files
                     os.chdir('../completesearch')
@@ -100,7 +115,7 @@ def allowed_file(filename):
         filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 
-def process_csv(file, delimiter, path):
+def process_csv(file, delimiter):
     """ Check the uploaded file (skip bad rows) and process it """
     data = pd.read_csv(file, delimiter=delimiter, error_bad_lines=False)
 
@@ -127,13 +142,7 @@ def process_csv(file, delimiter, path):
 
     facets = sorted(facets, key=lambda x: x['name'])
 
-    # Write facets to the file
-    with open(os.path.join(path, 'facets.json'), 'w') as f:
-        f.write(json.dumps(
-            {'facets': facets}
-        ))
-
-    return data
+    return data, facets
 
 
 @bp.route('/get_fields/', methods=['GET'])

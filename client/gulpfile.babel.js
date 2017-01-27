@@ -74,7 +74,8 @@ gulp.task('browser-sync', false, () => {
     bs.init({
         notify: false,
         // proxy: '127.0.0.1:5000'
-        proxy: '192.168.99.100:5000'
+        // proxy: '192.168.99.100:5000'
+        proxy: 'localhost:5000'
     });
 });
 
