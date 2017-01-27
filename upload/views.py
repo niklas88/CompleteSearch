@@ -63,8 +63,6 @@ def upload_file():
 
                     command = 'make OPTIONS="%s" prepare_input' % opts
 
-                    print(command)
-
                     # Generate necessary files
                     os.chdir('../completesearch')
                     output1, err1 = subprocess.Popen(
