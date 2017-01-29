@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app as app, jsonify
+from flask import Blueprint, render_template, current_app as app
 
 bp = Blueprint('common', __name__)
 
@@ -14,12 +14,3 @@ def index():
         VIEW=view,
         DEBUG=app.config['DEBUG']
     )
-
-
-@bp.route('/get_facets/', methods=['GET'])
-def get_facets():
-    """ Return all facets. """
-    # settings = app.settings.to_dict()
-    # facets = settings['facets']
-    # return jsonify(facets)
-    return jsonify([])

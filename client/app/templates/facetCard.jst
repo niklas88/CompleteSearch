@@ -2,18 +2,7 @@
     <div class="content">
         <h4 class="card-title">Refine by <%= name %></h4>
         <div class="card-description">
-            <ul class="facet-items">
-                <% facetItems.each(function(item, idx) { %>
-                    <% if (idx > 4) { %>
-                    <li class="hidden">
-                    <% } else { %>
-                    <li>
-                    <% } %>
-                        <a id="facet-item-<%= item.cid %>" href="javascript:void(0)"><%= item.attributes.name %></a>
-                        <span class="label label-default pull-right"><%= item.attributes.count %></span>
-                    </li>
-                <% }); %>
-            </ul>
+            <ul></ul>
             <div class="facet-items-top">
                 <hr>
                 <a href="javascript:void(0)" class="btn btn-primary btn-sm top-5">Top 5</a>

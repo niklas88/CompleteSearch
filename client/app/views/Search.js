@@ -1,6 +1,6 @@
 import {Marionette} from '../../vendor/vendor';
 import template from '../templates/search.jst';
-import FacetListView from './FacetList';
+import FacetCardListView from './FacetCardList';
 import HitCollection from '../collections/Hit';
 import HitListView from './HitList';
 
@@ -29,16 +29,11 @@ export default Marionette.View.extend({
         this.$el.unwrap();
         this.setElement(this.$el);
 
-        // Show all facets
-        const facetListView = new FacetListView();
-        facetListView.collection.fetch({
+        // Show all facet cards
+        const facetCardListView = new FacetCardListView();
+        facetCardListView.collection.fetch({
             success: () => {
-                facetListView.collection.each((facet) => {
-                    const items = facet.get('items');
-                    facet.get('facetItems').add(items);
-                    facet.unset('items');
-                });
-                this.showChildView('facets', facetListView);
+                this.showChildView('facets', facetCardListView);
             }
         });
 

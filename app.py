@@ -28,8 +28,9 @@ class Settings:
                     'show': [],
                     'filter': [],
                     'facets': [],
+                    'all_fields': [],
                 }
-                f.write(json.dumps(settings))
+                f.write(json.dumps(settings, indent=4, sort_keys=True))
                 self._settings = settings
 
     def to_dict(self):
@@ -39,7 +40,7 @@ class Settings:
     def save(self):
         """ Save dictionary with settings to the settings file. """
         with open(SETTINGS_DIR, 'w') as f:
-            f.write(json.dumps(self._settings))
+            f.write(json.dumps(self._settings, indent=4, sort_keys=True))
 
 
 def create_app(config='Config'):

@@ -1,0 +1,12 @@
+<ul class="facet-items">
+    <% items.each((item, idx) => { %>
+        <% if (idx > 4) { %>
+        <li class="hidden">
+        <% } else { %>
+        <li>
+        <% } %>
+            <a id="facet-item-<%= item.cid %>" href="javascript:void(0)"><%= item.attributes.name %></a>
+            <span class="label label-default pull-right"><%= item.attributes.count %></span>
+        </li>
+    <% }); %>
+</ul>

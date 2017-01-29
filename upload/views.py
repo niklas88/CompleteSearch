@@ -38,6 +38,7 @@ def upload_file():
 
                     # Update settings
                     settings['database_uploaded'] = True
+                    settings['all_fields'] = all_fields
                     settings['facets'] = facets_fields
                     settings['full_text'] = all_fields
                     settings['show'] = facets_fields

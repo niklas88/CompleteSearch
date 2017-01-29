@@ -1,8 +1,9 @@
 import {Marionette} from '../../vendor/vendor';
-import template from '../templates/facet.jst';
+import template from '../templates/facetCard.jst';
+import FacetItemCollection from '../collections/FacetItem';
+import FacetItemsView from './FacetItems';
 
 export default Marionette.View.extend({
-    tagName: 'div',
     template: template,
 
     regions: {
@@ -25,7 +26,23 @@ export default Marionette.View.extend({
 
     ui: {},
 
-    onAttach() {
+    onRender() {
+        this.collection = new FacetItemCollection();
+        this.collection.url += '?name=' + this.model.get('name');
+        this.collection.fetch({
+            success: () => {
+                this.showChildView('items', new FacetItemsView({
+                    collection: this.collection
+                }));
+                this.afterRender();
+            },
+            error: (model, response, options) => {
+                // debugger;
+            }
+        });
+    },
+
+    afterRender: function() {
         this.ui.itemsTop = $('#' + this.id() + ' .facet-items-top');
         this.ui.top5     = $('#' + this.id() + ' .facet-items-top .top-5');
         this.ui.top50    = $('#' + this.id() + ' .facet-items-top .top-50');
@@ -35,12 +52,12 @@ export default Marionette.View.extend({
     },
 
     showTopButtons: function() {
-        const length = this.model.get('facetItems').length,
-            itemsTop = this.getUI('itemsTop'),
-            top5 = this.getUI('top5'),
-            top50 = this.getUI('top50'),
-            top100 = this.getUI('top100'),
-            topAll = this.getUI('topAll');
+        const length    = this.collection.length;
+        const itemsTop  = this.getUI('itemsTop');
+        const top5      = this.getUI('top5');
+        const top50     = this.getUI('top50');
+        const top100    = this.getUI('top100');
+        const topAll    = this.getUI('topAll');
 
         if (length > 5) {
             itemsTop.show();
@@ -67,7 +84,7 @@ export default Marionette.View.extend({
     topBtnClick: function(e) {
         const limit = parseInt(e.target.text.split(' ')[1]);
 
-        this.model.get('facetItems').each((item, idx) => {
+        this.collection.each((item, idx) => {
             var $item = $('#facet-item-' + item.cid).parent();
             if (idx < limit) {
                 $item.toggleClass('hidden', false);
@@ -78,7 +95,7 @@ export default Marionette.View.extend({
     },
 
     topAllBtnClick: function(a, b, c) {
-        this.model.get('facetItems').each((item) => {
+        this.collection.each((item) => {
             $('#facet-item-' + item.cid).parent().toggleClass('hidden', false);
         });
     }

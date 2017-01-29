@@ -7,9 +7,47 @@ import json
 bp = Blueprint('search', __name__)
 
 
+@bp.route('/get_facets_list/', methods=['GET'])
+def get_facets_list():
+    """ Return the list of facets. """
+    settings = app.settings.to_dict()
+    facets_list = [{'name': facet} for facet in settings['facets']]
+    return jsonify(facets_list)
+
+
+@bp.route('/get_facets/', methods=['GET'])
+def get_facets():
+    """ Return all facets for a given type. """
+    error = ''
+    facets = []
+
+    name = request.args.get('name')
+    query = ':facet:%s:' % name
+    url = 'http://0.0.0.0:8888/?q=%s*&format=json' % query
+
+    try:
+        response = urlopen(url)
+        content = str(response.read(), 'utf-8').replace('\r\n', '')
+        result = json.loads(content)['result']
+        # status = result['status']['@code']  # TODO@me: check status
+        completions = result['completions']['c']
+
+        for completion in completions:
+            facets.append({
+                'name': completion['text'].replace(query, ''),
+                'count': completion['@oc'],
+            })
+
+    except URLError as e:
+        error = 'CompleteSearch server is not running or responding.'
+        app.logger.exception(e)
+
+    return jsonify(facets)
+
+
 @bp.route('/search/', methods=['GET'])
 def search():
-    """ Perform a search using CompleteSearch. """
+    """ Perform search using CompleteSearch. """
     error = ''
     data = []
     settings = app.settings.to_dict()
