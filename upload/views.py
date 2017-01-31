@@ -63,43 +63,45 @@ def upload_file():
                     index=False
                 )
 
-                # TODO@me: define allow-multiple-items automatically
-                opts = "--within-field-separator=';' " + \
-                       '--full-text=%s ' % all_fields_str + \
-                       '--allow-multiple-items=Autor ' + \
-                       '--show=%s ' % facets_fields_str + \
-                       '--filter=%s ' % facets_fields_str + \
-                       '--facets=%s' % facets_fields_str
+                # Don't run this code with TestingConfig
+                if not app.config['TESTING']:
+                    # TODO@me: define allow-multiple-items automatically
+                    opts = "--within-field-separator=';' " + \
+                           '--full-text=%s ' % all_fields_str + \
+                           '--allow-multiple-items=Autor ' + \
+                           '--show=%s ' % facets_fields_str + \
+                           '--filter=%s ' % facets_fields_str + \
+                           '--facets=%s' % facets_fields_str
 
-                command = 'make OPTIONS="%s" prepare_input' % opts
+                    command = 'make OPTIONS="%s" prepare_input' % opts
 
-                # Generate necessary files
-                os.chdir('../completesearch')
-                output1, err1 = subprocess.Popen(
-                    [command],
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                ).communicate()
-                app.logger.debug('Prepare input:\n%s' % err1)
+                    # Generate necessary files
+                    os.chdir('../completesearch')
+                    output1, err1 = subprocess.Popen(
+                        [command],
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    ).communicate()
+                    app.logger.debug('Prepare input:\n%s' % err1)
 
-                # Stop CompleteSearch server
-                output2, err2 = subprocess.Popen(
-                    ['make stop_server'],
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                ).communicate()
-                app.logger.debug('Stop CS server:\n%s' % output2)
+                    # Stop CompleteSearch server
+                    output2, err2 = subprocess.Popen(
+                        ['make stop_server'],
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    ).communicate()
+                    app.logger.debug('Stop CS server:\n%s' % output2)
 
-                # Start CompleteSearch server
-                output3, err3 = subprocess.Popen(
-                    ['make start_server'],
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                ).communicate()
-                app.logger.debug('Start CS server:\n%s' % output3)
+                    # Start CompleteSearch server
+                    output3, err3 = subprocess.Popen(
+                        ['make start_server'],
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    ).communicate()
+                    app.logger.debug('Start CS server:\n%s' % output3)
         else:
             error = 'Wrong file type.'
     else:

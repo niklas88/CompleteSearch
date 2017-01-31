@@ -16,11 +16,8 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 
-class ProductionConfig(Config):
-    DEBUG = False
-
-
 class TestingConfig(Config):
+    DEBUG = True
     TESTING = True
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SETTINGS_DIR = os.path.join(BASE_DIR, 'test_data', 'settings.json')
