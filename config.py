@@ -1,7 +1,6 @@
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SETTINGS_DIR = os.path.join(BASE_DIR, 'settings.json')
 
 
 class Config:
@@ -9,6 +8,8 @@ class Config:
     BASE_DIR = BASE_DIR
     UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
     ALLOWED_EXTENSIONS = ('txt', 'csv', 'tsv',)
+    SETTINGS_DIR = os.path.join(BASE_DIR, 'settings.json')
+    OUTPUT_PATH = os.path.join(BASE_DIR, '..', 'data', 'input.csv')
 
 
 class DevelopmentConfig(Config):
@@ -21,3 +22,6 @@ class ProductionConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    PRESERVE_CONTEXT_ON_EXCEPTION = False
+    SETTINGS_DIR = os.path.join(BASE_DIR, 'test_data', 'settings.json')
+    OUTPUT_PATH = os.path.join(BASE_DIR, 'test_data', 'test_result.csv')

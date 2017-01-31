@@ -3,7 +3,6 @@ import json
 
 from flask import Flask
 
-from config import SETTINGS_DIR
 from common.logging import handler
 from common.views import bp as common_bp
 from upload.views import bp as upload_bp
@@ -12,13 +11,15 @@ from search.views import bp as search_bp
 
 class Settings:
     """ A class with CompleteSearch settings. """
-    def __init__(self):
-        if os.path.isfile(SETTINGS_DIR):
-            with open(SETTINGS_DIR, 'r') as f:
+    def __init__(self, settings_dir):
+        self._settings_dir = settings_dir
+
+        if os.path.isfile(self._settings_dir):
+            with open(self._settings_dir, 'r') as f:
                 self._settings = json.loads(f.read())
         else:
             # Create a file with default settings
-            with open(SETTINGS_DIR, 'w') as f:
+            with open(self._settings_dir, 'w') as f:
                 settings = {
                     'database_uploaded': False,
                     'title_field': '',
@@ -39,7 +40,7 @@ class Settings:
 
     def save(self):
         """ Save dictionary with settings to the settings file. """
-        with open(SETTINGS_DIR, 'w') as f:
+        with open(self._settings_dir, 'w') as f:
             f.write(json.dumps(self._settings, indent=4, sort_keys=True))
 
 
@@ -51,7 +52,7 @@ def create_app(config='Config'):
     app.config.from_object('config.%s' % config)
 
     # Load settings
-    app.settings = Settings()
+    app.settings = Settings(app.config['SETTINGS_DIR'])
 
     # Register Blueprints
     app.register_blueprint(common_bp)
@@ -59,7 +60,8 @@ def create_app(config='Config'):
     app.register_blueprint(search_bp)
 
     # Set logger
-    app.logger.addHandler(handler)
+    if config != 'TestingConfig':
+        app.logger.addHandler(handler)
 
     return app
 

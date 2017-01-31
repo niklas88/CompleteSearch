@@ -90,11 +90,10 @@ ENV/
 
 uploads/
 .idea/
-data/
 
 node_modules/
 static/css/*
 static/js/*
 
 # CompleteSearch settings
-settings.json
+/settings.json

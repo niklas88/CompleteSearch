@@ -1,0 +1,19 @@
+{
+    "all_fields": [
+        "Land",
+        "Hauptstadt",
+        "Einwohnerzahl"
+    ],
+    "allow_multiple_items": [],
+    "database_uploaded": true,
+    "facets": [],
+    "filter": [],
+    "full_text": [
+        "Land",
+        "Hauptstadt",
+        "Einwohnerzahl"
+    ],
+    "show": [],
+    "title_field": "",
+    "within_field_separator": ";"
+}
