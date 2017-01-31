@@ -7,6 +7,7 @@ from common.logging import handler
 from common.views import bp as common_bp
 from upload.views import bp as upload_bp
 from search.views import bp as search_bp
+from settings.views import bp as settings_bp
 
 
 class Settings:
@@ -23,7 +24,7 @@ class Settings:
                 settings = {
                     'database_uploaded': False,
                     'title_field': '',
-                    'within_field_separator': ';',
+                    'within_field_separator': '',
                     'full_text': [],
                     'allow_multiple_items': [],
                     'show': [],
@@ -58,6 +59,7 @@ def create_app(config='Config'):
     app.register_blueprint(common_bp)
     app.register_blueprint(upload_bp)
     app.register_blueprint(search_bp)
+    app.register_blueprint(settings_bp)
 
     # Set logger
     if config != 'TestingConfig':

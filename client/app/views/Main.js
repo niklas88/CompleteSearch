@@ -2,8 +2,8 @@ import {Marionette} from '../../vendor/vendor';
 import {Backbone} from '../../vendor/vendor';
 import template from '../templates/main.jst';
 import IndexView from './Index';
-import ConfigureView from './Configure';
-import ConfigCollection from '../collections/Config';
+import SettingsView from './Settings';
+import SettingsModel from '../models/Settings';
 import SearchView from './Search';
 
 export default Marionette.View.extend({
@@ -13,22 +13,30 @@ export default Marionette.View.extend({
         content: '#content'
     },
 
+    ui: {
+        settingsBtn: '#settings-button'
+    },
+
+    events: {
+        'click @ui.settingsBtn': 'showSettings'
+    },
+
     onRender() {
         if (VIEW == 'index') {
             this.showChildView('content', new IndexView());
-        }
-        else if (VIEW == 'configure') {
-            const configCollection = new ConfigCollection();
-            configCollection.fetch({
-                success: () => {
-                    this.showChildView('content', new ConfigureView({
-                        collection: configCollection
-                    }));
-                }
-            });
-        }
-        else if (VIEW == 'search') {
+        } else if (VIEW == 'search') {
             this.showChildView('content', new SearchView());
         }
+    },
+
+    showSettings() {
+        const settingsModel = new SettingsModel();
+        settingsModel.fetch({
+            success: () => {
+                this.showChildView('content', new SettingsView({
+                    model: settingsModel
+                }));
+            }
+        });
     }
 });
