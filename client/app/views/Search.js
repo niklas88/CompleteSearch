@@ -1,4 +1,4 @@
-import {Marionette} from '../../vendor/vendor';
+import {Marionette, Radio} from '../../vendor/vendor';
 import template from '../templates/search.jst';
 import FacetCardListView from './FacetCardList';
 import HitCollection from '../collections/Hit';
@@ -22,6 +22,17 @@ export default Marionette.View.extend({
     events: {
         'click @ui.searchBtn': 'search',
         'enter @ui.search': 'search'
+    },
+
+    initialize() {
+        const facetCardListChannel = Radio.channel('facetCardList');
+        this.listenTo(facetCardListChannel, 'facets:reload', this.reloadFacetCardList);
+        this.listenTo(facetCardListChannel, 'facets:set:active', this.setActiveFacets);
+        facetCardListChannel.reply('facets:get:active', this.getActiveFacets);
+
+        // Search parameters
+        this.query = '';
+        this.activeFacets = {};
     },
 
     onRender() {
@@ -64,6 +75,9 @@ export default Marionette.View.extend({
         if (query) {
             $emptyText.hide();
             $loader.show();
+
+            // Save the query
+            me.query = query;
 
             // Perform search using CompleteSearch
             $.getJSON('search/?query=' + query, (obj) => {
@@ -109,5 +123,23 @@ export default Marionette.View.extend({
         const hits = this.getData(++this.hits.page);
         const hitCollection = this.getRegion('hits').currentView.collection;
         hitCollection.add(hits);
+    },
+
+    reloadFacetCardList(name, facet) {
+        // Save facet
+        this.activeFacets[name].push(facet.get('name'));
+
+        // TODO@me: redraw FacetCardList view
+    },
+
+    setActiveFacets(name) {
+        if (!this.activeFacets.hasOwnProperty(name)) {
+            this.activeFacets[name] = [];
+        }
+    },
+
+    getActiveFacets(name) {
+        console.log('this', this);
+        // debugger;
     }
 });

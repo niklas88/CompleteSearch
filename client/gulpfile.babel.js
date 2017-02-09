@@ -20,13 +20,13 @@ const dirs = {
 };
 
 const sassPaths = {
-  src: [
-      `${dirs.nm}/bootstrap/dist/css/bootstrap.min.css`,
-    //   `${dirs.nm}/bootstrap-material-design/dist/css/bootstrap-material-design.min.css`,
-      `${dirs.src}/css/lib/**/*.css`,
-      `${dirs.src}/css/Main.scss`
-  ],
-  dest: `${dirs.dest}`
+    src: [
+        `${dirs.nm}/bootstrap/dist/css/bootstrap.min.css`,
+        //   `${dirs.nm}/bootstrap-material-design/dist/css/bootstrap-material-design.min.css`,
+        `${dirs.src}/css/lib/**/*.css`,
+        `${dirs.src}/css/Main.scss`
+    ],
+    dest: `${dirs.dest}`
 };
 
 gulp.task('styles', 'Compile CSS/SASS styles.', () => {
@@ -37,8 +37,7 @@ gulp.task('styles', 'Compile CSS/SASS styles.', () => {
         // .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(sassPaths.dest))
         .pipe(bs.stream());
-},
-{
+}, {
     aliases: ['s']
 });
 
@@ -60,13 +59,11 @@ gulp.task('client', 'Rebuild the client (JS only).', () => {
         // .pipe(uglify())
         .pipe(gulp.dest('../static/js'))
         .pipe(bs.stream());
-},
-{
+}, {
     aliases: ['c']
 });
 
-gulp.task('build', 'Completely (re-)build the client.', ['styles', 'client'], () => {},
-{
+gulp.task('build', 'Completely (re-)build the client.', ['styles', 'client'], () => {}, {
     aliases: ['b']
 });
 
@@ -87,8 +84,7 @@ gulp.task('watch', 'Watch script and styles changes.', ['browser-sync'], () => {
     // Watch styles changes/
     gulp.watch('app/**/*', ['client']);
     gulp.watch('../static/js/*').on('change', bs.reload);
-},
-{
+}, {
     aliases: ['w']
 });
 

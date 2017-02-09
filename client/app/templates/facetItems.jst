@@ -5,7 +5,7 @@
         <% } else { %>
         <li>
         <% } %>
-            <a id="facet-item-<%= item.cid %>" href="javascript:void(0)"><%= item.attributes.name %></a>
+            <a id="facet-item-<%= item.cid %>" class="facet-item" href="javascript:void(0)"><%= item.attributes.name %></a>
             <span class="label label-default pull-right"><%= item.attributes.count %></span>
         </li>
     <% }); %>
