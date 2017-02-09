@@ -50,7 +50,7 @@ export default Marionette.View.extend({
         // Initialize Material Design
         $.material.init();
 
-        $('footer').toggleClass('footer-white', true);
+        // $('footer').toggleClass('footer-white', true);
     },
 
     search() {
