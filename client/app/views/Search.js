@@ -50,7 +50,7 @@ export default Marionette.View.extend({
 
         // Search on Enter
         const $search = this.getUI('search');
-        $search.keyup((e) => {
+        $search.keydown((e) => {
             if (e.keyCode == 13) {
                 $search.trigger('enter');
             }
