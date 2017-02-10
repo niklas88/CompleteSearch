@@ -93,6 +93,13 @@
     text-indent: 28px;
 }
 
+#search-enter-hint {
+    font-size: 13px;
+    font-weight: 400;
+    color: #aaa;
+    display: none;
+}
+
 #hits .hit {
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 15px;

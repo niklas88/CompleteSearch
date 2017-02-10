@@ -15,6 +15,7 @@ export default Marionette.View.extend({
     ui: {
         searchBtn: '#search-button',
         search: '#search',
+        searchEnterHint: '#search-enter-hint',
         emptyText: '#empty-text',
         loader: '#loader'
     },
@@ -48,10 +49,23 @@ export default Marionette.View.extend({
             }
         });
 
-        // Search on Enter
         const $search = this.getUI('search');
-        $search.keydown((e) => {
+        const $searchEnterHint = this.getUI('searchEnterHint');
+
+        $search.keyup((e) => {
+            const query = $search.val();
+
+            // Show/hide search hint
+            if (query !== '') {
+                $searchEnterHint.show();
+            } else {
+                $searchEnterHint.hide();
+                $search.trigger('enter');
+            }
+
+            // Search on Enter
             if (e.keyCode == 13) {
+                $searchEnterHint.hide();
                 $search.trigger('enter');
             }
         });
