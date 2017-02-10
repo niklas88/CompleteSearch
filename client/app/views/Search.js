@@ -25,13 +25,13 @@ export default Marionette.View.extend({
     },
 
     initialize() {
-        const facetCardListChannel = Radio.channel('facetCardList');
-        this.listenTo(facetCardListChannel, 'facets:reload', this.reloadFacetCardList);
-        this.listenTo(facetCardListChannel, 'facets:set:active', this.setActiveFacets);
-        facetCardListChannel.reply('facets:get:active', this.getActiveFacets);
+        const searchChannel = Radio.channel('search');
+        this.listenTo(searchChannel, 'facets:update:active', this.updateActiveFacets);
+        this.listenTo(searchChannel, 'facets:set:active', this.setActiveFacets);
+        searchChannel.reply('facets:get:query', this.getSearchQuery.bind(this));
+        searchChannel.reply('facets:get:active', this.getActiveFacets.bind(this));
 
-        // Search parameters
-        this.query = '';
+        // Selected (active) facets
         this.activeFacets = {};
     },
 
@@ -66,21 +66,24 @@ export default Marionette.View.extend({
 
     search() {
         const me = this;
-        const query = this.getUI('search').val();
+        const query = this.getSearchQuery();
         const $emptyText = this.getUI('emptyText');
         const $loader = this.getUI('loader');
-
-        // TODO: query: trim, remove js code from the query
+        const activeFacets = this.getActiveFacets();
 
         if (query) {
             $emptyText.hide();
             $loader.show();
 
-            // Save the query
-            me.query = query;
+            let url = 'search/?query=' + query;
+
+            // Add active facets to the url
+            if (Object.keys(activeFacets).length > 0) {
+                url += '&active=' + JSON.stringify(activeFacets);
+            }
 
             // Perform search using CompleteSearch
-            $.getJSON('search/?query=' + query, (obj) => {
+            $.getJSON(url, (obj) => {
                 if (obj.success) {
                     if (obj.data.length > 0) {
                         // Save all fetched hits
@@ -98,6 +101,9 @@ export default Marionette.View.extend({
                             text: 'No hits.'
                         });
                     }
+
+                    // Redraw FacetCardList view
+                    me.getRegion('facets').currentView.render();
                 } else {
                     me.getRegion('hits').empty();
                     $emptyText.show();
@@ -109,6 +115,12 @@ export default Marionette.View.extend({
 
                 $loader.hide();
             });
+        } else {
+            me.getRegion('hits').empty();
+            $emptyText.show();
+
+            // Redraw FacetCardList view
+            this.getRegion('facets').currentView.render();
         }
     },
 
@@ -125,11 +137,10 @@ export default Marionette.View.extend({
         hitCollection.add(hits);
     },
 
-    reloadFacetCardList(name, facet) {
-        // Save facet
-        this.activeFacets[name].push(facet.get('name'));
-
-        // TODO@me: redraw FacetCardList view
+    getSearchQuery() {
+        let query = this.getUI('search').val();
+        // TODO@me: query: trim and remove js code from the query
+        return query;
     },
 
     setActiveFacets(name) {
@@ -138,8 +149,29 @@ export default Marionette.View.extend({
         }
     },
 
-    getActiveFacets(name) {
-        console.log('this', this);
-        // debugger;
+    getActiveFacets() {
+        let facets = {};
+
+        for (let facet in this.activeFacets) {
+            if (this.activeFacets.hasOwnProperty(facet) && this.activeFacets[facet].length > 0) {
+                facets[facet] = this.activeFacets[facet];
+            }
+        }
+
+        return facets;
+    },
+
+    updateActiveFacets(name, facet) {
+        const facetName = facet.get('name');
+
+        // Save facet
+        if (this.activeFacets[name].indexOf(facetName) === -1) {
+            this.activeFacets[name].push(facetName);
+        } else {
+            // TODO@me: delete the item from the array
+        }
+
+        // Trigger hits and facet card reload
+        this.search();
     }
 });

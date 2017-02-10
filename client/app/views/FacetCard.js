@@ -28,7 +28,7 @@ export default Marionette.View.extend({
     ui: {},
 
     initialize() {
-        this.facetCardListChannel = Radio.channel('facetCardList');
+        this.searchChannel = Radio.channel('search');
     },
 
     onRender() {
@@ -36,16 +36,23 @@ export default Marionette.View.extend({
         this.collection = new FacetItemCollection();
 
         // Set Active Facets array
-        this.facetCardListChannel.trigger('facets:set:active', name);
+        this.searchChannel.trigger('facets:set:active', name);
 
         let url = this.collection.url;
         url += '?name=' + name;
 
-        const activeFacets = this.facetCardListChannel.request(
-            'facets:get:active', name
-        );
+        const query = this.searchChannel.request('facets:get:query');
+        const activeFacets = this.searchChannel.request('facets:get:active');
 
-        // TODO@me: add active facets to the url
+        // Add query to the url
+        if (query !== '') {
+            url += '&query=' + query;
+        }
+
+        // Add active facets to the url
+        if (Object.keys(activeFacets).length > 0) {
+            url += '&active=' + JSON.stringify(activeFacets);
+        }
 
         this.collection.fetch({
             url: url,
@@ -124,7 +131,7 @@ export default Marionette.View.extend({
 
         // TODO@me: (un-)highlight just clicked facet
 
-        this.facetCardListChannel.trigger('facets:reload',
+        this.searchChannel.trigger('facets:update:active',
             this.model.get('name'),
             this.collection.get(itemId)
         );

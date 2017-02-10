@@ -1,10 +1,10 @@
 from http.client import RemoteDisconnected
-
-from flask import Blueprint, request, current_app as app, jsonify
-
 from urllib.request import urlopen
 from urllib.error import URLError
 import json
+import re
+
+from flask import Blueprint, request, current_app as app, jsonify
 
 bp = Blueprint('search', __name__)
 
@@ -20,14 +20,38 @@ def get_facets_list():
 @bp.route('/get_facets/', methods=['GET'])
 def get_facets():
     """ Return all facets for a given field name. """
-    error = ''
     facets = []
     completions = None
 
-    name = request.args.get('name', '')
-    if name != '':
-        query = ':facet:%s:' % name
-        url = 'http://0.0.0.0:8888/?q=%s*&format=json' % query
+    def facet_dict(item, facet_query):
+        # Trim, remove :facet:<whatever>: and all html tags
+        pattern = re.compile('<.*?>')
+        name = item['text'].replace(facet_query, '').strip()
+        name = re.sub(pattern, '', name)
+        return {
+            'name': name,
+            'count': item['@oc'],
+        }
+
+    search_query = request.args.get('query', '')
+    facet_name = request.args.get('name', '')
+    active_facets = json.loads(request.args.get('active', '{}'))
+
+    if facet_name != '':
+        facet_query = ':facet:%s:' % facet_name
+
+        if search_query:
+            search_query += '* '
+
+        active_facet_items = ''
+        for facet, items in active_facets.items():
+            for item in items:
+                active_facet_items += ':facet:%s:"%s" ' % (facet, item)
+
+        combined_query = search_query + active_facet_items + facet_query
+        combined_query = combined_query.replace(' ', '%20')
+
+        url = 'http://0.0.0.0:8888/?q=%s*&format=json' % combined_query
 
         try:
             response = urlopen(url)
@@ -35,18 +59,18 @@ def get_facets():
             result = json.loads(content)['result']
             completions = result['completions']
         except (URLError, RemoteDisconnected) as e:
-            error = 'CompleteSearch server is not running or responding.'
+            # error = 'CompleteSearch server is not running or responding.'
             app.logger.exception(e)
-    else:
-        error = 'Search query is empty.'
-
-    # status = result['status']['@code']  # TODO@me: check status
-    if error == '' and completions and int(completions['@total']) > 0:
-        facets = [{
-            # TODO@me: strip, trim and filter js/html code
-            'name': c['text'].replace(query, ''),
-            'count': c['@oc'],
-        } for c in completions['c']]
+        else:
+            # status = result['status']['@code']  # TODO@me: check the status
+            if completions and int(completions['@total']) > 0:
+                if int(completions['@total']) == 1:
+                    facets = [facet_dict(completions['c'], facet_query)]
+                else:
+                    facets = [
+                        facet_dict(c, facet_query)
+                        for c in completions['c']
+                    ]
 
     return jsonify(facets)
 
@@ -58,56 +82,51 @@ def search():
     data = []
     settings = app.settings.to_dict()
 
-    query = request.args.get('query')
-    url = 'http://0.0.0.0:8888/?q=%s&format=json' % query
+    search_query = request.args.get('query', '')
+    active_facets = json.loads(request.args.get('active', '{}'))
 
-    try:
-        response = urlopen(url)
-        content = str(response.read(), 'utf-8').replace('\r\n', '')
-        result = json.loads(content)['result']
-        hits = result['hits']
+    if search_query != '':
+        search_query += '* '
 
-        if int(hits['@total']) > 0:
-            for hit in result['hits']['hit']:
-                fields = [
-                    {
-                        'name': field,
-                        'value':
-                            hit['info'][field]
-                            if field in hit['info'].keys()
-                            else ''
-                    }
-                    for field in settings['show']
-                ]
+        active_facet_items = ''
+        for facet, items in active_facets.items():
+            for item in items:
+                active_facet_items += ':facet:%s:"%s" ' % (facet, item)
 
-                hit_data = {
-                    'titleField': settings['title_field'],
-                    'fields': fields
-                }
+        combined_query = search_query + active_facet_items
+        combined_query = combined_query.replace(' ', '%20')
 
-                data.append(hit_data)
+        url = 'http://0.0.0.0:8888/?q=%s&format=json' % combined_query
 
-        # XML response
-        # root = ET.fromstring(content)
-        # hits = root.find('hits')
-        #
-        # for hit in hits.iter('hit'):
-        #     info = hit.find('info').text
-        #     # excerpt = hit.find('excerpt').text
-        #     data.append({
-        #        'title': ET.fromstring(info).text,
-        #        'description': '...'
-        #     })
-
-    except Exception as e:
-        if e.__class__ == URLError:
+        try:
+            response = urlopen(url)
+            content = str(response.read(), 'utf-8').replace('\r\n', '')
+            result = json.loads(content)['result']
+            hits = result['hits']
+        except (URLError, RemoteDisconnected) as e:
             error = 'CompleteSearch server is not running or responding.'
+            app.logger.exception(e)
         else:
-            error = str(e)
-        app.logger.exception(e)
+            if int(hits['@total']) > 0:
+                for hit in result['hits']['hit']:
+                    fields = [
+                        {
+                            'name': field,
+                            'value':
+                                hit['info'][field]
+                                if field in hit['info'].keys()
+                                else ''
+                        }
+                        for field in settings['show']
+                    ]
 
-    return jsonify({
-        'success': not error,
-        'error': error,
-        'data': data
-    })
+                    hit_data = {
+                        'titleField': settings['title_field'],
+                        'fields': fields
+                    }
+
+                    data.append(hit_data)
+    else:
+        error = 'Empty search query.'
+
+    return jsonify(success=not error, error=error, data=data)
