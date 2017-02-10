@@ -43,10 +43,6 @@
     padding: 70px 0 85px;
 }
 
-.completesearch-configure {
-    padding: 70px 0 85px;
-}
-
 
 /* Upload */
 
@@ -63,7 +59,8 @@
 
 #search-section {
     background-color: #eee;
-    border-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
 }
 
 #search-params {
@@ -94,9 +91,9 @@
 }
 
 #search-enter-hint {
+    color: #aaa;
     font-size: 13px;
     font-weight: 400;
-    color: #aaa;
     display: none;
 }
 
@@ -130,6 +127,11 @@ ul.facet-items li a {
     color: #3C4858
 }
 
+ul.facet-items li a:hover {
+    color: $main-accent-color;
+    text-decoration: underline;
+}
+
 .facet-items-top {
     text-align: center;
     display: none;
@@ -149,6 +151,14 @@ ul.facet-items li a {
 
 
 /* Settings */
+
+#settings {
+    padding-top: 70px;
+}
+
+#settings-fields-section {
+    padding-top: 0;
+}
 
 #settings-form {
     text-align: center;

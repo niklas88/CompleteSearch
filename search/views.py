@@ -127,6 +127,6 @@ def search():
 
                     data.append(hit_data)
     else:
-        error = 'Empty search query.'
+        error = 'No search query given.'
 
     return jsonify(success=not error, error=error, data=data)

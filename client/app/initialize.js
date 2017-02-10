@@ -3,7 +3,8 @@ import App from './components/App';
 
 import bootstrap from 'bootstrap/dist/js/bootstrap.min';
 import materialDesign from 'bootstrap-material-design';
-// import materialKit from '../js/material-kit';
+// import materialKit from '../resources/js/material-kit';
+import jqueryDropdown from '../resources/js/jquery.dropdown';
 import noty from 'noty';
 
 document.addEventListener('DOMContentLoaded', () => {

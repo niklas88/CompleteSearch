@@ -56,16 +56,16 @@ export default Marionette.View.extend({
             const query = $search.val();
 
             // Show/hide search hint
-            if (query !== '') {
-                $searchEnterHint.show();
-            } else {
-                $searchEnterHint.hide();
-                $search.trigger('enter');
-            }
+            // if (query !== '') {
+            //     $searchEnterHint.show();
+            // } else {
+            //     $searchEnterHint.hide();
+            //     $search.trigger('enter');
+            // }
 
             // Search on Enter
             if (e.keyCode == 13) {
-                $searchEnterHint.hide();
+                // $searchEnterHint.hide();
                 $search.trigger('enter');
             }
         });

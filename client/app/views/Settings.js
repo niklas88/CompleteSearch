@@ -45,6 +45,12 @@ export default Marionette.View.extend({
     onAttach() {
         $.material.init();
 
+        // Beautiful select
+        $('.select').dropdown({
+            'dropdownClass': 'dropdown-menu',
+            'optionClass': ''
+        });
+
         const model = this.model.toJSON();
         const params = [
             'fullText', 'show', 'allowMultipleItems', 'filter', 'facets'
