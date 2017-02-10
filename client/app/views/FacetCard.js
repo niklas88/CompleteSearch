@@ -22,7 +22,7 @@ export default Marionette.View.extend({
         'click .top-50': 'topBtnClick',
         'click .top-100': 'topBtnClick',
         'click .top-all': 'topAllBtnClick',
-        'click .facet-item': 'itemClick'
+        'click .facet-item a': 'itemClick'
     },
 
     ui: {},
@@ -58,6 +58,14 @@ export default Marionette.View.extend({
             url: url,
             success: () => {
                 if (this.collection.length > 0) {
+                    if (activeFacets.hasOwnProperty(name)) {
+                        for (let item of activeFacets[name]) {
+                            const facet = this.collection.where('name', item);
+                            facet.set('active', true);
+                        }
+                    }
+
+                    // Render facet items
                     this.showChildView('items', new FacetItemsView({
                         collection: this.collection
                     }));
@@ -116,7 +124,7 @@ export default Marionette.View.extend({
         const limit = parseInt(e.target.text.split(' ')[1]);
 
         this.collection.each((item, idx) => {
-            var $item = $('#facet-item-' + item.cid).parent();
+            var $item = $('#facet-item-' + item.cid).parent().parent();
             if (idx < limit) {
                 $item.toggleClass('hidden', false);
             } else {
@@ -127,15 +135,14 @@ export default Marionette.View.extend({
 
     topAllBtnClick: function(e) {
         this.collection.each((item) => {
-            $('#facet-item-' + item.cid).parent().toggleClass('hidden', false);
+            $('#facet-item-' + item.cid).parent().parent().toggleClass('hidden', false);
         });
     },
 
     itemClick: function(e) {
         const itemId = e.target.id.split('-')[2];
 
-        // TODO@me: (un-)highlight just clicked facet
-
+        // Save selected facet
         this.searchChannel.trigger('facets:update:active',
             this.model.get('name'),
             this.collection.get(itemId)

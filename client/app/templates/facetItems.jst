@@ -5,8 +5,13 @@
         <% } else { %>
         <li>
         <% } %>
-            <a id="facet-item-<%= item.cid %>" class="facet-item" href="javascript:void(0)"><%= item.attributes.name %></a>
-            <span class="label label-default pull-right"><%= item.attributes.count %></span>
+            <div class="facet-item">
+                <a id="facet-item-<%= item.cid %>" class="facet-item <%= (item.attributes.active) ? 'active': '' %>" href="javascript:void(0)"><%= item.attributes.name %></a>
+                <% if (item.attributes.active) { %>
+                    <span class="badge facet-badge"><i class="fa fa-check" aria-hidden="true"></i></span>
+                <% } %>
+                <span class="label label-default pull-right"><%= item.attributes.count %></span>
+            </div>
         </li>
     <% }); %>
 </ul>

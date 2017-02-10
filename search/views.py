@@ -85,8 +85,9 @@ def search():
     search_query = request.args.get('query', '')
     active_facets = json.loads(request.args.get('active', '{}'))
 
-    if search_query != '':
-        search_query += '* '
+    if search_query != '' or active_facets != {}:
+        if search_query:
+            search_query += '* '
 
         active_facet_items = ''
         for facet, items in active_facets.items():

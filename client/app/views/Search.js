@@ -85,7 +85,7 @@ export default Marionette.View.extend({
         const $loader = this.getUI('loader');
         const activeFacets = this.getActiveFacets();
 
-        if (query) {
+        if (query || Object.keys(activeFacets).length > 0) {
             $emptyText.hide();
             $loader.show();
 
@@ -165,24 +165,24 @@ export default Marionette.View.extend({
 
     getActiveFacets() {
         let facets = {};
-
         for (let facet in this.activeFacets) {
             if (this.activeFacets.hasOwnProperty(facet) && this.activeFacets[facet].length > 0) {
                 facets[facet] = this.activeFacets[facet];
             }
         }
-
         return facets;
     },
 
     updateActiveFacets(name, facet) {
         const facetName = facet.get('name');
+        const index = this.activeFacets[name].indexOf(facetName);
 
-        // Save facet
-        if (this.activeFacets[name].indexOf(facetName) === -1) {
+        if (index === -1) {
+            // Save facet
             this.activeFacets[name].push(facetName);
         } else {
-            // TODO@me: delete the item from the array
+            // Delete the item from the array
+            this.activeFacets[name].splice(index, 1);
         }
 
         // Trigger hits and facet card reload

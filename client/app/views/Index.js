@@ -1,4 +1,4 @@
-import {Marionette} from '../../vendor/vendor';
+import {Marionette, Radio} from '../../vendor/vendor';
 import template from '../templates/index.jst';
 import UploadView from './Upload';
 
@@ -20,8 +20,8 @@ export default Marionette.View.extend({
     },
 
     start() {
-        const contentRegion = app.getContentRegion();
-        contentRegion.empty();
+        const appChannel = Radio.channel('app');
+        const contentRegion = appChannel.request('get:content:region');
         contentRegion.show(new UploadView());
     }
 });

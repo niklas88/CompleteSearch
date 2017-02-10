@@ -117,19 +117,36 @@
     font-weight: bold;
 }
 
-ul.facet-items {
+.facet-items {
     list-style-type: none;
     margin-bottom: 0;
     padding-left: 0;
+    line-height: 1.8;
 }
 
-ul.facet-items li a {
-    color: #3C4858
+.facet-item {
+    position: relative;
 }
 
-ul.facet-items li a:hover {
+.facet-item a {
+    color: #3c4858;
+}
+
+.facet-item a:hover {
     color: $main-accent-color;
     text-decoration: underline;
+}
+
+.facet-item a.active {
+    color: $main-accent-color;
+}
+
+.facet-item .facet-badge {
+    background-color: $main-accent-color;
+    padding: 3px;
+    margin-left: 2px;
+    position: absolute;
+    top: -4px;
 }
 
 .facet-items-top {

@@ -9,9 +9,5 @@ export default Marionette.Application.extend({
         this.on('start', () => {
             this.showView(new MainView());
         });
-    },
-
-    getContentRegion() {
-        return this.getRegion('app').currentView.getRegion('content');
     }
 });

@@ -1,4 +1,4 @@
-import {Marionette} from '../../vendor/vendor';
+import {Marionette, Radio} from '../../vendor/vendor';
 import template from '../templates/settings.jst';
 import SearchView from './Search';
 
@@ -102,7 +102,8 @@ export default Marionette.View.extend({
                     });
 
                     // Change the view (ConfigureView -> SearchView)
-                    const contentRegion = app.getContentRegion();
+                    const appChannel = Radio.channel('app');
+                    const contentRegion = appChannel.request('get:content:region');
                     contentRegion.empty();
                     contentRegion.show(new SearchView());
                 },

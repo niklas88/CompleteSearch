@@ -1,7 +1,5 @@
-import {Marionette} from '../../vendor/vendor';
+import {Marionette, Radio} from '../../vendor/vendor';
 import template from '../templates/upload.jst';
-// import ConfigureView from './Configure';
-// import ConfigCollection from '../collections/Config';
 import SearchView from './Search';
 
 export default Marionette.View.extend({
@@ -62,20 +60,9 @@ export default Marionette.View.extend({
                                 text: 'File has been uploaded!'
                             });
 
-                            // // Change the view (UploadView -> ConfigureView)
-                            // const configCollection = new ConfigCollection();
-                            // configCollection.fetch({
-                            //     success: () => {
-                            //         const contentRegion = app.getContentRegion();
-                            //         contentRegion.empty();
-                            //         contentRegion.show(new ConfigureView({
-                            //             collection: configCollection
-                            //         }));
-                            //     }
-                            // });
-
                             // Change the view (UploadView -> SearchView)
-                            const contentRegion = app.getContentRegion();
+                            const appChannel = Radio.channel('app');
+                            const contentRegion = appChannel.request('get:content:region');
                             contentRegion.empty();
                             contentRegion.show(new SearchView());
 

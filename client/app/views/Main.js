@@ -1,5 +1,4 @@
-import {Marionette} from '../../vendor/vendor';
-import {Backbone} from '../../vendor/vendor';
+import {Backbone, Marionette, Radio} from '../../vendor/vendor';
 import template from '../templates/main.jst';
 import IndexView from './Index';
 import SettingsView from './Settings';
@@ -21,6 +20,11 @@ export default Marionette.View.extend({
         'click @ui.settingsBtn': 'showSettings'
     },
 
+    initialize() {
+        const appChannel = Radio.channel('app');
+        appChannel.reply('get:content:region', this.getContentRegion.bind(this));
+    },
+
     onRender() {
         if (VIEW == 'index') {
             this.showChildView('content', new IndexView());
@@ -38,5 +42,9 @@ export default Marionette.View.extend({
                 }));
             }
         });
+    },
+
+    getContentRegion() {
+        return this.getRegion('content');
     }
 });
