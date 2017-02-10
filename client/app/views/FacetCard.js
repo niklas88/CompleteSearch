@@ -57,10 +57,15 @@ export default Marionette.View.extend({
         this.collection.fetch({
             url: url,
             success: () => {
-                this.showChildView('items', new FacetItemsView({
-                    collection: this.collection
-                }));
-                this.afterRender();
+                if (this.collection.length > 0) {
+                    this.showChildView('items', new FacetItemsView({
+                        collection: this.collection
+                    }));
+                    this.afterRender();
+                } else {
+                    // Don't show a card if there are no facet items
+                    this.remove();
+                }
             },
             error: (model, response, options) => {
                 // debugger;
