@@ -33,7 +33,7 @@ def get_facets():
             'count': item['@oc'],
         }
 
-    search_query = request.args.get('query', '')
+    search_query = request.args.get('query', '').lower()
     facet_name = request.args.get('name', '')
     active_facets = json.loads(request.args.get('active', '{}'))
 
@@ -82,7 +82,7 @@ def search():
     data = []
     settings = app.settings.to_dict()
 
-    search_query = request.args.get('query', '')
+    search_query = request.args.get('query', '').lower()
     active_facets = json.loads(request.args.get('active', '{}'))
 
     if search_query != '' or active_facets != {}:

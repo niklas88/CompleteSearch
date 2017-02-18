@@ -31,7 +31,6 @@ export default Marionette.View.extend({
             'text/tab-separated-values',
             'text/csv',
             'text/plain',
-            'text/xml'
         ];
 
         if (inputFile[0].files.length == 1) {
@@ -63,7 +62,7 @@ export default Marionette.View.extend({
                             // Change the view (UploadView -> SearchView)
                             const appChannel = Radio.channel('app');
                             const contentRegion = appChannel.request('get:content:region');
-                            contentRegion.empty();
+                            // contentRegion.empty();
                             contentRegion.show(new SearchView());
 
                         } else {

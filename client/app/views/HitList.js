@@ -1,4 +1,4 @@
-import {Marionette} from '../../vendor/vendor';
+import {Marionette, Radio} from '../../vendor/vendor';
 import HitView from './Hit';
 
 export default Marionette.CollectionView.extend({
@@ -6,6 +6,12 @@ export default Marionette.CollectionView.extend({
 
     collectionEvents: {
         'update': 'onAdd'
+    },
+
+    initialize() {
+        const appChannel = Radio.channel('app');
+        const contentRegion = appChannel.request('get:content:region');
+        this.searchView = contentRegion.currentView;
     },
 
     onRender() {
@@ -20,9 +26,8 @@ export default Marionette.CollectionView.extend({
             if (level >= bottom) {
                 $(window).off('scroll');
 
-                const searchView = app.getContentRegion().currentView;
-                if (me.collection.length < searchView.hits.length) {
-                    searchView.showMore();
+                if (me.collection.length < me.searchView.hits.length) {
+                    me.searchView.showMore();
                 }
             }
         };
