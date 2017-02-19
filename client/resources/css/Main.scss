@@ -57,6 +57,14 @@
 
 /* Search */
 
+#search-tips li {
+    margin-bottom: 5px;
+}
+
+#search-tips li:last-child {
+    margin-bottom: 0;
+}
+
 #search-section {
     background-color: #eee;
     border-bottom-left-radius: 6px;
