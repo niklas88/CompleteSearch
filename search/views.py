@@ -1,5 +1,6 @@
 from http.client import RemoteDisconnected
 from urllib.request import urlopen
+from urllib.parse import quote
 from urllib.error import URLError
 import json
 import re
@@ -49,7 +50,7 @@ def get_facets():
             for item in items:
                 active_facet_items += ':facet:%s:"%s" ' % (facet, item)
 
-        combined_query = search_query + active_facet_items + facet_query
+        combined_query = quote(search_query + active_facet_items + facet_query)
 
         url = 'http://0.0.0.0:8888/?q=%s*&h=0&c=250&format=json' % \
             combined_query
@@ -98,7 +99,7 @@ def search():
         if active_facet_items:
             search_query += ' '
 
-        combined_query = search_query + active_facet_items
+        combined_query = quote(search_query + active_facet_items)
 
         url = 'http://0.0.0.0:8888/?q=%s&format=json' % combined_query
 
