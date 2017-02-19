@@ -153,6 +153,8 @@ def escape_user_input(query):
     >>> escape_user_input('bach$')
     '"bach"$'
     """
+    new_query = ''
+
     def escape_term(st, postfix):
         term = st.strip()
         if term[-1] == '*':
@@ -163,15 +165,12 @@ def escape_user_input(query):
             escaped_term = '"%s"' % term + postfix
         return escaped_term
 
-    new_query = ''
-
     # Complex search
     if re.search('\.|\|', query):
         new_query = query
         for match in re.findall('[^.|]+', query):
             escaped_term = escape_term(match, '')
             new_query = new_query.replace(match, escaped_term)
-
     # Simple search
     else:
         new_query = escape_term(query, '*')

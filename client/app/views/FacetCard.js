@@ -20,7 +20,7 @@ export default Marionette.View.extend({
     events: {
         'click .top-5': 'topBtnClick',
         'click .top-50': 'topBtnClick',
-        'click .top-100': 'topBtnClick',
+        'click .top-250': 'topBtnClick',
         'click .top-all': 'topAllBtnClick',
         'click .facet-item a': 'itemClick'
     },
@@ -32,6 +32,8 @@ export default Marionette.View.extend({
     },
 
     onRender() {
+        const me = this;
+
         const name = this.model.get('name');
         this.collection = new FacetItemCollection();
 
@@ -54,26 +56,21 @@ export default Marionette.View.extend({
             url += '&active=' + JSON.stringify(activeFacets);
         }
 
-        this.collection.fetch({
+        me.collection.fetch({
             url: url,
             success: () => {
-                if (this.collection.length > 0) {
-                    if (activeFacets.hasOwnProperty(name)) {
-                        for (let item of activeFacets[name]) {
-                            const facet = this.collection.where('name', item);
-                            facet.set('active', true);
-                        }
+                if (activeFacets.hasOwnProperty(name)) {
+                    for (let item of activeFacets[name]) {
+                        const facet = me.collection.where('name', item);
+                        facet.set('active', true);
                     }
-
-                    // Render facet items
-                    this.showChildView('items', new FacetItemsView({
-                        collection: this.collection
-                    }));
-                    this.afterRender();
-                } else {
-                    // Don't show a card if there are no facet items
-                    this.remove();
                 }
+
+                // Render facet items
+                me.showChildView('items', new FacetItemsView({
+                    collection: me.collection
+                }));
+                me.afterRender();
             },
             error: (model, response, options) => {
                 // debugger;
@@ -82,10 +79,15 @@ export default Marionette.View.extend({
     },
 
     afterRender: function() {
+        // Show "No options" text if there are no facet items
+        if (this.collection.length === 0) {
+            $('#' + this.id() + ' .no-facet-items').show();
+        }
+
         this.ui.itemsTop = $('#' + this.id() + ' .facet-items-top');
         this.ui.top5 = $('#' + this.id() + ' .facet-items-top .top-5');
         this.ui.top50 = $('#' + this.id() + ' .facet-items-top .top-50');
-        this.ui.top100 = $('#' + this.id() + ' .facet-items-top .top-100');
+        this.ui.top250 = $('#' + this.id() + ' .facet-items-top .top-250');
         this.ui.topAll = $('#' + this.id() + ' .facet-items-top .top-all');
         this.showTopButtons();
     },
@@ -95,7 +97,7 @@ export default Marionette.View.extend({
         const itemsTop = this.getUI('itemsTop');
         const top5 = this.getUI('top5');
         const top50 = this.getUI('top50');
-        const top100 = this.getUI('top100');
+        const top250 = this.getUI('top250');
         const topAll = this.getUI('topAll');
 
         if (length > 5) {
@@ -106,16 +108,12 @@ export default Marionette.View.extend({
                 topAll.text('All (' + length + ')').show();
             } else if (length == 50) {
                 top50.show();
-            } else if (length > 50 && length < 100) {
+            } else if (length > 50 && length < 250) {
                 top50.show();
                 topAll.text('All (' + length + ')').show();
-            } else if (length == 100) {
-                top50.show();
-                top100.show();
             } else {
                 top50.show();
-                top100.show();
-                topAll.text('All (' + length + ')').show();
+                top250.show();
             }
         }
     },

@@ -125,6 +125,10 @@
     font-weight: bold;
 }
 
+.no-facet-items {
+    display: none;
+}
+
 .facet-items {
     list-style-type: none;
     margin-bottom: 0;
@@ -162,7 +166,7 @@
     display: none;
 }
 
-.top-5, .top-50, .top-100, .top-all {
+.top-5, .top-50, .top-250, .top-all {
     display: none;
 }
 
