@@ -59,10 +59,12 @@ export default Marionette.View.extend({
         me.collection.fetch({
             url: url,
             success: () => {
-                if (activeFacets.hasOwnProperty(name)) {
+                if (me.collection.length > 0 && activeFacets.hasOwnProperty(name)) {
                     for (let item of activeFacets[name]) {
                         const facet = me.collection.where('name', item);
-                        facet.set('active', true);
+                        if (typeof facet !== 'undefined') {
+                            facet.set('active', true);
+                        }
                     }
                 }
 
