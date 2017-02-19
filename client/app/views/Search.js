@@ -13,6 +13,7 @@ export default Marionette.View.extend({
     },
 
     ui: {
+        totalHits: '#total-hits',
         searchBtn: '#search-button',
         search: '#search',
         searchEnterHint: '#search-enter-hint',
@@ -131,6 +132,7 @@ export default Marionette.View.extend({
             });
         } else {
             me.getRegion('hits').empty();
+            this.getUI('totalHits').text('');
             $emptyText.show();
 
             // Redraw FacetCardList view
@@ -187,5 +189,17 @@ export default Marionette.View.extend({
 
         // Trigger hits and facet card reload
         this.search();
+    },
+
+    updateTotalHits(hitCollection) {
+        const $totalHits = this.getUI('totalHits');
+
+        // Update the total number of hits
+        if (hitCollection.length > 0) {
+            const total = hitCollection.at(0).get('total');
+            $totalHits.text('Total: ' + total + ' hits');
+        } else {
+            $totalHits.text('');
+        }
     }
 });

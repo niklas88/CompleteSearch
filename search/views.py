@@ -127,7 +127,8 @@ def search():
 
                     hit_data = {
                         'titleField': settings['title_field'],
-                        'fields': fields
+                        'fields': fields,
+                        'total': hits['@total'],
                     }
 
                     data.append(hit_data)

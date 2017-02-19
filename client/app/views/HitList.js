@@ -5,23 +5,19 @@ export default Marionette.CollectionView.extend({
     childView: HitView,
 
     collectionEvents: {
-        'update': 'onAdd'
+        'update': 'onRender'
     },
 
     initialize() {
+        const me = this;
         const appChannel = Radio.channel('app');
         const contentRegion = appChannel.request('get:content:region');
         this.searchView = contentRegion.currentView;
-    },
 
-    onRender() {
-        const me = this;
-
-        // Fetch next page on scroll
-        this.scrollHandler = () => {
-            const $elem = $('#hits');
+        this.fetchNextPage = () => {
+            const $hitList = $('#hits');
             const level = $(window).scrollTop() + $(window).height();
-            const bottom = $elem.offset().top + $elem.height();
+            const bottom = $hitList.offset().top + $hitList.height();
 
             if (level >= bottom) {
                 $(window).off('scroll');
@@ -31,11 +27,10 @@ export default Marionette.CollectionView.extend({
                 }
             }
         };
-
-        $(window).scroll(this.scrollHandler);
     },
 
-    onAdd() {
-        $(window).scroll(this.scrollHandler);
+    onRender() {
+        $(window).scroll(this.fetchNextPage);
+        this.searchView.updateTotalHits(this.collection);
     }
 });
