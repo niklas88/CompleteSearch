@@ -1,32 +1,33 @@
-import _gulp from 'gulp';
-import gulpHelp from 'gulp-help';
-import eslint from 'gulp-eslint';
-import uglify from 'gulp-uglify';
-import sass from 'gulp-sass';
-import autoprefixer from 'gulp-autoprefixer';
-import concat from 'gulp-concat';
-import source from 'vinyl-source-stream';
-import buffer from 'vinyl-buffer';
-import browserify from 'browserify';
-import browserSync from 'browser-sync';
+const _gulp = require('gulp');
+const gulpHelp = require('gulp-help');
+const eslint = require('gulp-eslint');
+const uglify = require('gulp-uglify');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const concat = require('gulp-concat');
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
+const browserify = require('browserify');
+const browserSync = require('browser-sync');
+const util = require('gulp-util');
+const gulpif = require('gulp-if');
 
 const gulp = gulpHelp(_gulp);
 const bs = browserSync.create();
 
 const dirs = {
     src: './resources',
-    nm: './node_modules',
-    dest: '../static/css'
+    nm: './node_modules'
 };
 
 const sassPaths = {
     src: [
         `${dirs.nm}/bootstrap/dist/css/bootstrap.min.css`,
-        //   `${dirs.nm}/bootstrap-material-design/dist/css/bootstrap-material-design.min.css`,
+        // `${dirs.nm}/bootstrap-material-design/dist/css/bootstrap-material-design.min.css`,
         `${dirs.src}/css/lib/**/*.css`,
         `${dirs.src}/css/Main.scss`
     ],
-    dest: `${dirs.dest}`
+    dest: '../static/css'
 };
 
 gulp.task('styles', 'Compile CSS/SASS styles.', () => {
@@ -56,7 +57,11 @@ gulp.task('client', 'Rebuild the client (JS only).', () => {
         .pipe(buffer())
         .pipe(eslint())
         // .pipe(eslint.format())
-        // .pipe(uglify())
+        // minify if --prod option is present
+        .pipe(gulpif(
+            typeof util.env.prod !== 'undefined',
+            uglify().on('error', util.log))
+        )
         .pipe(gulp.dest('../static/js'))
         .pipe(bs.stream());
 }, {
@@ -71,7 +76,6 @@ gulp.task('browser-sync', false, () => {
     bs.init({
         notify: false,
         // proxy: '127.0.0.1:5000'
-        // proxy: '192.168.99.100:5000'
         proxy: 'localhost:5000'
     });
 });

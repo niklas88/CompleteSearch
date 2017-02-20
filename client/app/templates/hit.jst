@@ -1,10 +1,10 @@
 <div class="hit">
     <% if(titleField !== '') { %>
-        <% const title = $.grep(fields, (f) => { return f.name == titleField; }).value; %>
+        <% const title = $.grep(fields, function(f) { return f.name == titleField; }).value; %>
         <h6><%= title %></h6>
     <% } %>
 
-    <% _.each(fields, (field) => { %>
+    <% _.each(fields, function(field) { %>
         <% if(field.name != titleField) { %>
             <p class="hit-field"><span><%= field.name %>: </span><%= field.value %></p>
         <% } %>

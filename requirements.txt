@@ -5,7 +5,9 @@ Flask-Testing
 blinker
 
 # Miscellaneous
-Fabric3
-coverage
 numpy
 pandas
+
+# Dev
+Fabric3
+coverage

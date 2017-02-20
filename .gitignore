@@ -94,6 +94,7 @@ uploads/
 node_modules/
 static/css/*
 static/js/*
+app.zip
 
 # CompleteSearch settings
 settings.json
