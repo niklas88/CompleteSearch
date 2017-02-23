@@ -1,13 +1,19 @@
-import {Marionette} from '../../vendor/vendor';
+import {Backbone, Marionette} from '../../vendor/vendor';
 import MainView from '../views/Main';
+import Router from './Router';
 
 export default Marionette.Application.extend({
     region: '#app',
 
     initialize() {
         window.app = this;
-        this.on('start', () => {
-            this.showView(new MainView());
-        });
+    },
+
+    onStart() {
+        this.showView(new MainView());
+        const router = new Router();
+
+        // Start URL handling
+        Backbone.history.start();
     }
 });
