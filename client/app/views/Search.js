@@ -14,27 +14,25 @@ export default Marionette.View.extend({
 
     ui: {
         totalHits: '#total-hits',
-        searchBtn: '#search-button',
         search: '#search',
-        searchEnterHint: '#search-enter-hint',
         emptyText: '#empty-text',
         loader: '#loader'
     },
 
     events: {
-        'click @ui.searchBtn': 'search',
-        'enter @ui.search': 'search'
+        'enter @ui.search': 'setQuery',
+        'keyup @ui.search': 'pressEnter'
     },
 
-    initialize() {
+    initialize(options) {
         const searchChannel = Radio.channel('search');
-        this.listenTo(searchChannel, 'facets:update:active', this.updateActiveFacets);
-        this.listenTo(searchChannel, 'facets:set:active', this.setActiveFacets);
-        searchChannel.reply('facets:get:query', this.getSearchQuery.bind(this));
-        searchChannel.reply('facets:get:active', this.getActiveFacets.bind(this));
 
-        // Selected (active) facets
-        this.activeFacets = {};
+        this.listenTo(searchChannel, 'update:facets', this.updateFacets);
+        searchChannel.reply('get:facets', this.getFacets.bind(this));
+        searchChannel.reply('get:params', this.getParams.bind(this));
+
+        // Search parameters (from the URL bar)
+        this.params = options.params;
     },
 
     onRender() {
@@ -50,61 +48,50 @@ export default Marionette.View.extend({
             }
         });
 
-        const $search = this.getUI('search');
-        const $searchEnterHint = this.getUI('searchEnterHint');
-
-        $search.keyup((e) => {
-            const query = $search.val();
-
-            // Show/hide search hint
-            // if (query !== '') {
-            //     $searchEnterHint.show();
-            // } else {
-            //     $searchEnterHint.hide();
-            //     $search.trigger('enter');
-            // }
-
-            // Search on Enter
-            if (e.keyCode == 13) {
-                // $searchEnterHint.hide();
-                $search.trigger('enter');
+        // Set query input initial value
+        if (this.params.hasOwnProperty('query')) {
+            this.getUI('search').val(this.params.query);
+            if (this.params.query !== '') {
+                setTimeout(() => {
+                    this.search();
+                }, 500);
             }
-        });
+        }
     },
 
     onAttach() {
         // Initialize Material Design
         $.material.init();
+    },
 
-        // $('footer').toggleClass('footer-white', true);
+    pressEnter(e) {
+        const $search = this.getUI('search');
+        const query = $search.val();
+
+        // Search on Enter
+        if (e.keyCode == 13) {
+            $search.trigger('enter', query);
+        }
     },
 
     search() {
         const me = this;
-        const query = this.getSearchQuery();
+        const query = this.getQuery();
+        const facets = this.getFacets();
         const $emptyText = this.getUI('emptyText');
         const $loader = this.getUI('loader');
-        const activeFacets = this.getActiveFacets();
 
-        if (query || Object.keys(activeFacets).length > 0) {
+        if (query || facets) {
             $emptyText.hide();
             $loader.show();
 
-            let url = 'search/?query=' + query;
+            me.hits = new HitCollection();
+            me.hits.fetch({
+                data: $.param(me.params),
+                success: () => {
+                    $loader.hide();
 
-            // Add active facets to the url
-            if (Object.keys(activeFacets).length > 0) {
-                url += '&active=' + JSON.stringify(activeFacets);
-            }
-
-            // Perform search using CompleteSearch
-            $.getJSON(url, (obj) => {
-                if (obj.success) {
-                    if (obj.data.length > 0) {
-                        // Save all fetched hits
-                        me.hits = new HitCollection(obj.data);
-
-                        // Show hits for the 1st page
+                    if (me.hits.length > 0) {
                         me.showChildView('hits', new HitListView({
                             collection: new HitCollection(me.getData(me.hits.page))
                         }));
@@ -117,18 +104,21 @@ export default Marionette.View.extend({
                         });
                     }
 
-                    // Redraw FacetCardList view
+                    // Redraw Facet cards
                     me.getRegion('facets').currentView.render();
-                } else {
-                    me.getRegion('hits').empty();
-                    $emptyText.show();
+                },
+                error: (hits, response, options) => {
+                    const error = JSON.parse(response.responseText).message;
+                    console.error(error);
                     noty({
                         type: 'error',
-                        text: obj.error
+                        text: '[ERROR] search: ' + error
                     });
-                }
 
-                $loader.hide();
+                    me.getRegion('hits').empty();
+                    $loader.hide();
+                    $emptyText.show();
+                }
             });
         } else {
             me.getRegion('hits').empty();
@@ -153,42 +143,68 @@ export default Marionette.View.extend({
         hitCollection.add(hits);
     },
 
-    getSearchQuery() {
-        let query = this.getUI('search').val();
-        // TODO@me: query: trim and remove js code from the query
-        return query;
-    },
-
-    setActiveFacets(name) {
-        if (!this.activeFacets.hasOwnProperty(name)) {
-            this.activeFacets[name] = [];
+    setHash() {
+        if (!$.isEmptyObject(this.params)) {
+            location.hash = 'search?' + $.param(this.params);
+        } else {
+            location.hash = 'search';
         }
     },
 
-    getActiveFacets() {
-        let facets = {};
-        for (let facet in this.activeFacets) {
-            if (this.activeFacets.hasOwnProperty(facet) && this.activeFacets[facet].length > 0) {
-                facets[facet] = this.activeFacets[facet];
+    getQuery() {
+        return (this.params.hasOwnProperty('query')) ? this.params.query : '';
+    },
+
+    setQuery(e, query) {
+        if (query !== '') {
+            this.params.query = query;
+        } else {
+            if (this.params.hasOwnProperty('query')) {
+                delete this.params.query;
             }
         }
-        return facets;
+        this.setHash();
     },
 
-    updateActiveFacets(name, facet) {
-        const facetName = facet.get('name');
-        const index = this.activeFacets[name].indexOf(facetName);
+    getParams() {
+        return this.params;
+    },
 
-        if (index === -1) {
-            // Save facet
-            this.activeFacets[name].push(facetName);
+    setParams(params) {
+        this.params = params;
+
+        // Update search input value
+        if (params.hasOwnProperty('query')) {
+            this.getUI('search').val(params.query);
+        }
+    },
+
+    getFacets() {
+        return (this.params.hasOwnProperty('facets')) ? this.params.facets : '';
+    },
+
+    updateFacets(name, item) {
+        const facet = name + ':' + item;
+
+        if (this.params.hasOwnProperty('facets')) {
+            if (this.params.facets.indexOf(facet) === -1) {
+                // Add facet to the params
+                this.params.facets += ' ' + facet;
+            } else {
+                // Remove facet from the params and trim extra spaces
+                this.params.facets = this.params.facets.replace(facet, '');
+                this.params.facets = this.params.facets.trim();
+
+                // Don't store empty facet param
+                if (this.params.facets === '') {
+                    delete this.params.facets;
+                }
+            }
         } else {
-            // Delete the item from the array
-            this.activeFacets[name].splice(index, 1);
+            this.params.facets = facet;
         }
 
-        // Trigger hits and facet card reload
-        this.search();
+        this.setHash();
     },
 
     updateTotalHits(hitCollection) {

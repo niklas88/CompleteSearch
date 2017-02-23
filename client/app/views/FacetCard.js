@@ -35,35 +35,32 @@ export default Marionette.View.extend({
         const me = this;
 
         const name = this.model.get('name');
-        this.collection = new FacetItemCollection();
+        me.collection = new FacetItemCollection();
 
-        // Set Active Facets array
-        this.searchChannel.trigger('facets:set:active', name);
+        const params = this.searchChannel.request('get:params');
+        const searchParams = $.extend({
+            name: name
+        }, params);
 
-        let url = this.collection.url;
-        url += '?name=' + name;
-
-        const query = this.searchChannel.request('facets:get:query');
-        const activeFacets = this.searchChannel.request('facets:get:active');
-
-        // Add query to the url
-        if (query !== '') {
-            url += '&query=' + query;
-        }
-
-        // Add active facets to the url
-        if (Object.keys(activeFacets).length > 0) {
-            url += '&active=' + JSON.stringify(activeFacets);
+        const facetsString = this.searchChannel.request('get:facets');
+        let facets = [];
+        if (facetsString !== '') {
+            for (let facet of facetsString.split(' ')) {
+                const item = facet.split(':');
+                if (item[0] === name) {
+                    facets.push(item[1]);
+                }
+            }
         }
 
         me.collection.fetch({
-            url: url,
+            data: $.param(searchParams),
             success: () => {
-                if (me.collection.length > 0 && activeFacets.hasOwnProperty(name)) {
-                    for (let item of activeFacets[name]) {
-                        const facet = me.collection.where('name', item);
-                        if (typeof facet !== 'undefined') {
-                            facet.set('active', true);
+                if (me.collection.length > 0 && facets.length > 0) {
+                    for (let facet of facets) {
+                        const facetModel = me.collection.where('name', facet);
+                        if (typeof facetModel !== 'undefined') {
+                            facetModel.set('active', true);
                         }
                     }
                 }
@@ -143,9 +140,9 @@ export default Marionette.View.extend({
         const itemId = e.target.id.split('-')[2];
 
         // Save selected facet
-        this.searchChannel.trigger('facets:update:active',
+        this.searchChannel.trigger('update:facets',
             this.model.get('name'),
-            this.collection.get(itemId)
+            this.collection.get(itemId).get('name')
         );
     }
 });

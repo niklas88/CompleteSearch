@@ -1,7 +1,7 @@
 import os
 import json
 
-from flask import Flask
+from flask import Flask, jsonify
 
 from common.logging import handler
 from common.views import bp as common_bp
@@ -45,6 +45,22 @@ class Settings:
             f.write(json.dumps(self._settings, indent=4, sort_keys=True))
 
 
+class ServerError(Exception):
+    status_code = 500
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+
 def create_app(config='Config'):
     # Create main Flask app
     app = Flask(__name__, static_path='/static')
@@ -64,6 +80,14 @@ def create_app(config='Config'):
     # Set logger
     if config != 'TestingConfig':
         app.logger.addHandler(handler)
+
+    app.ServerError = ServerError
+
+    @app.errorhandler(ServerError)
+    def handle_invalid_usage(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
 
     return app
 

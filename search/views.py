@@ -1,13 +1,37 @@
+import re
+import json
+
 from http.client import RemoteDisconnected
 from urllib.request import urlopen
 from urllib.parse import quote
 from urllib.error import URLError
-import json
-import re
 
 from flask import Blueprint, request, current_app as app, jsonify
 
 bp = Blueprint('search', __name__)
+
+
+# class InvalidUsage(Exception):
+#     status_code = 500
+#
+#     def __init__(self, message, status_code=None, payload=None):
+#         Exception.__init__(self)
+#         self.message = message
+#         if status_code is not None:
+#             self.status_code = status_code
+#         self.payload = payload
+#
+#     def to_dict(self):
+#         rv = dict(self.payload or ())
+#         rv['message'] = self.message
+#         return rv
+#
+#
+# @bp.errorhandler(InvalidUsage)
+# def handle_invalid_usage(error):
+#     response = jsonify(error.to_dict())
+#     response.status_code = error.status_code
+#     return response
 
 
 @bp.route('/get_facets_list/', methods=['GET'])
@@ -21,7 +45,7 @@ def get_facets_list():
 @bp.route('/get_facets/', methods=['GET'])
 def get_facets():
     """ Return all facets for a given field name. """
-    facets = []
+    data = []
     completions = None
 
     def facet_dict(item, facet_query):
@@ -36,7 +60,7 @@ def get_facets():
 
     search_query = request.args.get('query', '').lower()
     facet_name = request.args.get('name', '')
-    active_facets = json.loads(request.args.get('active', '{}'))
+    facets = request.args.get('facets', '')
 
     if facet_name != '':
         facet_query = ':facet:%s:' % facet_name
@@ -45,12 +69,12 @@ def get_facets():
             search_query = escape_user_input(search_query)
             search_query += ' '
 
-        active_facet_items = ''
-        for facet, items in active_facets.items():
-            for item in items:
-                active_facet_items += ':facet:%s:"%s" ' % (facet, item)
+        facet_items = ''
+        for facet in facets.split():
+            item = facet.split(':')
+            facet_items += ':facet:%s:"%s" ' % (item[0], item[1])
 
-        combined_query = quote(search_query + active_facet_items + facet_query)
+        combined_query = quote(search_query + facet_items + facet_query)
 
         url = 'http://0.0.0.0:8888/?q=%s*&h=0&c=250&format=json' % \
             combined_query
@@ -67,14 +91,14 @@ def get_facets():
             # status = result['status']['@code']  # TODO@me: check the status
             if completions and int(completions['@total']) > 0:
                 if int(completions['@total']) == 1:
-                    facets = [facet_dict(completions['c'], facet_query)]
+                    data = [facet_dict(completions['c'], facet_query)]
                 else:
-                    facets = [
+                    data = [
                         facet_dict(c, facet_query)
                         for c in completions['c']
                     ]
 
-    return jsonify(facets)
+    return jsonify(data)
 
 
 @bp.route('/search/', methods=['GET'])
@@ -85,22 +109,21 @@ def search():
     settings = app.settings.to_dict()
 
     search_query = request.args.get('query', '').lower()
-    active_facets = json.loads(request.args.get('active', '{}'))
+    facets = request.args.get('facets', '')
 
-    if search_query != '' or active_facets != {}:
+    if search_query != '' or facets != '':
         if search_query:
             search_query = escape_user_input(search_query)
 
-        active_facet_items = ''
-        for facet, items in active_facets.items():
-            for item in items:
-                active_facet_items += ':facet:%s:"%s" ' % (facet, item)
+        facet_items = ''
+        for facet in facets.split():
+            item = facet.split(':')
+            facet_items += ':facet:%s:"%s" ' % (item[0], item[1])
 
-        if active_facet_items:
+        if facet_items:
             search_query += ' '
 
-        combined_query = quote(search_query + active_facet_items)
-
+        combined_query = quote(search_query + facet_items)
         url = 'http://0.0.0.0:8888/?q=%s&format=json' % combined_query
 
         try:
@@ -132,10 +155,11 @@ def search():
                     }
 
                     data.append(hit_data)
-    else:
-        error = 'No search query given.'
 
-    return jsonify(success=not error, error=error, data=data)
+    if error:
+        raise app.ServerError('error')
+    else:
+        return jsonify(data)
 
 
 def escape_user_input(query):

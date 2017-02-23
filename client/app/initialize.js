@@ -5,6 +5,7 @@ import bootstrap from 'bootstrap/dist/js/bootstrap.min';
 import materialDesign from 'bootstrap-material-design';
 // import materialKit from '../resources/js/material-kit';
 import jqueryDropdown from '../resources/js/jquery.dropdown';
+import jqueryDeparam from '../resources/js/jquery.deparam';
 import noty from 'noty';
 
 document.addEventListener('DOMContentLoaded', () => {
