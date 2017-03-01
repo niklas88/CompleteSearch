@@ -33,7 +33,7 @@ export default Marionette.View.extend({
             'text/plain',
         ];
 
-        if (inputFile[0].files.length == 1) {
+        if (inputFile[0].files.length === 1) {
             const file = inputFile[0].files[0];
 
             if (supportedFileTypes.indexOf(file.type) > -1) {
@@ -50,10 +50,10 @@ export default Marionette.View.extend({
                     dataType: 'json',
                     processData: false,
                     contentType: false,
-                    success: (data) => {
+                    success: (obj) => {
                         // TODO: stop loader
 
-                        if (data.success) {
+                        if (obj.success) {
                             noty({
                                 type: 'success',
                                 text: 'File has been uploaded!'
@@ -67,18 +67,17 @@ export default Marionette.View.extend({
 
                         } else {
                             // TODO: stop loader
-
                             noty({
-                               type: 'error',
-                               text: data.error
+                                type: 'error',
+                                text: obj.error
                             });
                         }
                     },
                     error: (jqXHR, textStatus, errorThrown) => {
                         // TODO: set loader
                         noty({
-                           type: 'error',
-                           text: textStatus
+                            type: 'error',
+                            text: textStatus
                         });
                         // console.error('[ERROR]: ' + textStatus);
                     }

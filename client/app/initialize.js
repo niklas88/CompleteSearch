@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Click event to scroll to top
     $('#scrollToTop').click(() => {
         $('html, body').animate({
-            scrollTop : 0
+            scrollTop: 0
         }, 500);
         return false;
     });

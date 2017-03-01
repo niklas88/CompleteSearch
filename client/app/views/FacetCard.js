@@ -105,7 +105,7 @@ export default Marionette.View.extend({
 
             if (length < 50) {
                 topAll.text('All (' + length + ')').show();
-            } else if (length == 50) {
+            } else if (length === 50) {
                 top50.show();
             } else if (length > 50 && length < 250) {
                 top50.show();

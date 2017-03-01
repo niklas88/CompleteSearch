@@ -12,7 +12,7 @@ const MainController = Marionette.Object.extend({
     },
 
     main() {
-        if (VIEW == 'index') {
+        if (VIEW === 'index') {
             this.contentRegion.show(new IndexView());
         } else {
             this.contentRegion.show(new SearchView({

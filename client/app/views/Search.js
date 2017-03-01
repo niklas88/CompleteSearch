@@ -69,7 +69,7 @@ export default Marionette.View.extend({
         const query = $search.val();
 
         // Search on Enter
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             $search.trigger('enter', query);
         }
     },
