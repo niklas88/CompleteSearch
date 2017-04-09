@@ -90,6 +90,7 @@ ENV/
 
 uploads/
 .idea/
+.vscode/
 
 node_modules/
 static/css/*

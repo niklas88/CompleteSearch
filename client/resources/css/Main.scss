@@ -184,8 +184,12 @@
     padding-top: 70px;
 }
 
-#settings-fields-section {
+#settings-section {
     padding-top: 0;
+}
+
+#settings-section .title {
+    text-align: center;
 }
 
 #settings-form {
@@ -205,9 +209,9 @@
     font-weight: bold;
 }
 
-#save-settings {
-    margin-top: 45px;
-}
+// #save-settings {
+//     margin-top: 45px;
+// }
 
 
 /* Helper */

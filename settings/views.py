@@ -1,7 +1,8 @@
+import os
+import subprocess
 import json
 
 from flask import Blueprint, request, current_app as app, jsonify
-
 
 bp = Blueprint('settings', __name__)
 
@@ -91,7 +92,13 @@ def configure_database():
 #
 #     # TODO: send the command to CompleteSearch and generate files
 
-    return jsonify(
-        success=not error,
-        error=error
-    )
+    return jsonify(success=not error, error=error)
+
+
+@bp.route('/delete_database/', methods=['POST'])
+def delete_database():
+    """ Delete the uploaded database. """
+    os.chdir('../completesearch')
+    subprocess.Popen(['make delete_input'], shell=True).communicate()
+    app.settings.reset()
+    return jsonify(success=True)

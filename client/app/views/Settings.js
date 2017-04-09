@@ -12,7 +12,8 @@ export default Marionette.View.extend({
         filterBtn: '#filter-selectAll',
         facetsBtn: '#facets-selectAll',
         showBtn: '#show-selectAll',
-        saveBtn: '#save-settings'
+        saveBtn: '#save-settings',
+        deleteDatabaseBtn: '#delete-database'
     },
 
     events: {
@@ -21,6 +22,7 @@ export default Marionette.View.extend({
         'click @ui.filterBtn': 'selectAll',
         'click @ui.facetsBtn': 'selectAll',
         'click @ui.showBtn': 'selectAll',
+        'click @ui.deleteDatabaseBtn': 'deleteDatabase',
         'submit @ui.form': 'save'
     },
 
@@ -105,7 +107,7 @@ export default Marionette.View.extend({
                     const appChannel = Radio.channel('app');
                     const contentRegion = appChannel.request('get:content:region');
                     contentRegion.empty();
-                    contentRegion.show(new SearchView());
+                    contentRegion.show(new SearchView({params: {}}));
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.error(jqXHR);
@@ -163,5 +165,20 @@ export default Marionette.View.extend({
         }
 
         return true;
+    },
+
+    deleteDatabase() {
+        this.getUI('deleteDatabaseBtn').prop('disabled', true);
+        $.post('delete_database/', (obj) => {
+            noty({
+                type: 'success',
+                text: 'Database has been deleted!'
+            });
+
+            // Redirect to the main page
+            setTimeout(() => {
+                window.location.replace('.');
+            }, 1000);
+        });
     }
 });

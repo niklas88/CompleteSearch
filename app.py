@@ -14,30 +14,37 @@ class Settings:
     """ A class with CompleteSearch settings. """
     def __init__(self, settings_dir):
         self._settings_dir = settings_dir
+        self._settings_empty = {
+            'database_uploaded': False,
+            'title_field': '',
+            'within_field_separator': '',
+            'full_text': [],
+            'allow_multiple_items': [],
+            'show': [],
+            'filter': [],
+            'facets': [],
+            'all_fields': [],
+        }
 
+        # Read the settings file
         if os.path.isfile(self._settings_dir):
             with open(self._settings_dir, 'r') as f:
                 self._settings = json.loads(f.read())
         else:
             # Create a file with default settings
             with open(self._settings_dir, 'w') as f:
-                settings = {
-                    'database_uploaded': False,
-                    'title_field': '',
-                    'within_field_separator': '',
-                    'full_text': [],
-                    'allow_multiple_items': [],
-                    'show': [],
-                    'filter': [],
-                    'facets': [],
-                    'all_fields': [],
-                }
-                f.write(json.dumps(settings, indent=4, sort_keys=True))
-                self._settings = settings
+                self._settings = self._settings_empty
+                f.write(json.dumps(self._settings, indent=4, sort_keys=True))
 
     def to_dict(self):
         """ Return a dictionary with settings. """
         return self._settings
+
+    def reset(self):
+        """ Reset all settings. """
+        with open(self._settings_dir, 'w') as f:
+            self._settings = self._settings_empty
+            f.write(json.dumps(self._settings, indent=4, sort_keys=True))
 
     def save(self):
         """ Save dictionary with settings to the settings file. """

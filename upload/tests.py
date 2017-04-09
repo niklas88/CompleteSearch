@@ -73,5 +73,5 @@ class UploadFileTest(TestCase):
         self.assert200(response)
         self.assertEquals(response.json, {
             'success': False,
-            'error': 'Unknown delimiter.',
+            'error': 'Could not determine delimiter',
         })
