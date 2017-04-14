@@ -60,7 +60,7 @@ export default Marionette.View.extend({
                             });
 
                             // Change the view (UploadView -> SearchView)
-                            window.location.replace('');
+                            window.location.replace('.');
                         } else {
                             // TODO: stop loader
                             noty({

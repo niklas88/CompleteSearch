@@ -7,23 +7,23 @@ export default Marionette.View.extend({
 
     ui: {
         form: '#settings-form',
-        fullTextBtn: '#fullText-selectAll',
-        allowMultipleItemsBtn: '#allowMultipleItems-selectAll',
-        filterBtn: '#filter-selectAll',
-        facetsBtn: '#facets-selectAll',
-        showBtn: '#show-selectAll',
+        fullTextAll: '#full_text-selectAll',
+        allowMultipleItemsAllBtn: '#allow_multiple_items-selectAll',
+        filterAllBtn: '#filter-selectAll',
+        facetsAllBtn: '#facets-selectAll',
+        showAllBtn: '#show-selectAll',
         saveBtn: '#save-settings',
         deleteDatabaseBtn: '#delete-database'
     },
 
     events: {
-        'click @ui.fullTextBtn': 'selectAll',
-        'click @ui.allowMultipleItemsBtn': 'selectAll',
-        'click @ui.filterBtn': 'selectAll',
-        'click @ui.facetsBtn': 'selectAll',
-        'click @ui.showBtn': 'selectAll',
-        'click @ui.deleteDatabaseBtn': 'deleteDatabase',
-        'submit @ui.form': 'save'
+        'click @ui.fullTextAll': 'selectAll',
+        'click @ui.allowMultipleItemsAllBtn': 'selectAll',
+        'click @ui.filterAllBtn': 'selectAll',
+        'click @ui.facetsAllBtn': 'selectAll',
+        'click @ui.showAllBtn': 'selectAll',
+        'click @ui.saveBtn': 'save',
+        'click @ui.deleteDatabaseBtn': 'deleteDatabase'
     },
 
     collectionEvents: {
@@ -33,14 +33,14 @@ export default Marionette.View.extend({
     serializeData() {
         const model = this.model.toJSON();
         return {
-            titleField: model.titleField,
-            withinFieldSeparator: model.withinFieldSeparator,
-            allFields: model.allFields,
-            allowMultipleItems: model.allowMultipleItems,
-            facets: model.facets,
-            filter: model.filter,
-            fullText: model.fullText,
-            show: model.show
+            'title_field': model.title_field,
+            'within_field_separator': model.within_field_separator,
+            'all_fields': model.all_fields,
+            'allow_multiple_items': model.allow_multiple_items,
+            'facets': model.facets,
+            'filter': model.filter,
+            'full_text': model.full_text,
+            'show': model.show
         };
     },
 
@@ -55,12 +55,12 @@ export default Marionette.View.extend({
 
         const model = this.model.toJSON();
         const params = [
-            'fullText', 'show', 'allowMultipleItems', 'filter', 'facets'
+            'full_text', 'show', 'allow_multiple_items', 'filter', 'facets'
         ];
 
         // Check checkboxes
         for (let param of params) {
-            for (let field of model.allFields) {
+            for (let field of model.all_fields) {
                 if (model[param].includes(field)) {
                     $('#' + param + '-' + field).prop('checked', true);
                 }
@@ -68,10 +68,10 @@ export default Marionette.View.extend({
         }
 
         // Set Title field
-        $('#titleField').val(model.titleField);
+        $('#title_field').val(model.title_field).change();
 
         // Set withinfield separator
-        $('#withinFieldSeparator').val(model.withinFieldSeparator);
+        $('#within_field_separator').val(model.within_field_separator);
 
         // Initialize tooltips
         setTimeout(() => {
@@ -91,9 +91,8 @@ export default Marionette.View.extend({
     save() {
         const values = this.getFormValues();
         if (this.checkValues(values)) {
-            $.ajax({
+            $.post({
                 url: 'configure_database/',
-                method: 'POST',
                 contentType: false,
                 processData: false,
                 data: JSON.stringify(values),
@@ -104,10 +103,7 @@ export default Marionette.View.extend({
                     });
 
                     // Change the view (ConfigureView -> SearchView)
-                    const appChannel = Radio.channel('app');
-                    const contentRegion = appChannel.request('get:content:region');
-                    contentRegion.empty();
-                    contentRegion.show(new SearchView({params: {}}));
+                    // window.location.replace('.');
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.error(jqXHR);
@@ -118,27 +114,27 @@ export default Marionette.View.extend({
                 }
             });
         }
-        return false;
+        // return false;
     },
 
     getFormValues() {
         const data = this.getUI('form').serializeArray();
 
         let values = {
-            'fullText': [],
+            'full_text': [],
             'show': [],
-            'titleField': '',
-            'allowMultipleItems': [],
-            'withinFieldSeparator': '',
+            'title_field': '',
+            'allow_multiple_items': [],
+            'within_field_separator': '',
             'filter': [],
             'facets': []
         };
 
         for (let item of data) {
-            if (item.name === 'titleField') {
-                values.titleField = item.value;
-            } else if (item.name === 'withinFieldSeparator') {
-                values.withinFieldSeparator = item.value;
+            if (item.name === 'title_field') {
+                values.title_field = item.value;
+            } else if (item.name === 'within_field_separator') {
+                values.within_field_separator = item.value;
             } else {
                 values[item.name].push(item.value);
             }
@@ -148,7 +144,7 @@ export default Marionette.View.extend({
     },
 
     checkValues(values) {
-        if (values.fullText.length === 0) {
+        if (values.full_text.length === 0) {
             noty({
                 type: 'error',
                 text: 'You did not select any fields for searching.'

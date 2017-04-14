@@ -14,14 +14,14 @@
                     <div class="row">
                         <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="titleField">
+                                <label class="col-sm-5 control-label" for="title_field">
                                     Title Field
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
                                 </label>
                                 <div class="col-sm-7">
-                                    <select id="titleField" name="titleField" class="select form-control">
+                                    <select id="title_field" name="title_field" class="select form-control">
                                         <option value="--">--</option>
-                                        <% _.each(allFields, function(field) { %>
+                                        <% _.each(all_fields, function(field) { %>
                                             <option value="<%= field %>"><%= field %></option>
                                         <% }); %>
                                     </select>
@@ -33,22 +33,22 @@
                     <div class="row">
                         <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="fullText">
+                                <label class="col-sm-5 control-label" for="full_text">
                                     Full Text
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <% _.each(allFields, function(field) { %>
+                                    <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
-                                            <label for="<%= 'fullText-' + field.replace(' ', '-') %>">
-                                                <input type="checkbox" name="fullText" id="<%= 'fullText-' + field.replace(' ', '-') %>" value="<%= field %>">
+                                            <label for="<%= 'full_text-' + field.replace(' ', '-') %>">
+                                                <input type="checkbox" name="full_text" id="<%= 'full_text-' + field.replace(' ', '-') %>" value="<%= field %>">
                                                 <%= field %>
                                             </label>
                                         </div>
                                     <% }); %>
                                 </div>
                                 <div class="col-sm-3">
-                                    <button id="fullText-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
+                                    <button id="full_text-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
                                 </div>
                             </div>
                         </div>
@@ -59,7 +59,7 @@
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <% _.each(allFields, function(field) { %>
+                                    <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'show-' + field.replace(' ', '-') %>">
                                                 <input type="checkbox" name="show" id="<%= 'show-' + field.replace(' ', '-') %>" value="<%= field %>">
@@ -78,22 +78,22 @@
                     <div class="row">
                         <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="allowMultipleItems">
+                                <label class="col-sm-5 control-label" for="allow_multiple_items">
                                     Multiple Items Fields
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <% _.each(allFields, function(field) { %>
+                                    <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
-                                            <label for="<%= 'allowMultipleItems-' + field.replace(' ', '-') %>">
-                                                <input type="checkbox" name="allowMultipleItems" id="<%= 'allowMultipleItems-' + field.replace(' ', '-') %>" value="<%= field %>">
+                                            <label for="<%= 'allow_multiple_items-' + field.replace(' ', '-') %>">
+                                                <input type="checkbox" name="allow_multiple_items" id="<%= 'allow_multiple_items-' + field.replace(' ', '-') %>" value="<%= field %>">
                                                 <%= field %>
                                             </label>
                                         </div>
                                     <% }); %>
                                 </div>
                                 <div class="col-sm-3">
-                                    <button id="allowMultipleItems-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
+                                    <button id="allow_multiple_items-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +104,7 @@
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <% _.each(allFields, function(field) { %>
+                                    <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'filter-' + field.replace(' ', '-') %>">
                                                 <input type="checkbox" name="filter" id="<%= 'filter-' + field.replace(' ', '-') %>" value="<%= field %>">
@@ -123,12 +123,12 @@
                     <div class="row">
                         <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="withinFieldSeparator">
+                                <label class="col-sm-5 control-label" for="within_field_separator">
                                     Multiple Items Fields Separator
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
                                 </label>
                                 <div class="col-sm-7">
-                                    <input id="withinFieldSeparator" name="withinFieldSeparator" type="text" class="form-control" placeholder=";">
+                                    <input id="within_field_separator" name="within_field_separator" type="text" class="form-control" placeholder=";">
                                 </div>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <% _.each(allFields, function(field) { %>
+                                    <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'facets-' + field.replace(' ', '-') %>">
                                                 <input type="checkbox" name="facets" id="<%= 'facets-' + field.replace(' ', '-') %>" value="<%= field %>">
@@ -154,9 +154,10 @@
                             </div>
                         </div>
                     </div><!-- /.row -->
-
-                    <button type="submit" id="save-settings" class="btn btn-raised btn-primary" value="Submit">Save</button>
                 </form>
+                <div class="text-center">
+                    <button id="save-settings" class="btn btn-raised btn-primary" value="Save">Save</button>
+                </div>
 
                 <hr/>
 

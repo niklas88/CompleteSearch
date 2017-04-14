@@ -67,9 +67,9 @@ def upload_file():
         # Don't run this code with TestingConfig
         if not app.config['TESTING']:
             # TODO@me: define allow-multiple-items automatically
+            # '--allow-multiple-items=Autor ' + \
             opts = "--within-field-separator=';' " + \
                     '--full-text=%s ' % all_fields_str + \
-                    '--allow-multiple-items=Autor ' + \
                     '--show=%s ' % facets_fields_str + \
                     '--filter=%s ' % facets_fields_str + \
                     '--facets=%s' % facets_fields_str
@@ -86,8 +86,9 @@ def upload_file():
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             ).communicate()
-            app.logger.debug('[Process input]: command output:\n%s' % str(out))
-            app.logger.debug('[Process input]: command error:\n%s' % str(err))
+            # app.logger.debug('[Process input]: command output:\n%s' % str(out))
+            app.logger.debug('[Process input]: command error:\n%s' %
+                             str(err, 'utf-8'))
 
     except (ValueError, csv.Error) as e:
         error = str(e)

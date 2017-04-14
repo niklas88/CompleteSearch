@@ -13,13 +13,13 @@ def get_settings():
     settings = app.settings.to_dict()
 
     data = {
-        'titleField': settings['title_field'],
-        'withinFieldSeparator': settings['within_field_separator'],
-        'allFields': settings['all_fields'],
-        'allowMultipleItems': settings['allow_multiple_items'],
+        'title_field': settings['title_field'],
+        'within_field_separator': settings['within_field_separator'],
+        'all_fields': settings['all_fields'],
+        'allow_multiple_items': settings['allow_multiple_items'],
         'facets': settings['facets'],
         'filter': settings['filter'],
-        'fullText': settings['full_text'],
+        'full_text': settings['full_text'],
         'show': settings['show'],
     }
 
@@ -32,65 +32,54 @@ def configure_database():
     settings = app.settings.to_dict()
     error = ''
 
-    if request.data:
+    try:
+        if not request.data:
+            raise ValueError('Data is missing.')
+
         params = json.loads(str(request.data, 'utf-8'))
-        if len(params['fullText']) != 0 and len(params['show']) != 0:
-            separator = params['withinFieldSeparator']
-            separator = separator if separator != '' else ';'
-            settings['within_field_separator'] = separator
-            settings['title_field'] = params['titleField']
-            settings['full_text'] = params['fullText']
-            settings['allow_multiple_items'] = params['allowMultipleItems']
-            settings['show'] = params['show']
-            settings['filter'] = params['filter']
-            settings['facets'] = params['facets']
 
-            # TODO@me: save settings only after making sure
-            # files have been re-generated with CompleteSearch
-            app.settings.save()
-        else:
-            error = 'At least one field must be selected in both ' + \
-                    'Full Text and Show'
-    else:
-        error = 'Data is missing.'
+        if not params['full_text'] and not params['show']:
+            raise ValueError('At least one field must be selected in both ' +
+                             'Full Text and Show')
 
-#     separator = params['--within-field-separator'][0]
-#     settings = {}
-#
-#     # Construct a command for genereating CompleteSearch input files
-#     DB = 'input/input'
-#     PARSER_OPTIONS = '--base-name=input/input ' + \
-#                      '--write-docs-file ' + \
-#                      '--write-words-file-ascii ' + \
-#                      '--normalize-words ' + \
-#                      '--encoding=utf8 ' + \
-#                      '--maps-directory=parser/'
-#
-#     for p_name, p_value in params.items():
-#         settings[p_name] = p_value
-#         if p_name == '--title-field':
-#             pass
-#         elif p_name == '--allow-multiple-items':
-#             PARSER_OPTIONS += ' %s=%s' % (p_name, ','.join(p_value))
-#             sep = separator if separator != '' else ';'
-#             PARSER_OPTIONS += ' --within-field-separator="%s"' % sep
-#         else:
-#             if any(p_value):
-#                 PARSER_OPTIONS += ' %s=%s' % (p_name, ','.join(p_value))
-#
-#     comm = 'make pall DB="%s" PARSER_OPTIONS=\'%s\' && ' % (DB, PARSER_OPTIONS)
-#     comm += 'cp input/{input.hybrid,input.vocabulary,input.docs.DB} server'
-#
-#     path = os.path.join(app.config['BASE_DIR'], 'data')
-#     with open(os.path.join(path, 'make_command.txt'), 'w') as f:
-#         f.write(comm)
-#
-#     # Save DB settings
-#     app.config['SETTINGS'] = settings
-#     with open(os.path.join(path, 'settings.json'), 'w') as f:
-#         f.write(json.dumps(settings))
-#
-#     # TODO: send the command to CompleteSearch and generate files
+        settings.update(params)
+        settings['within_field_separator'] = params['within_field_separator'] \
+            if params['within_field_separator'] != '' else ';'
+        app.settings.save()
+
+        # Don't run this code with TestingConfig
+        if not app.config['TESTING']:
+            full_text = ','.join(settings['full_text'])
+            allow_multiple_items = ','.join(settings['allow_multiple_items'])
+            show = ','.join(settings['show'])
+            filter_ = ','.join(settings['filter'])
+            facets = ','.join(settings['facets'])
+
+            opts = "--within-field-separator=';' " + \
+                   '--full-text=%s ' % full_text + \
+                   '--allow-multiple-items=%s ' % allow_multiple_items + \
+                   '--show=%s ' % show + \
+                   '--filter=%s ' % filter_ + \
+                   '--facets=%s' % facets
+
+            command = 'make OPTIONS="%s" process_input' % opts
+
+            # Directory with the Makefile
+            os.chdir('../completesearch')
+
+            # Process the input
+            out, err = subprocess.Popen(
+                [command],
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            ).communicate()
+            app.logger.debug('[Process input]: command error:\n%s' %
+                             str(err, 'utf-8'))
+
+    except ValueError as e:
+        error = str(e)
+        app.logger.exception(e)
 
     return jsonify(success=not error, error=error)
 

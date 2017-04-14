@@ -17,7 +17,7 @@ class Settings:
         self._settings_empty = {
             'database_uploaded': False,
             'title_field': '',
-            'within_field_separator': '',
+            'within_field_separator': ';',
             'full_text': [],
             'allow_multiple_items': [],
             'show': [],
