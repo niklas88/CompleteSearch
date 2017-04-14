@@ -60,11 +60,7 @@ export default Marionette.View.extend({
                             });
 
                             // Change the view (UploadView -> SearchView)
-                            const appChannel = Radio.channel('app');
-                            const contentRegion = appChannel.request('get:content:region');
-                            contentRegion.show(new SearchView({params: {}}));
-
-                            // window.location.replace('#search');
+                            window.location.replace('');
                         } else {
                             // TODO: stop loader
                             noty({

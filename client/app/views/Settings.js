@@ -178,7 +178,7 @@ export default Marionette.View.extend({
             // Redirect to the main page
             setTimeout(() => {
                 window.location.replace('.');
-            }, 1000);
+            }, 750);
         });
     }
 });

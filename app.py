@@ -33,7 +33,7 @@ class Settings:
         else:
             # Create a file with default settings
             with open(self._settings_dir, 'w') as f:
-                self._settings = self._settings_empty
+                self._settings = dict(self._settings_empty)
                 f.write(json.dumps(self._settings, indent=4, sort_keys=True))
 
     def to_dict(self):
@@ -41,9 +41,9 @@ class Settings:
         return self._settings
 
     def reset(self):
-        """ Reset all settings. """
+        """ Reset all settings and write default settings to the file. """
+        self._settings = dict(self._settings_empty)
         with open(self._settings_dir, 'w') as f:
-            self._settings = self._settings_empty
             f.write(json.dumps(self._settings, indent=4, sort_keys=True))
 
     def save(self):

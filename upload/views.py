@@ -46,12 +46,14 @@ def upload_file():
         all_fields_str = ','.join(all_fields)
 
         # Update settings
-        settings['database_uploaded'] = True
-        settings['all_fields'] = all_fields
-        settings['facets'] = facets_fields
-        settings['full_text'] = all_fields
-        settings['show'] = facets_fields
-        settings['filter'] = facets_fields
+        settings.update({
+            'database_uploaded': True,
+            'all_fields': all_fields,
+            'facets': facets_fields,
+            'full_text': all_fields,
+            'show': facets_fields,
+            'filter': facets_fields,
+        })
         app.settings.save()
 
         # Save the processed file
@@ -72,28 +74,20 @@ def upload_file():
                     '--filter=%s ' % facets_fields_str + \
                     '--facets=%s' % facets_fields_str
 
-            command = 'make OPTIONS="%s" prepare_input' % opts
+            command = 'make OPTIONS="%s" process_input' % opts
 
             # Directory with the Makefile
             os.chdir('../completesearch')
 
-            # Generate necessary files
-            output1, err1 = subprocess.Popen(
+            # Process the input
+            out, err = subprocess.Popen(
                 [command],
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             ).communicate()
-            app.logger.debug('Prepare input:\n%s' % err1)
-
-            # Start CompleteSearch server
-            output2, err2 = subprocess.Popen(
-                ['make start_server'],
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            ).communicate()
-            app.logger.debug('Start CS server:\n%s' % output2)
+            app.logger.debug('[Process input]: command output:\n%s' % str(out))
+            app.logger.debug('[Process input]: command error:\n%s' % str(err))
 
     except (ValueError, csv.Error) as e:
         error = str(e)
