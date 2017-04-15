@@ -26,12 +26,10 @@ const MainController = Marionette.Object.extend({
     },
 
     showSearchView(args) {
-        if (typeof this.contentRegion.currentView === 'undefined') {
-            // Render SearchView only if doesn't exist yet or args is empty
-            this.contentRegion.show(new SearchView({
-                params: (args !== null) ? $.deparam(args) : {}
-            }));
-        } else {
+        if (this.contentRegion.currentView &&
+            this.contentRegion.currentView.viewId &&
+            this.contentRegion.currentView.viewId === 'searchView') {
+
             // Set initial params from the URL bar
             this.contentRegion.currentView.setParams(
                 $.deparam((args !== null) ? args : '')
@@ -39,6 +37,12 @@ const MainController = Marionette.Object.extend({
 
             // Trigger search function
             this.contentRegion.currentView.search();
+        } else {
+            // Render SearchView only if doesn't exist yet
+            // or if the view is changed
+            this.contentRegion.show(new SearchView({
+                params: (args !== null) ? $.deparam(args) : {}
+            }));
         }
     },
 
@@ -64,6 +68,11 @@ export default Marionette.AppRouter.extend({
 
     initialize() {
         this.controller = new MainController();
+
+        // Disable HitList scroll event handler (fetchNextPage)
+        this.on('all', function() {
+            $(window).off('scroll');
+        });
     },
 
     // For debugging purposes

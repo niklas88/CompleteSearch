@@ -25,6 +25,8 @@ export default Marionette.View.extend({
     },
 
     initialize(options) {
+        this.viewId = 'searchView';
+
         const searchChannel = Radio.channel('search');
 
         this.listenTo(searchChannel, 'update:facets', this.updateFacets);

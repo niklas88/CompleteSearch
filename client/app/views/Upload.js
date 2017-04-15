@@ -1,6 +1,5 @@
-import {Marionette, Radio} from '../../vendor/vendor';
+import {Marionette} from '../../vendor/vendor';
 import template from '../templates/upload.jst';
-import SearchView from './Search';
 
 export default Marionette.View.extend({
     template: template,

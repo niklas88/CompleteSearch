@@ -12,9 +12,9 @@ export default Marionette.CollectionView.extend({
         const me = this;
         const appChannel = Radio.channel('app');
         const contentRegion = appChannel.request('get:content:region');
-        this.searchView = contentRegion.currentView;
+        me.searchView = contentRegion.currentView;
 
-        this.fetchNextPage = () => {
+        me.fetchNextPage = () => {
             const $hitList = $('#hits');
             const level = $(window).scrollTop() + $(window).height();
             const bottom = $hitList.offset().top + $hitList.height();
