@@ -15,7 +15,7 @@ def coverage():
 
 
 def create_zip():
-    git_url = 'https://github.com/anatskiy/tst.git'
+    git_url = 'https://github.com/anatskiy/CompleteSearch.git'
     git_status = local('git status --porcelain', capture=True)
 
     with lcd(BASE_DIR):
