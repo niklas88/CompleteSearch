@@ -22,7 +22,12 @@ const MainController = Marionette.Object.extend({
     },
 
     showUploadView() {
-        this.contentRegion.show(new UploadView());
+        // Show the view only if the database is not uploaded
+        if (!DATABASE_UPLOADED) {
+            this.contentRegion.show(new UploadView());
+        } else {
+            this.main();
+        }
     },
 
     showSearchView(args) {
