@@ -18,11 +18,13 @@
                         <i class="material-icons">help</i> Help
                     </a> -->
                 </li>
-                <li>
-                    <a href="#settings">
-                        <i class="material-icons">settings</i> Settings
-                    </a>
-                </li>
+                <% if(DATABASE_UPLOADED) { %>
+                    <li>
+                        <a href="#settings">
+                            <i class="material-icons">settings</i> Settings
+                        </a>
+                    </li>
+                <% } %>
             </ul>
         </div>
     </div>

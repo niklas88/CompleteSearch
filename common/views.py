@@ -11,6 +11,7 @@ def index():
 
     return render_template(
         'index.html',
+        DATABASE_UPLOADED=settings['database_uploaded'],
         VIEW=view,
         DEBUG=app.config['DEBUG']
     )

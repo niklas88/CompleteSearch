@@ -21,9 +21,10 @@
     <!-- CSS Files -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    <!-- Global variables from back-end -->
+    <!-- Global variables from the server -->
     <script type="text/javascript">
         var VIEW = '{{ VIEW }}';
+        var DATABASE_UPLOADED = ('{{ DATABASE_UPLOADED }}' === 'True') ? true : false;
     </script>
 
     <!-- Main app -->

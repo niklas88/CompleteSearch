@@ -26,35 +26,45 @@ const MainController = Marionette.Object.extend({
     },
 
     showSearchView(args) {
-        if (this.contentRegion.currentView &&
-            this.contentRegion.currentView.viewId &&
-            this.contentRegion.currentView.viewId === 'searchView') {
+        // Show the view only if the database is uploaded
+        if (DATABASE_UPLOADED) {
+            if (this.contentRegion.currentView &&
+                this.contentRegion.currentView.viewId &&
+                this.contentRegion.currentView.viewId === 'searchView') {
 
-            // Set initial params from the URL bar
-            this.contentRegion.currentView.setParams(
-                $.deparam((args !== null) ? args : '')
-            );
+                // Set initial params from the URL bar
+                this.contentRegion.currentView.setParams(
+                    $.deparam((args !== null) ? args : '')
+                );
 
-            // Trigger search function
-            this.contentRegion.currentView.search();
+                // Trigger search function
+                this.contentRegion.currentView.search();
+            } else {
+                // Render SearchView only if doesn't exist yet
+                // or if the view is changed
+                this.contentRegion.show(new SearchView({
+                    params: (args !== null) ? $.deparam(args) : {}
+                }));
+            }
         } else {
-            // Render SearchView only if doesn't exist yet
-            // or if the view is changed
-            this.contentRegion.show(new SearchView({
-                params: (args !== null) ? $.deparam(args) : {}
-            }));
+            this.main();
         }
     },
 
     showSettingsView() {
-        const settingsModel = new SettingsModel();
-        settingsModel.fetch({
-            success: () => {
-                this.contentRegion.show(new SettingsView({
-                    model: settingsModel
-                }));
-            }
-        });
+        // Show the view only if the database is uploaded
+        if (DATABASE_UPLOADED) {
+            const settingsModel = new SettingsModel();
+            settingsModel.fetch({
+                success: () => {
+                    this.contentRegion.show(new SettingsView({
+                        model: settingsModel
+                    }));
+                }
+            });
+        } else {
+            this.main();
+        }
     },
 });
 
