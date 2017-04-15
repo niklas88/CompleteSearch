@@ -157,7 +157,7 @@ def search():
                     data.append(hit_data)
 
     if error:
-        raise app.ServerError('error')
+        raise app.ServerError(error)
     else:
         return jsonify(data)
 

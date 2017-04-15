@@ -102,7 +102,7 @@ export default Marionette.View.extend({
                     });
 
                     // Change the view (ConfigureView -> SearchView)
-                    // window.location.replace('.');
+                    window.location.replace('.');
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.error(jqXHR);
@@ -145,7 +145,7 @@ export default Marionette.View.extend({
     checkValues(values) {
         if (values.full_text.length === 0) {
             noty({
-                type: 'error',
+                type: 'warning',
                 text: 'You did not select any fields for searching.'
             });
             return false;
@@ -153,8 +153,16 @@ export default Marionette.View.extend({
 
         if (values.show.length === 0) {
             noty({
-                type: 'error',
-                text: 'You did not select any "Show" fields.'
+                type: 'warning',
+                text: 'You did not select any <strong>Show</strong> fields.'
+            });
+            return false;
+        }
+
+        if (values.title_field !== '' && values.show.indexOf(values.title_field) === -1) {
+            noty({
+                type: 'warning',
+                text: '<strong>Title Field</strong> must be also selected in the <strong>Show</strong> fields.'
             });
             return false;
         }

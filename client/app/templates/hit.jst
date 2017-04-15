@@ -1,6 +1,6 @@
 <div class="hit">
     <% if(titleField !== '') { %>
-        <% const title = $.grep(fields, function(f) { return f.name == titleField; }).value; %>
+        <% var title = $.grep(fields, function(f) { return f.name === titleField; })[0].value; %>
         <h6><%= title %></h6>
     <% } %>
 

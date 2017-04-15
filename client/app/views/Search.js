@@ -114,7 +114,7 @@ export default Marionette.View.extend({
                     console.error(error);
                     noty({
                         type: 'error',
-                        text: '[ERROR] search: ' + error
+                        text: error
                     });
 
                     me.getRegion('hits').empty();
