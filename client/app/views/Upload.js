@@ -35,7 +35,7 @@ export default Marionette.View.extend({
         if (inputFile[0].files.length === 1) {
             const file = inputFile[0].files[0];
 
-            if (supportedFileTypes.indexOf(file.type) > -1) {
+            if (supportedFileTypes.indexOf(file.type) !== -1) {
                 let data = new FormData();
                 data.append('file', file);
 
@@ -82,6 +82,8 @@ export default Marionette.View.extend({
                     type: 'error',
                     text: 'This file type is not supported.'
                 });
+                console.error('Supported file types:', supportedFileTypes);
+                console.error('Current file type:', file.type);
             }
         } else {
             noty({

@@ -100,7 +100,7 @@ def upload_file():
 def allowed_file(filename):
     """ Check if a file type is allowed. """
     return '.' in filename and \
-        filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+        filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 
 def process_csv(csv_file, delimiter):
