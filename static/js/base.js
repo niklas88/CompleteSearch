@@ -1,8 +1,4 @@
-import $ from 'jquery';
 import Noty from 'noty';
-
-// make jQuery be globally available
-window.$ = window.jQuery = $;
 
 Noty.overrideDefaults({
     layout: 'topRight',

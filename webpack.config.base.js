@@ -3,21 +3,22 @@ const path = require('path');
 
 module.exports = {
     devtool: false,
-    entry: [
-        './static/js/base'
-    ],
+    entry: {
+        main: './static/js/base'
+    },
     output: {
         path: path.join(__dirname, './static/js/dist/'),
         filename: 'bundle.js',
         publicPath: '/'
     },
     plugins: [
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.DefinePlugin({
             __DEV__: 'true'
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
+            jQuery: 'jquery',
             _: 'underscore'
         })
     ],
