@@ -20,11 +20,19 @@
 
 #settings-form .form-group label.control-label {
     font-size: 13px;
-    margin: 8px 0 0 0;
+    margin: 6px 0 0 0;
+}
+
+#settings-form .form-group label.control-label.title-field {
+    margin-top: 15px;
 }
 
 #settings-form .config-tooltip {
     font-weight: bold;
+}
+
+.bootstrap-select .btn {
+    text-transform: none;
 }
 
 // #save-settings {

@@ -53,8 +53,11 @@ def get_facets():
         pattern = re.compile('<.*?>')
         name = item['text'].replace(facet_query, '').strip()
         name = re.sub(pattern, '', name)
+        splitted_name = name[:25].split(' ')
+        short_name = ' '.join(splitted_name[:len(splitted_name)])
         return {
-            'name': name,
+            'name': short_name + '...' if short_name != name else name,
+            'title': name,
             'count': item['@oc'],
         }
 

@@ -1,4 +1,7 @@
+import $ from 'jquery';
 import Noty from 'noty';
+
+window.$ = window.jQuery = $;
 
 Noty.overrideDefaults({
     layout: 'topRight',
@@ -8,9 +11,8 @@ Noty.overrideDefaults({
 });
 
 require('arrive');
-require('bootstrap/dist/js/bootstrap.min');
+require('bootstrap');
 require('bootstrap-material-design');
 require('./libs/material-kit');
-require('./libs/jquery.dropdown');
 require('./libs/jquery.deparam');
 require('./app/initialize');

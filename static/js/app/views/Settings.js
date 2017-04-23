@@ -1,4 +1,5 @@
 import Marionette from 'backbone.marionette';
+import selectpicker from 'bootstrap-select';
 import Noty from 'noty';
 
 import template from '../templates/settings.jst';
@@ -46,13 +47,10 @@ export default Marionette.View.extend({
     },
 
     onAttach() {
-        $.material.init();
-
-        // Beautiful select
-        $('.select').dropdown({
-            dropdownClass: 'dropdown-menu',
-            optionClass: ''
-        });
+        // Activate bootstrap-select
+        if ($('.selectpicker').length !== 0) {
+            $('.selectpicker').selectpicker();
+        }
 
         const model = this.model.toJSON();
         const params = [
@@ -103,8 +101,10 @@ export default Marionette.View.extend({
                         text: 'Database has been configured!'
                     }).show();
 
-                    // Change the view (ConfigureView -> SearchView)
-                    window.location.replace('.');
+                    // Redirect to the main page
+                    setTimeout(() => {
+                        window.location.replace('.');
+                    }, 1500);
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.error(jqXHR);
@@ -115,7 +115,6 @@ export default Marionette.View.extend({
                 }
             });
         }
-        // return false;
     },
 
     getFormValues() {
@@ -183,7 +182,7 @@ export default Marionette.View.extend({
             // Redirect to the main page
             setTimeout(() => {
                 window.location.replace('.');
-            }, 750);
+            }, 1500);
         });
     }
 });

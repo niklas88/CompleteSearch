@@ -144,7 +144,8 @@ export default Marionette.View.extend({
         // Save selected facet
         this.searchChannel.trigger('update:facets',
             this.model.get('name'),
-            this.collection.get(itemId).get('name')
+            // this.collection.get(itemId).get('name')
+            this.collection.get(itemId).get('title')
         );
     }
 });
