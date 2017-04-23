@@ -11,29 +11,6 @@ from flask import Blueprint, request, current_app as app, jsonify
 bp = Blueprint('search', __name__)
 
 
-# class InvalidUsage(Exception):
-#     status_code = 500
-#
-#     def __init__(self, message, status_code=None, payload=None):
-#         Exception.__init__(self)
-#         self.message = message
-#         if status_code is not None:
-#             self.status_code = status_code
-#         self.payload = payload
-#
-#     def to_dict(self):
-#         rv = dict(self.payload or ())
-#         rv['message'] = self.message
-#         return rv
-#
-#
-# @bp.errorhandler(InvalidUsage)
-# def handle_invalid_usage(error):
-#     response = jsonify(error.to_dict())
-#     response.status_code = error.status_code
-#     return response
-
-
 @bp.route('/get_facets_list/', methods=['GET'])
 def get_facets_list():
     """ Return the list of facets. """
@@ -113,6 +90,8 @@ def search():
 
     search_query = request.args.get('query', '').lower()
     facets = request.args.get('facets', '')
+    start = request.args.get('start', 0)
+    hits_per_page = request.args.get('hits_per_page', 20)
 
     if search_query != '' or facets != '':
         if search_query:
@@ -127,7 +106,8 @@ def search():
             search_query += ' '
 
         combined_query = quote(search_query + facet_items)
-        url = 'http://0.0.0.0:8888/?q=%s&format=json' % combined_query
+        url = 'http://0.0.0.0:8888/?q=%s&f=%s&h=%s&format=json' % (
+            combined_query, start, hits_per_page)
 
         try:
             response = urlopen(url)
@@ -138,6 +118,7 @@ def search():
             error = 'CompleteSearch server is not running or responding.'
             app.logger.exception(e)
         else:
+            show_fields = sorted(settings['show'])
             if int(hits['@total']) > 0:
                 for hit in result['hits']['hit']:
                     fields = [
@@ -148,13 +129,13 @@ def search():
                                 if field in hit['info'].keys()
                                 else ''
                         }
-                        for field in settings['show']
+                        for field in show_fields
                     ]
 
                     hit_data = {
                         'titleField': settings['title_field'],
                         'fields': fields,
-                        'total': hits['@total'],
+                        'total': int(hits['@total']),
                     }
 
                     data.append(hit_data)

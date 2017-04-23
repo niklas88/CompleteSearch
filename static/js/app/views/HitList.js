@@ -22,8 +22,7 @@ export default Marionette.CollectionView.extend({
 
             if (level >= bottom) {
                 $(window).off('scroll');
-
-                if (me.collection.length < me.searchView.hits.length) {
+                if (me.collection.length < me.collection.at(0).get('total')) {
                     me.searchView.showMore();
                 }
             }

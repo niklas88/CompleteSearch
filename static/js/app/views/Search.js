@@ -86,19 +86,24 @@ export default Marionette.View.extend({
         const $emptyText = this.getUI('emptyText');
         const $loader = this.getUI('loader');
 
+        me.hits = new HitCollection();
+
+        const params = $.extend({
+            start: 0,
+            hits_per_page: me.hits.hitsPerPage
+        }, me.params);
+
         if (query || facets) {
             $emptyText.hide();
             $loader.show();
-
-            me.hits = new HitCollection();
             me.hits.fetch({
-                data: $.param(me.params),
+                data: $.param(params),
                 success: () => {
                     $loader.hide();
 
                     if (me.hits.length > 0) {
                         me.showChildView('hits', new HitListView({
-                            collection: new HitCollection(me.getData(me.hits.page))
+                            collection: me.hits
                         }));
                     } else {
                         me.getRegion('hits').empty();
@@ -114,7 +119,6 @@ export default Marionette.View.extend({
                 },
                 error: (hits, response) => {
                     const error = JSON.parse(response.responseText).message;
-                    console.error(error);
                     new Noty({
                         type: 'error',
                         text: error
@@ -135,17 +139,32 @@ export default Marionette.View.extend({
         }
     },
 
-    getData(page) {
-        const hitsPerPage = this.hits.hitsPerPage;
-        const start = page * hitsPerPage;
-        const end = start + hitsPerPage;
-        return this.hits.slice(start, end);
-    },
-
     showMore() {
-        const hits = this.getData(++this.hits.page);
-        const hitCollection = this.getRegion('hits').currentView.collection;
-        hitCollection.add(hits);
+        const $loader = this.getUI('loader');
+        const hitCollection = this.hits;
+        const page = ++hitCollection.page;
+        const hitsPerPage = hitCollection.hitsPerPage;
+        const start = page * hitsPerPage;
+        const url = hitCollection.url;
+        const params = $.extend({
+            start: start,
+            hits_per_page: hitsPerPage
+        }, this.params);
+
+        $loader.show();
+        $.getJSON(url, $.param(params))
+            .done((hits) => {
+                $loader.hide();
+                hitCollection.add(hits);
+            })
+            .fail((response) => {
+                $loader.hide();
+                const error = JSON.parse(response.responseText).message;
+                new Noty({
+                    type: 'error',
+                    text: error
+                }).show();
+            });
     },
 
     setHash() {

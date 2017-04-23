@@ -4,6 +4,6 @@ import HitModel from '../models/Hit';
 export default Backbone.Collection.extend({
     url: 'search/',
     model: HitModel,
-    hitsPerPage: 10,
+    hitsPerPage: 20,
     page: 0
 });
