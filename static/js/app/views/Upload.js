@@ -7,8 +7,9 @@ export default Marionette.View.extend({
     template: template,
 
     ui: {
+        inputFile: '#input-file',
         uploadButton: '#upload-button',
-        inputFile: '#input-file'
+        progressBar: '#progressBar'
     },
 
     events: {
@@ -27,7 +28,9 @@ export default Marionette.View.extend({
     },
 
     upload() {
-        let inputFile = this.getUI('inputFile');
+        const inputFile = this.getUI('inputFile');
+        const $uploadButton = this.getUI('uploadButton');
+        const $progressBar = this.getUI('progressBar');
         const supportedFileTypes = [
             'text/tab-separated-values',
             'text/csv',
@@ -41,8 +44,7 @@ export default Marionette.View.extend({
                 let data = new FormData();
                 data.append('file', file);
 
-                // TODO@me: set loader here
-
+                $uploadButton.attr('disabled', true);
                 $.ajax({
                     url: 'upload_file/',
                     type: 'POST',
@@ -51,9 +53,27 @@ export default Marionette.View.extend({
                     dataType: 'json',
                     processData: false,
                     contentType: false,
-                    success: (obj) => {
-                        // TODO: stop loader
+                    xhr: function() {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function(e) {
+                            if (e.lengthComputable) {
+                                const percent = Math.round((e.loaded / e.total) * 100);
 
+                                $progressBar
+                                    .attr('aria-valuenow', percent)
+                                    .css('width', percent + '%');
+
+                                if (percent === 100) {
+                                    new Noty({
+                                        text: 'Processing...',
+                                        timeout: false
+                                    }).show();
+                                }
+                            }
+                        });
+                        return xhr;
+                    },
+                    success: (obj) => {
                         if (obj.success) {
                             new Noty({
                                 type: 'success',
@@ -71,7 +91,7 @@ export default Marionette.View.extend({
                         }
                     },
                     error: (jqXHR, textStatus) => {
-                        // TODO: set loader
+                        $uploadButton.attr('disabled', false);
                         new Noty({
                             type: 'error',
                             text: textStatus
