@@ -117,9 +117,13 @@ def process_csv(csv_file, delimiter):
 
     # Define good facets (columns which have more than one occurrence)
     facets = [
-        column
+        {
+            'name': column,
+            'count': data[column].value_counts().size
+        }
         for column in data
         if data[column].value_counts().size < non_nan_rows[column]
     ]
+    facets = [x['name'] for x in sorted(facets, key=lambda x: x['count'])[:5]]
 
     return data, facets

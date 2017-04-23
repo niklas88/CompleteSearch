@@ -1,6 +1,6 @@
 import Marionette from 'backbone.marionette';
-import selectpicker from 'bootstrap-select';
 import Noty from 'noty';
+require('bootstrap-select');
 
 import template from '../templates/settings.jst';
 
@@ -25,7 +25,8 @@ export default Marionette.View.extend({
         'click @ui.facetsAllBtn': 'selectAll',
         'click @ui.showAllBtn': 'selectAll',
         'click @ui.saveBtn': 'save',
-        'click @ui.deleteDatabaseBtn': 'deleteDatabase'
+        'click @ui.deleteDatabaseBtn': 'deleteDatabase',
+        'change input[name=facets]': 'checkFacet'
     },
 
     collectionEvents: {
@@ -87,6 +88,23 @@ export default Marionette.View.extend({
         });
     },
 
+    checkFacet(e) {
+        let numChecked = 0;
+        _.each($('input[name=facets]'), (input) => {
+            if (input.checked) {
+                numChecked++;
+            }
+        });
+
+
+        if (e.target.checked && numChecked > 5) {
+            new Noty({
+                type: 'warning',
+                text: 'Selecting more than 5 facets might degrade the performance.'
+            }).show();
+        }
+    },
+
     save() {
         const values = this.getFormValues();
         if (this.checkValues(values)) {
@@ -98,7 +116,8 @@ export default Marionette.View.extend({
                 success: () => {
                     new Noty({
                         type: 'success',
-                        text: 'Database has been configured!'
+                        text: 'Database has been configured!',
+                        timeout: false
                     }).show();
 
                     // Redirect to the main page
@@ -176,7 +195,8 @@ export default Marionette.View.extend({
         $.post('delete_database/', () => {
             new Noty({
                 type: 'success',
-                text: 'Database has been deleted!'
+                text: 'Database has been deleted!',
+                timeout: false
             }).show();
 
             // Redirect to the main page

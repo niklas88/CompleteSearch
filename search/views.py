@@ -38,7 +38,7 @@ bp = Blueprint('search', __name__)
 def get_facets_list():
     """ Return the list of facets. """
     settings = app.settings.to_dict()
-    facets_list = [{'name': facet} for facet in settings['facets']]
+    facets_list = [{'name': facet} for facet in sorted(settings['facets'])]
     return jsonify(facets_list)
 
 

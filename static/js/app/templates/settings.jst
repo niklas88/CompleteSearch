@@ -12,13 +12,13 @@
                 <form id="settings-form" class="form-horizontal text-left">
 
                     <div class="row">
-                        <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label title-field" for="title_field">
+                                <label class="col-md-3 control-label title-field" for="title_field">
                                     Title Field
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="Show this field as a search hit's title">[?]</span>
                                 </label>
-                                <div class="col-sm-7">
+                                <div class="col-md-9">
                                     <select id="title_field" title="--" name="title_field" class="selectpicker form-control" data-style="form-control">
                                         <option disabled selected>--</option>
                                         <% _.each(all_fields, function(field) { %>
@@ -31,13 +31,13 @@
                     </div><!-- /.row -->
 
                     <div class="row">
-                        <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="full_text">
+                                <label class="col-md-3 control-label" for="full_text">
                                     Full Text
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="Perform the full text search in these fields">[?]</span>
                                 </label>
-                                <div class="col-sm-4">
+                                <div class="col-md-6">
                                     <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'full_text-' + field.replace(' ', '-') %>">
@@ -47,18 +47,18 @@
                                         </div>
                                     <% }); %>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-3">
                                     <button id="full_text-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="show">
+                                <label class="col-md-3 control-label" for="show">
                                     Show
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="Specify which fields should be returned on a hit">[?]</span>
                                 </label>
-                                <div class="col-sm-4">
+                                <div class="col-md-6">
                                     <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'show-' + field.replace(' ', '-') %>">
@@ -68,7 +68,7 @@
                                         </div>
                                     <% }); %>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-3">
                                     <button id="show-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
                                 </div>
                             </div>
@@ -76,13 +76,13 @@
                     </div><!-- /.row -->
 
                     <div class="row">
-                        <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="allow_multiple_items">
+                                <label class="col-md-3 control-label" for="allow_multiple_items">
                                     Multiple Items Fields
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="Specify fields containing multiple terms per column, e.g. several authors for one document">[?]</span>
                                 </label>
-                                <div class="col-sm-4">
+                                <div class="col-md-6">
                                     <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'allow_multiple_items-' + field.replace(' ', '-') %>">
@@ -92,18 +92,18 @@
                                         </div>
                                     <% }); %>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-3">
                                     <button id="allow_multiple_items-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="filter">
+                                <label class="col-md-3 control-label" for="filter">
                                     Filters
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="Restrict the search to specific columns. Filters help to filter a word for each single word in a column">[?]</span>
                                 </label>
-                                <div class="col-sm-4">
+                                <div class="col-md-6">
                                     <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'filter-' + field.replace(' ', '-') %>">
@@ -113,7 +113,7 @@
                                         </div>
                                     <% }); %>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-3">
                                     <button id="filter-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
                                 </div>
                             </div>
@@ -121,24 +121,24 @@
                     </div><!-- /.row -->
 
                     <div class="row">
-                        <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="within_field_separator">
+                                <label class="col-sm-3 control-label" for="within_field_separator">
                                     Multiple Items Fields Separator
                                     <!--<span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="tooltip">[?]</span>-->
                                 </label>
-                                <div class="col-sm-7">
+                                <div class="col-sm-9">
                                     <input id="within_field_separator" name="within_field_separator" type="text" class="form-control" placeholder=";">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-md-offset-0 col-sm-10 col-sm-offset-1">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="col-sm-5 control-label" for="facets">
+                                <label class="col-md-3 control-label" for="facets">
                                     Facets
                                     <span class="config-tooltip" data-toggle="tooltip" data-placement="top" title="" data-container="body" data-original-title="Restrict the search to specific columns. Facets help to find specific phrases">[?]</span>
                                 </label>
-                                <div class="col-sm-4">
+                                <div class="col-md-6">
                                     <% _.each(all_fields, function(field) { %>
                                         <div class="checkbox">
                                             <label for="<%= 'facets-' + field.replace(' ', '-') %>">
@@ -148,7 +148,7 @@
                                         </div>
                                     <% }); %>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-md-3">
                                     <button id="facets-selectAll" class="btn btn-primary btn-xs" type="button">Select All</button>
                                 </div>
                             </div>
