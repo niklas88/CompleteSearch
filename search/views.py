@@ -46,7 +46,7 @@ def get_facets():
         facet_query = ':facet:%s:' % facet_name
 
         if search_query:
-            search_query = escape_user_input(search_query)
+            search_query = clean_user_input(search_query)
             search_query += ' '
 
         facet_items = ''
@@ -95,7 +95,7 @@ def search():
 
     if search_query != '' or facets != '':
         if search_query:
-            search_query = escape_user_input(search_query)
+            search_query = clean_user_input(search_query)
 
         facet_items = ''
         for facet in facets.split():
@@ -146,42 +146,52 @@ def search():
         return jsonify(data)
 
 
-def escape_user_input(query):
-    """ Escape user input with double quotation marks,
-    preserving search operators like |, $, and *.
+def clean_user_input(query):
+    """ Clean user input, preserving search operators like |, $, and *.
 
-    >>> escape_user_input(' vivaldi, antonio | mozart.bach    ')
-    '"vivaldi, antonio"|"mozart"."bach"'
+    >>> clean_user_input('   antonio  vivaldi | mozart.bach    ')
+    'antonio* vivaldi*|mozart*.bach*'
 
-    >>> escape_user_input('mo* | bach$')
-    '"mo"*|"bach"$'
+    >>> clean_user_input('mo* | bach$')
+    'mo*|bach$'
 
-    >>> escape_user_input('mozart')
-    '"mozart"*'
+    >>> clean_user_input('mozart')
+    'mozart*'
 
-    >>> escape_user_input('bach$')
-    '"bach"$'
+    >>> clean_user_input('@#johann*$ bach$')
+    'johann* bach$'
+
+    >>> clean_user_input('@#johann$* bach$')
+    'johann$ bach$'
+
+    >>> clean_user_input('^&stravinsky!?')
+    'stravinsky*'
+
+    >>> clean_user_input('bach$')
+    'bach$'
     """
-    new_query = ''
+    def clean_terms(st):
+        terms = []
+        for term in st.split(' '):
+            if term != '':
+                cleaned_term = re.sub(r'\W+', '', term)
+                index = term.find(cleaned_term)
+                try:
+                    char = term[index + len(cleaned_term)]
+                    if char == '*' or char == '$':
+                        terms.append(cleaned_term + char)
+                    else:
+                        terms.append(cleaned_term + '*')
+                except IndexError:
+                    terms.append(cleaned_term + '*')
+        return ' '.join(terms)
 
-    def escape_term(st, postfix):
-        term = st.strip()
-        if term[-1] == '*':
-            escaped_term = '"%s"*' % term[:-1]
-        elif term[-1] == '$':
-            escaped_term = '"%s"$' % term[:-1]
-        else:
-            escaped_term = '"%s"' % term + postfix
-        return escaped_term
-
-    # Complex search
-    if re.search('\.|\|', query):
+    if '.' in query or '|' in query:
         new_query = query
-        for match in re.findall('[^.|]+', query):
-            escaped_term = escape_term(match, '')
-            new_query = new_query.replace(match, escaped_term)
-    # Simple search
+        for match in re.findall(r'[^.|]+', query):
+            cleaned_terms = clean_terms(match)
+            new_query = new_query.replace(match, cleaned_terms)
     else:
-        new_query = escape_term(query, '*')
+        new_query = clean_terms(query)
 
     return new_query
