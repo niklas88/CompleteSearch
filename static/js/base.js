@@ -1,7 +1,9 @@
 import $ from 'jquery';
+import _ from 'underscore';
 import Noty from 'noty';
 
 window.$ = window.jQuery = $;
+window._ = _;
 
 Noty.overrideDefaults({
     layout: 'topRight',

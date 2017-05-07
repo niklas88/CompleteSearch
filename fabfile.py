@@ -28,8 +28,7 @@ def create_zip():
             )
 
             print('\nRebuilding the client...')
-            with lcd('client/'):
-                local('gulp b --prod')
+            local('gulp webpack:once')
             print('...done!')
 
             print('\nCloning the codebase...')
@@ -40,7 +39,8 @@ def create_zip():
             print('...done!')
 
             print('\nCopying compiled assets...')
-            local('cp -R {static/css,static/js} %s/app/static' % name)
+            local('mkdir %s/app/static/js/dist/' % name)
+            local('cp static/js/dist/bundle.js %s/app/static/js/dist/' % name)
             print('...done!')
 
             print('\nCreating ZIP archive...')
