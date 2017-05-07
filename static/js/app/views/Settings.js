@@ -106,8 +106,10 @@ export default Marionette.View.extend({
     },
 
     save() {
+        const $saveBtn = this.getUI('saveBtn');
         const values = this.getFormValues();
         if (this.checkValues(values)) {
+            $saveBtn.attr('disabled', true);
             $.post({
                 url: 'configure_database/',
                 contentType: false,
@@ -126,6 +128,7 @@ export default Marionette.View.extend({
                     }, 1500);
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
+                    $saveBtn.attr('disabled', false);
                     console.error(jqXHR);
                     new Noty({
                         type: 'error',

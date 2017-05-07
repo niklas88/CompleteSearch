@@ -83,7 +83,7 @@ export default Marionette.View.extend({
                             // Change the view (UploadView -> SearchView)
                             window.location.replace('.');
                         } else {
-                            // TODO: stop loader
+                            $uploadButton.attr('disabled', true);
                             new Noty({
                                 type: 'error',
                                 text: obj.error
