@@ -207,8 +207,8 @@ export default Marionette.View.extend({
         return this.params.hasOwnProperty('facets') ? this.params.facets : '';
     },
 
-    updateFacets(name, item) {
-        const facet = name + ':' + item;
+    updateFacets(name, value) {
+        const facet = name + ':' + value;
 
         if (this.params.hasOwnProperty('facets')) {
             if (this.params.facets.indexOf(facet) === -1) {

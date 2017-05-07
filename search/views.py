@@ -1,5 +1,6 @@
 import re
 import json
+from html.parser import HTMLParser
 
 from http.client import RemoteDisconnected
 from urllib.request import urlopen
@@ -7,8 +8,31 @@ from urllib.parse import quote
 from urllib.error import URLError
 
 from flask import Blueprint, request, current_app as app, jsonify
+from html5lib.filters.sanitizer import allowed_elements
 
 bp = Blueprint('search', __name__)
+
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs = True
+        self.elements = set()
+        self.fed = []
+
+    def handle_endtag(self, tag):
+        self.elements.add(tag)
+
+    def handle_data(self, d):
+        self.fed.append(d)
+
+    def get_data(self):
+        return ''.join(self.fed)
+
+    def handle_starttag(self, tag, attrs):
+        self.elements.add(tag)
 
 
 @bp.route('/get_facets_list/', methods=['GET'])
@@ -23,20 +47,18 @@ def get_facets_list():
 def get_facets():
     """ Return all facets for a given field name. """
     data = []
-    completions = None
 
     def facet_dict(item, facet_query):
-        # Trim, remove :facet:<facet_name>: and all html tags
-        pattern = re.compile('<.*?>')
-        name = item['text'].replace(facet_query, '').strip()
-        name = re.sub(pattern, '', name)
-        splitted_name = name[:25].split(' ')
-        short_name = ' '.join(splitted_name[:len(splitted_name)])
+        value = item['text'].replace(facet_query, '')
+        title = remove_html(value).replace('_', ' ')
+        splitted = title[:25].split(' ')
+        short_name = ' '.join(splitted[:len(splitted)])
         return {
-            'name': short_name + '...' if short_name != name else name,
-            'title': name,
+            'name': short_name + '...' if short_name != title else title,
+            'value': value,
+            'title': title,
             'count': item['@oc'],
-        }
+        } if value != '_' else {}
 
     search_query = request.args.get('query', '').lower()
     facet_name = request.args.get('name', '')
@@ -51,12 +73,12 @@ def get_facets():
 
         facet_items = ''
         for facet in facets.split():
-            item = facet.split(':')
-            facet_items += ':facet:%s:"%s" ' % (item[0], item[1])
+            for group in re.findall(r'^(.+?):(.+)$', facet):
+                facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
 
-        combined_query = quote(search_query + facet_items + facet_query)
+        combined_query = quote(search_query + facet_items + facet_query + '*')
 
-        url = 'http://0.0.0.0:8888/?q=%s*&h=0&c=250&format=json' % \
+        url = 'http://0.0.0.0:8888/?q=%s&h=0&c=250&format=json' % \
             combined_query
 
         try:
@@ -78,6 +100,8 @@ def get_facets():
                         for c in completions['c']
                     ]
 
+    # Get rid of empty items
+    data = [x for x in data if x != {}]
     return jsonify(data)
 
 
@@ -99,8 +123,8 @@ def search():
 
         facet_items = ''
         for facet in facets.split():
-            item = facet.split(':')
-            facet_items += ':facet:%s:"%s" ' % (item[0], item[1])
+            for group in re.findall(r'^(.+?):(.+)$', facet):
+                facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
 
         if facet_items:
             search_query += ' '
@@ -125,7 +149,7 @@ def search():
                         {
                             'name': field,
                             'value':
-                                hit['info'][field]
+                                remove_html(hit['info'][field])
                                 if field in hit['info'].keys()
                                 else ''
                         }
@@ -144,6 +168,19 @@ def search():
         raise app.ServerError(error)
     else:
         return jsonify(data)
+
+
+def remove_html(html):
+    """ Remove all html tags in a given text. """
+    elements = set([x[1] for x in allowed_elements])
+    s = MLStripper()
+    s.feed(html)
+
+    if s.elements.intersection(elements):  # html document
+        result = s.get_data()
+    else:
+        result = html.replace('<', '').replace('>', '')
+    return result
 
 
 def clean_user_input(query):
