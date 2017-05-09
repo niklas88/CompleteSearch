@@ -24,6 +24,14 @@ class UploadFileTest(TestCase):
             self.assertEquals(response.json, {
                 'success': True,
                 'error': '',
+                'data': {
+                    'all_fields': ['Land', 'Hauptstadt', 'Einwohnerzahl'],
+                    'full_text': ['Land', 'Hauptstadt', 'Einwohnerzahl'],
+                    'database_uploaded': True,
+                    'facets': [],
+                    'filter': [],
+                    'show': [],
+                },
             })
 
             output_path = os.path.join(
@@ -44,6 +52,7 @@ class UploadFileTest(TestCase):
         self.assertEquals(response.json, {
             'success': False,
             'error': 'You did not select any file.',
+            'data': {},
         })
 
     def test_empty_file(self):
@@ -54,6 +63,7 @@ class UploadFileTest(TestCase):
         self.assertEquals(response.json, {
             'success': False,
             'error': 'The file is empty.',
+            'data': {},
         })
 
     def test_wrong_file_type(self):
@@ -64,6 +74,7 @@ class UploadFileTest(TestCase):
         self.assertEquals(response.json, {
             'success': False,
             'error': 'Wrong file type.',
+            'data': {},
         })
 
     def test_unknown_delimiter(self):
@@ -74,4 +85,5 @@ class UploadFileTest(TestCase):
         self.assertEquals(response.json, {
             'success': False,
             'error': 'Could not determine delimiter',
+            'data': {},
         })
