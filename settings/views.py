@@ -9,7 +9,7 @@ bp = Blueprint('settings', __name__)
 
 @bp.route('/get_settings/', methods=['GET'])
 def get_settings():
-    """ Get a dictionary with all database settings. """
+    """ Get a dictionary with all dataset settings. """
     settings = app.settings.to_dict()
 
     data = {
@@ -26,8 +26,8 @@ def get_settings():
     return jsonify(data)
 
 
-@bp.route('/configure_database/', methods=['POST'])
-def configure_database():
+@bp.route('/configure_dataset/', methods=['POST'])
+def configure_dataset():
     """  """
     settings = app.settings.to_dict()
     error = ''
@@ -84,9 +84,9 @@ def configure_database():
     return jsonify(success=not error, error=error)
 
 
-@bp.route('/delete_database/', methods=['POST'])
-def delete_database():
-    """ Delete the uploaded database. """
+@bp.route('/delete_dataset/', methods=['POST'])
+def delete_dataset():
+    """ Delete the uploaded dataset. """
     os.chdir('../completesearch')
     subprocess.Popen(['make delete_input'], shell=True).communicate()
     app.settings.reset()

@@ -2,6 +2,7 @@ import os
 import csv
 import pandas as pd
 import subprocess
+import json
 
 from flask import Blueprint, request, current_app as app, jsonify
 
@@ -13,8 +14,8 @@ def upload_file():
     """
     Upload a file, validate and process it, and "feed" it to CompleteSearch.
     """
-    settings = app.settings.to_dict()
     dialect = None
+    result = {}
     error = ''
 
     try:
@@ -41,20 +42,19 @@ def upload_file():
         )
 
         data, facets_fields = process_csv(csv_file, dialect.delimiter)
+        # facets_fields = sorted(facets_fields)
         facets_fields_str = ','.join(facets_fields)
         all_fields = data.columns.values.tolist()
         all_fields_str = ','.join(all_fields)
 
-        # Update settings
-        settings.update({
+        result = {
             'database_uploaded': True,
             'all_fields': all_fields,
             'facets': facets_fields,
             'full_text': all_fields,
             'show': facets_fields,
             'filter': facets_fields,
-        })
-        app.settings.save()
+        }
 
         # Save the processed file
         data.to_csv(
@@ -86,11 +86,37 @@ def upload_file():
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             ).communicate()
-            # app.logger.debug('[Process input]: command output:\n%s' % str(out))
-            app.logger.debug('[Process input]: command error:\n%s' %
-                             str(err, 'utf-8'))
 
-    except (ValueError, csv.Error) as e:
+            if '[process_input] Error' in str(err, 'utf-8'):
+                app.logger.debug('[Process input]:\n%s' % str(err, 'utf-8'))
+                raise ValueError('Cannot process the uploaded file.')
+
+    except Exception as e:
+        error = str(e)
+        app.logger.exception(e)
+
+    return jsonify(success=not error, error=error, data=result)
+
+
+@bp.route('/save_uploaded_dataset/', methods=['POST'])
+def save_uploaded_dataset():
+    """ Save uploaded dataset's settings and start the server """
+    settings = app.settings.to_dict()
+    error = ''
+
+    try:
+        if not request.data:
+            raise ValueError('Data is missing.')
+        params = json.loads(str(request.data, 'utf-8'))
+
+        # Save settings
+        settings.update(params)
+        app.settings.save()
+
+        # Start the server
+        subprocess.Popen(['make start_server'], shell=True).communicate()
+
+    except Exception as e:
         error = str(e)
         app.logger.exception(e)
 

@@ -15,7 +15,7 @@ export default Marionette.View.extend({
         facetsAllBtn: '#facets-selectAll',
         showAllBtn: '#show-selectAll',
         saveBtn: '#save-settings',
-        deleteDatabaseBtn: '#delete-database'
+        deleteDatasetBtn: '#delete-dataset'
     },
 
     events: {
@@ -25,7 +25,7 @@ export default Marionette.View.extend({
         'click @ui.facetsAllBtn': 'selectAll',
         'click @ui.showAllBtn': 'selectAll',
         'click @ui.saveBtn': 'save',
-        'click @ui.deleteDatabaseBtn': 'deleteDatabase',
+        'click @ui.deleteDatasetBtn': 'deleteDataset',
         'change input[name=facets]': 'checkFacet'
     },
 
@@ -111,14 +111,14 @@ export default Marionette.View.extend({
         if (this.checkValues(values)) {
             $saveBtn.attr('disabled', true);
             $.post({
-                url: 'configure_database/',
+                url: 'configure_dataset/',
                 contentType: false,
                 processData: false,
                 data: JSON.stringify(values),
                 success: () => {
                     new Noty({
                         type: 'success',
-                        text: 'Database has been configured!',
+                        text: 'Dataset has been configured!',
                         timeout: false
                     }).show();
 
@@ -193,12 +193,13 @@ export default Marionette.View.extend({
         return true;
     },
 
-    deleteDatabase() {
-        this.getUI('deleteDatabaseBtn').prop('disabled', true);
-        $.post('delete_database/', () => {
+    deleteDataset() {
+        // TODO@me: disable the Save button too
+        this.getUI('deleteDatasetBtn').prop('disabled', true);
+        $.post('delete_dataset/', () => {
             new Noty({
                 type: 'success',
-                text: 'Database has been deleted!',
+                text: 'Dataset has been deleted!',
                 timeout: false
             }).show();
 

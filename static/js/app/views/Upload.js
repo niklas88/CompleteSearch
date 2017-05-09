@@ -9,11 +9,13 @@ export default Marionette.View.extend({
     ui: {
         inputFile: '#input-file',
         uploadButton: '#upload-button',
+        cancelButton: '#cancel-button',
         progressBar: '#progressBar'
     },
 
     events: {
-        'click @ui.uploadButton': 'upload'
+        'click @ui.uploadButton': 'upload',
+        'click @ui.cancelButton': 'cancelUpload'
     },
 
     onRender() {
@@ -28,8 +30,10 @@ export default Marionette.View.extend({
     },
 
     upload() {
+        const me = this;
         const inputFile = this.getUI('inputFile');
         const $uploadButton = this.getUI('uploadButton');
+        const $cancelButton = this.getUI('cancelButton');
         const $progressBar = this.getUI('progressBar');
         // const supportedFileTypes = [
         //     'text/tab-separated-values',
@@ -44,8 +48,10 @@ export default Marionette.View.extend({
             let data = new FormData();
             data.append('file', file);
 
-            $uploadButton.attr('disabled', true);
-            $.ajax({
+            $uploadButton.hide();
+            $cancelButton.show();
+
+            me.xhr = $.ajax({
                 url: 'upload_file/',
                 type: 'POST',
                 data: data,
@@ -57,7 +63,7 @@ export default Marionette.View.extend({
                     const xhr = new window.XMLHttpRequest();
                     xhr.upload.addEventListener('progress', function(e) {
                         if (e.lengthComputable) {
-                            const percent = Math.round((e.loaded / e.total) * 100);
+                            const percent = Math.round(e.loaded / e.total * 100);
 
                             $progressBar
                                 .attr('aria-valuenow', percent)
@@ -65,7 +71,7 @@ export default Marionette.View.extend({
 
                             if (percent === 100) {
                                 new Noty({
-                                    text: 'Processing...',
+                                    text: 'Processing... It might take some time.',
                                     timeout: false
                                 }).show();
                             }
@@ -75,28 +81,17 @@ export default Marionette.View.extend({
                 },
                 success: (obj) => {
                     if (obj.success) {
-                        new Noty({
-                            type: 'success',
-                            text: 'File has been uploaded!'
-                        }).show();
-
-                        // Change the view (UploadView -> SearchView)
-                        window.location.replace('.');
+                        me.saveDataset(obj.data);
                     } else {
-                        $uploadButton.attr('disabled', true);
-                        new Noty({
-                            type: 'error',
-                            text: obj.error
-                        }).show();
+                        me.showErrorMessage(obj.error);
+                        console.error(obj.error);
                     }
                 },
                 error: (jqXHR, textStatus) => {
-                    $uploadButton.attr('disabled', false);
-                    new Noty({
-                        type: 'error',
-                        text: textStatus
-                    }).show();
-                    // console.error('[ERROR]: ' + textStatus);
+                    if (textStatus !== 'abort') {
+                        me.showErrorMessage(textStatus);
+                        console.error('Cannot upload the file.');
+                    }
                 }
             });
             // } else {
@@ -112,6 +107,63 @@ export default Marionette.View.extend({
                 type: 'warning',
                 text: 'You did not select any file.'
             }).show();
+        }
+    },
+
+    saveDataset(data) {
+        const me = this;
+        $.post({
+            url: 'save_uploaded_dataset/',
+            contentType: false,
+            processData: false,
+            data: JSON.stringify(data),
+            success: (obj) => {
+                if (obj.success) {
+                    // new Noty({
+                    //     type: 'success',
+                    //     text: 'File has been uploaded!'
+                    // }).show();
+
+                    // Change the view (UploadView -> SearchView)
+                    window.location.replace('.');
+                } else {
+                    me.showErrorMessage(obj.error);
+                    console.error(obj.error);
+                }
+            },
+            error: (jqXHR, textStatus) => {
+                me.showErrorMessage(textStatus);
+                console.error('Cannot upload the file.');
+            }
+        });
+    },
+
+    showErrorMessage(message) {
+        const $uploadButton = this.getUI('uploadButton');
+        const $cancelButton = this.getUI('cancelButton');
+
+        $uploadButton.show();
+        $cancelButton.hide();
+
+        new Noty({ type: 'error', text: message }).show();
+    },
+
+    cancelUpload() {
+        const $progressBar = this.getUI('progressBar');
+        const $uploadButton = this.getUI('uploadButton');
+        const $cancelButton = this.getUI('cancelButton');
+
+        if (this.xhr) {
+            this.xhr.abort();
+            this.xhr = null;
+
+            $uploadButton.show();
+            $cancelButton.hide();
+            Noty.closeAll();
+
+            $progressBar
+                .attr('aria-valuenow', 0)
+                .css('width', '0%');
         }
     }
 });
