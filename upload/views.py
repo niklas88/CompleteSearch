@@ -66,8 +66,6 @@ def upload_file():
 
         # Don't run this code with TestingConfig
         if not app.config['TESTING']:
-            # TODO@me: define allow-multiple-items automatically
-            # '--allow-multiple-items=Autor ' + \
             opts = "--within-field-separator=';' " + \
                     '--full-text=%s ' % all_fields_str + \
                     '--show=%s ' % facets_fields_str + \

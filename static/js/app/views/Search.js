@@ -23,12 +23,12 @@ export default Marionette.View.extend({
     },
 
     events: {
-        'enter @ui.search': 'setQuery',
-        'keyup @ui.search': 'pressEnter'
+        'keyup @ui.search': 'searchAsYouType'
     },
 
     initialize(options) {
         this.viewId = 'searchView';
+        this.searchTimeout = null;
 
         const searchChannel = Radio.channel('search');
 
@@ -66,17 +66,17 @@ export default Marionette.View.extend({
 
     onAttach() {
         // Initialize Material Design
-        $.material.init();
+        // $.material.init();
     },
 
-    pressEnter(e) {
-        const $search = this.getUI('search');
-        const query = $search.val();
+    searchAsYouType(e) {
+        const me = this;
+        const query = e.target.value;
 
-        // Search on Enter
-        if (e.keyCode === 13) {
-            $search.trigger('enter', query);
-        }
+        clearTimeout(me.searchTimeout);
+        me.searchTimeout = setTimeout(() => {
+            me.setQuery(query);
+        }, 500);
     },
 
     search() {
@@ -179,7 +179,7 @@ export default Marionette.View.extend({
         return this.params.hasOwnProperty('query') ? this.params.query : '';
     },
 
-    setQuery(e, query) {
+    setQuery(query) {
         if (query !== '') {
             this.params.query = query;
         } else {
