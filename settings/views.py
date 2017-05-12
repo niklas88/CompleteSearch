@@ -61,7 +61,7 @@ def configure_dataset():
                    '--filter=%s ' % filter_ + \
                    '--facets=%s' % facets
 
-            command = 'make OPTIONS="%s" pclean-all process_input' % opts
+            command = 'make OPTIONS="%s" pclean-all process_input start' % opts
 
             # Process the input
             out, err = subprocess.Popen(
