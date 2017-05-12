@@ -64,9 +64,6 @@ def configure_dataset():
 
             command = 'make OPTIONS="%s" process_input' % opts
 
-            # Directory with the Makefile
-            os.chdir('../completesearch')
-
             # Process the input
             out, err = subprocess.Popen(
                 [command],
@@ -87,7 +84,6 @@ def configure_dataset():
 @bp.route('/delete_dataset/', methods=['POST'])
 def delete_dataset():
     """ Delete the uploaded dataset. """
-    os.chdir('../completesearch')
     subprocess.Popen(['make delete_input'], shell=True).communicate()
     app.settings.reset()
     return jsonify(success=True)

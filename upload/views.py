@@ -74,9 +74,6 @@ def upload_file():
 
             command = 'make OPTIONS="%s" process_input' % opts
 
-            # Directory with the Makefile
-            os.chdir('../completesearch')
-
             # Process the input
             out, err = subprocess.Popen(
                 [command],
@@ -112,7 +109,6 @@ def save_uploaded_dataset():
         app.settings.save()
 
         # Start the server
-        os.chdir('../completesearch')
         subprocess.Popen(['make start_server'], shell=True).communicate()
 
     except Exception as e:
