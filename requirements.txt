@@ -12,3 +12,6 @@ html5lib
 # Dev
 Fabric3
 coverage
+
+# Production
+gunicorn
