@@ -9,7 +9,7 @@ from gunicorn.app.base import Application
 class GunicornServer(Command):
     """ Runs the app within Gunicorn """
 
-    def __init__(self, host='127.0.0.1', port=8000, workers=4):
+    def __init__(self, host='0.0.0.0', port=8000, workers=4):
         self.port = port
         self.host = host
         self.workers = workers
