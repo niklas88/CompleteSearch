@@ -112,6 +112,7 @@ def save_uploaded_dataset():
         app.settings.save()
 
         # Start the server
+        os.chdir('../completesearch')
         subprocess.Popen(['make start_server'], shell=True).communicate()
 
     except Exception as e:
