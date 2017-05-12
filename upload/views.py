@@ -1,4 +1,3 @@
-import os
 import csv
 import pandas as pd
 import subprocess
@@ -72,7 +71,7 @@ def upload_file():
                     '--filter=%s ' % facets_fields_str + \
                     '--facets=%s' % facets_fields_str
 
-            command = 'make OPTIONS="%s" process_input' % opts
+            command = 'make OPTIONS="%s" pclean-all process_input' % opts
 
             # Process the input
             out, err = subprocess.Popen(
@@ -109,7 +108,7 @@ def save_uploaded_dataset():
         app.settings.save()
 
         # Start the server
-        subprocess.Popen(['make start_server'], shell=True).communicate()
+        subprocess.Popen(['make start'], shell=True).communicate()
 
     except Exception as e:
         error = str(e)

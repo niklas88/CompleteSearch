@@ -1,4 +1,3 @@
-import os
 import subprocess
 import json
 
@@ -62,7 +61,7 @@ def configure_dataset():
                    '--filter=%s ' % filter_ + \
                    '--facets=%s' % facets
 
-            command = 'make OPTIONS="%s" process_input' % opts
+            command = 'make OPTIONS="%s" pclean-all process_input' % opts
 
             # Process the input
             out, err = subprocess.Popen(
@@ -84,6 +83,6 @@ def configure_dataset():
 @bp.route('/delete_dataset/', methods=['POST'])
 def delete_dataset():
     """ Delete the uploaded dataset. """
-    subprocess.Popen(['make delete_input'], shell=True).communicate()
+    subprocess.Popen(['make stop pclean-all'], shell=True).communicate()
     app.settings.reset()
     return jsonify(success=True)
