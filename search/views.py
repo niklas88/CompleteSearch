@@ -1,38 +1,38 @@
 import re
 import json
-from html.parser import HTMLParser
+import cgi
 
-# from http.client import RemoteDisconnected
+# from html.parser import HTMLParser
 from urllib.request import urlopen
-from urllib.parse import quote
-from urllib.error import URLError
+from urllib.parse import quote, unquote
+from urllib.error import URLError, HTTPError
 
 from flask import Blueprint, request, current_app as app, jsonify
-from html5lib.filters.sanitizer import allowed_elements
+# from html5lib.filters.sanitizer import allowed_elements
 
 bp = Blueprint('search', __name__)
 
 
-class MLStripper(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.reset()
-        self.strict = False
-        self.convert_charrefs = True
-        self.elements = set()
-        self.fed = []
+# class MLStripper(HTMLParser):
+#     def __init__(self):
+#         super().__init__()
+#         self.reset()
+#         self.strict = False
+#         self.convert_charrefs = True
+#         self.elements = set()
+#         self.fed = []
 
-    def handle_endtag(self, tag):
-        self.elements.add(tag)
+#     def handle_endtag(self, tag):
+#         self.elements.add(tag)
 
-    def handle_data(self, d):
-        self.fed.append(d)
+#     def handle_data(self, d):
+#         self.fed.append(d)
 
-    def get_data(self):
-        return ''.join(self.fed)
+#     def get_data(self):
+#         return ''.join(self.fed)
 
-    def handle_starttag(self, tag, attrs):
-        self.elements.add(tag)
+#     def handle_starttag(self, tag, attrs):
+#         self.elements.add(tag)
 
 
 @bp.route('/get_facets_list/', methods=['GET'])
@@ -51,7 +51,7 @@ def get_facets():
 
     def facet_item_dict(item, facet_query):
         value = item['text'].replace(facet_query, '')
-        title = remove_html(value).replace('_', ' ')
+        title = cgi.escape(value).replace('_', ' ')
         return {
             'name': title,
             'value': value,
@@ -87,8 +87,8 @@ def get_facets():
             completions = result['completions']
 
             # status = result['status']['@code']  # TODO@me: check the status
-            if completions and int(completions['@total']) > 0:
-                if int(completions['@total']) == 1:
+            if completions and int(completions['@sent']) > 0:
+                if int(completions['@sent']) == 1:
                     data = [facet_item_dict(completions['c'], facet_query)]
                 else:
                     data = [
@@ -100,6 +100,9 @@ def get_facets():
         app.logger.exception(e)
         if e.__class__ == URLError:
             error = str(e.reason)
+        elif e.__class__ == HTTPError:
+            error = str(e.reason)
+            app.logger.error('URL: "%s"' % unquote(url))
         else:
             error = str(e)
 
@@ -151,7 +154,7 @@ def search():
                         {
                             'name': field,
                             'value':
-                                remove_html(hit['info'][field])
+                                hit['info'][field]
                                 if field in hit['info'].keys()
                                 else ''
                         }
@@ -170,6 +173,9 @@ def search():
         app.logger.exception(e)
         if e.__class__ == URLError:
             error = str(e.reason)
+        elif e.__class__ == HTTPError:
+            error = str(e.reason)
+            app.logger.error('URL: "%s"' % unquote(url))
         else:
             error = str(e)
 
@@ -179,17 +185,17 @@ def search():
     return jsonify(data)
 
 
-def remove_html(html):
-    """ Remove all html tags in a given text. """
-    elements = set([x[1] for x in allowed_elements])
-    s = MLStripper()
-    s.feed(html)
+# def remove_html(html):
+#     """ Remove all html tags in a given text. """
+#     elements = set([x[1] for x in allowed_elements])
+#     s = MLStripper()
+#     s.feed(html)
 
-    if s.elements.intersection(elements):  # html document
-        result = s.get_data()
-    else:
-        result = html.replace('<', '').replace('>', '')
-    return result
+#     if s.elements.intersection(elements):  # html document
+#         result = s.get_data()
+#     else:
+#         result = html.replace('<', '').replace('>', '')
+#     return result
 
 
 def clean_user_input(query):
@@ -215,21 +221,29 @@ def clean_user_input(query):
 
     >>> clean_user_input('bach$')
     'bach$'
+
+    >>> clean_user_input('!!!')
+    '!!!'
     """
     def clean_terms(st):
         terms = []
         for term in st.split(' '):
             if term != '':
-                cleaned_term = re.sub(r'\W+', '', term)
-                index = term.find(cleaned_term)
-                try:
-                    char = term[index + len(cleaned_term)]
-                    if char == '*' or char == '$':
-                        terms.append(cleaned_term + char)
-                    else:
+                # If not only special characters
+                if not re.match(r'^[_\W]+$', term):
+                    # Remove all special characters
+                    cleaned_term = re.sub(r'\W+', '', term)
+                    index = term.find(cleaned_term)
+                    try:
+                        char = term[index + len(cleaned_term)]
+                        if char == '*' or char == '$':
+                            terms.append(cleaned_term + char)
+                        else:
+                            terms.append(cleaned_term + '*')
+                    except IndexError:
                         terms.append(cleaned_term + '*')
-                except IndexError:
-                    terms.append(cleaned_term + '*')
+                else:
+                    return term
         return ' '.join(terms)
 
     if '.' in query or '|' in query:

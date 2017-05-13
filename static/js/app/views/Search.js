@@ -44,29 +44,27 @@ export default Marionette.View.extend({
         this.$el = this.$el.children();
         this.$el.unwrap();
         this.setElement(this.$el);
+    },
+
+    onAttach() {
+        const me = this;
+
+        // Initialize Material Design
+        // $.material.init();
+
+        // Set query input initial value
+        if (me.params.hasOwnProperty('query')) {
+            me.getUI('search').val(me.params.query);
+        }
 
         // Show all facet cards
         const facetCardListView = new FacetCardListView();
         facetCardListView.collection.fetch({
             success: () => {
-                this.showChildView('facets', facetCardListView);
+                me.showChildView('facets', facetCardListView);
+                me.search(true);
             }
         });
-
-        // Set query input initial value
-        if (this.params.hasOwnProperty('query')) {
-            this.getUI('search').val(this.params.query);
-            if (this.params.query !== '') {
-                setTimeout(() => {
-                    this.search();
-                }, 500);
-            }
-        }
-    },
-
-    onAttach() {
-        // Initialize Material Design
-        // $.material.init();
     },
 
     searchAsYouType(e) {
@@ -79,12 +77,13 @@ export default Marionette.View.extend({
         }, 500);
     },
 
-    search() {
+    search(initial) {
         const me = this;
         const query = this.getQuery();
         const facets = this.getFacets();
         const $emptyText = this.getUI('emptyText');
         const $loader = this.getUI('loader');
+        const initialLoad = false || initial;
 
         me.hits = new HitCollection();
 
@@ -112,7 +111,9 @@ export default Marionette.View.extend({
                     }
 
                     // Redraw Facet cards
-                    me.getRegion('facets').currentView.render();
+                    if (!initialLoad) {
+                        me.getRegion('facets').currentView.render();
+                    }
                 },
                 error: (hits, response) => {
                     const error = JSON.parse(response.responseText).message;
@@ -132,7 +133,9 @@ export default Marionette.View.extend({
             $emptyText.show();
 
             // Redraw Facet cards
-            me.getRegion('facets').currentView.render();
+            if (!initialLoad) {
+                me.getRegion('facets').currentView.render();
+            }
         }
     },
 
