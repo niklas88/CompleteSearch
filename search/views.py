@@ -2,7 +2,7 @@ import re
 import json
 from html.parser import HTMLParser
 
-from http.client import RemoteDisconnected
+# from http.client import RemoteDisconnected
 from urllib.request import urlopen
 from urllib.parse import quote
 from urllib.error import URLError
@@ -117,40 +117,36 @@ def get_facets():
 @bp.route('/search/', methods=['GET'])
 def search():
     """ Perform search using CompleteSearch. """
+    settings = app.settings.to_dict()
     error = ''
     data = []
-    settings = app.settings.to_dict()
 
     search_query = request.args.get('query', '').lower()
     facets = request.args.get('facets', '')
     start = request.args.get('start', 0)
     hits_per_page = request.args.get('hits_per_page', 20)
 
-    if search_query != '' or facets != '':
-        if search_query:
-            search_query = clean_user_input(search_query)
+    try:
+        if search_query != '' or facets != '':
+            if search_query:
+                search_query = clean_user_input(search_query)
 
-        facet_items = ''
-        for facet in facets.split():
-            for group in re.findall(r'^(.+?):(.+)$', facet):
-                facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
+            facet_items = ''
+            for facet in facets.split():
+                for group in re.findall(r'^(.+?):(.+)$', facet):
+                    facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
 
-        if facet_items:
-            search_query += ' '
+            if facet_items:
+                search_query += ' '
 
-        combined_query = quote(search_query + facet_items)
-        url = 'http://0.0.0.0:8888/?q=%s&f=%s&h=%s&format=json' % (
-            combined_query, start, hits_per_page)
+            combined_query = quote(search_query + facet_items)
+            url = 'http://0.0.0.0:8888/?q=%s&f=%s&h=%s&format=json' % (
+                combined_query, start, hits_per_page)
 
-        try:
             response = urlopen(url)
             content = str(response.read(), 'utf-8').replace('\r\n', '')
             result = json.loads(content)['result']
             hits = result['hits']
-        except (URLError, RemoteDisconnected) as e:
-            error = 'CompleteSearch server is not running or responding.'
-            app.logger.exception(e)
-        else:
             show_fields = sorted(settings['show'])
             if int(hits['@total']) > 0:
                 for hit in result['hits']['hit']:
@@ -173,10 +169,17 @@ def search():
 
                     data.append(hit_data)
 
+    except Exception as e:
+        app.logger.exception(e)
+        if e.__class__ == URLError:
+            error = str(e.reason)
+        else:
+            error = str(e)
+
     if error:
         raise app.ServerError(error)
-    else:
-        return jsonify(data)
+
+    return jsonify(data)
 
 
 def remove_html(html):

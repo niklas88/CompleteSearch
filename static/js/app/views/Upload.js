@@ -130,7 +130,7 @@ export default Marionette.View.extend({
 
         $uploadButton.show();
         $cancelButton.hide();
-        new Noty({ type: 'error', text: message }).show();
+        new Noty({ type: 'error', text: message, timeout: false }).show();
     },
 
     cancelUpload() {
