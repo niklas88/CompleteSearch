@@ -1,5 +1,5 @@
-import subprocess
 import json
+import subprocess
 
 from flask import Blueprint, request, current_app as app, jsonify
 
@@ -27,7 +27,7 @@ def get_settings():
 
 @bp.route('/configure_dataset/', methods=['POST'])
 def configure_dataset():
-    """  """
+    """ Change dataset parameters. """
     settings = app.settings.to_dict()
     error = ''
 
@@ -50,18 +50,20 @@ def configure_dataset():
         if not app.config['TESTING']:
             full_text = ','.join(settings['full_text'])
             allow_multiple_items = ','.join(settings['allow_multiple_items'])
+            within_field_separator = settings['within_field_separator']
             show = ','.join(settings['show'])
-            filter_ = ','.join(settings['filter'])
+            filters = ','.join(settings['filter'])
             facets = ','.join(settings['facets'])
 
-            opts = "--within-field-separator=';' " + \
+            opts = '--within-field-separator=\\%s ' % \
+                   within_field_separator + \
                    '--full-text=%s ' % full_text + \
                    '--allow-multiple-items=%s ' % allow_multiple_items + \
                    '--show=%s ' % show + \
-                   '--filter=%s ' % filter_ + \
+                   '--filter=%s ' % filters + \
                    '--facets=%s' % facets
 
-            command = 'make OPTIONS="%s" pclean-all process_input start' % opts
+            command = 'make OPTIONS="%s" process_input start' % opts
 
             # Process the input
             out, err = subprocess.Popen(
@@ -70,10 +72,20 @@ def configure_dataset():
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             ).communicate()
-            app.logger.debug('[Process input]: command error:\n%s' %
-                             str(err, 'utf-8'))
 
-    except ValueError as e:
+            cmd_error = str(err, 'utf-8')
+            if '[process_input] Error' in cmd_error:
+                app.settings.reset()
+                app.logger.debug('[Process input]:\n%s' % cmd_error)
+                errors = set()
+                for err_line in cmd_error.split('\n'):
+                    if err_line != '' and not err_line.startswith('make') \
+                            and not err_line.startswith('sort'):
+                        errors.add(err_line)
+                error = '<br/>'.join(list(errors))
+                error += '<br/><strong>Please re-upload the dataset.</strong>'
+
+    except Exception as e:
         error = str(e)
         app.logger.exception(e)
 
@@ -83,6 +95,6 @@ def configure_dataset():
 @bp.route('/delete_dataset/', methods=['POST'])
 def delete_dataset():
     """ Delete the uploaded dataset. """
-    subprocess.Popen(['make stop pclean-all'], shell=True).communicate()
     app.settings.reset()
+    subprocess.Popen(['make stop pclean-all'], shell=True).communicate()
     return jsonify(success=True)

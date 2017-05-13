@@ -84,7 +84,7 @@ export default Marionette.View.extend({
                 error: (jqXHR, textStatus) => {
                     if (textStatus !== 'abort') {
                         me.showErrorMessage(textStatus);
-                        console.error('Cannot upload the file.');
+                        console.error(jqXHR);
                     }
                 }
             });
@@ -105,21 +105,22 @@ export default Marionette.View.extend({
             data: JSON.stringify(data),
             success: (obj) => {
                 if (obj.success) {
-                    // new Noty({
-                    //     type: 'success',
-                    //     text: 'File has been uploaded!'
-                    // }).show();
-
-                    // Change the view (UploadView -> SearchView)
-                    window.location.replace('.');
+                    new Noty({
+                        type: 'success',
+                        text: 'File has been uploaded!',
+                        timeout: 1000
+                    }).on('afterClose', () => {
+                        // Change the view (UploadView -> SearchView)
+                        window.location.replace('.');
+                    }).show();
                 } else {
                     me.showErrorMessage(obj.error);
                     console.error(obj.error);
                 }
             },
-            error: (jqXHR, textStatus) => {
-                me.showErrorMessage(textStatus);
-                console.error('Cannot upload the file.');
+            error: (jqXHR, textStatus, errorThrown) => {
+                me.showErrorMessage(errorThrown);
+                console.error(jqXHR);
             }
         });
     },

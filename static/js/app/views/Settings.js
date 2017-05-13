@@ -108,6 +108,7 @@ export default Marionette.View.extend({
     save() {
         const $saveBtn = this.getUI('saveBtn');
         const values = this.getFormValues();
+
         if (this.checkValues(values)) {
             $saveBtn.attr('disabled', true);
             $.post({
@@ -115,25 +116,29 @@ export default Marionette.View.extend({
                 contentType: false,
                 processData: false,
                 data: JSON.stringify(values),
-                success: () => {
-                    new Noty({
-                        type: 'success',
-                        text: 'Dataset has been configured!',
-                        timeout: false
-                    }).show();
-
-                    // Redirect to the main page
-                    setTimeout(() => {
-                        window.location.replace('.');
-                    }, 1500);
+                success: (obj) => {
+                    if (obj.success) {
+                        new Noty({
+                            type: 'success',
+                            text: 'Dataset has been configured!',
+                            timeout: 1000
+                        }).on('afterClose', () => {
+                            // Redirect to the main page
+                            window.location.replace('.');
+                        }).show();
+                    } else {
+                        new Noty({
+                            type: 'error',
+                            text: obj.error
+                        }).on('afterClose', () => {
+                            // Redirect to the main page
+                            window.location.replace('.');
+                        }).show();
+                    }
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
+                    new Noty({ type: 'error', text: errorThrown }).show();
                     $saveBtn.attr('disabled', false);
-                    console.error(jqXHR);
-                    new Noty({
-                        type: 'error',
-                        text: errorThrown
-                    }).show();
                 }
             });
         }
@@ -196,17 +201,16 @@ export default Marionette.View.extend({
     deleteDataset() {
         // TODO@me: disable the Save button too
         this.getUI('deleteDatasetBtn').prop('disabled', true);
+
         $.post('delete_dataset/', () => {
             new Noty({
                 type: 'success',
                 text: 'Dataset has been deleted!',
-                timeout: false
-            }).show();
-
-            // Redirect to the main page
-            setTimeout(() => {
+                timeout: 1000
+            }).on('afterClose', () => {
+                // Redirect to the main page
                 window.location.replace('.');
-            }, 1500);
+            }).show();
         });
     }
 });
