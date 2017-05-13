@@ -51,12 +51,12 @@ def get_facets():
 
     def facet_item_dict(item, facet_query):
         value = item['text'].replace(facet_query, '')
-        title = cgi.escape(value).replace('_', ' ')
+        name = cgi.escape(value).replace('_', ' ') if value != '_' else value
         return {
-            'name': title,
+            'name': name,
             'value': value,
             'count': item['@oc'],
-        } if value != '_' else {}
+        }
 
     search_query = request.args.get('query', '').lower().strip()
     facet_name = request.args.get('name', '')
@@ -110,7 +110,7 @@ def get_facets():
         raise app.ServerError(error)
 
     # Get rid of empty items
-    data = [x for x in data if x != {}]
+    # data = [x for x in data if x != {}]
     return jsonify(data)
 
 

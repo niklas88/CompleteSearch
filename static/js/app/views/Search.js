@@ -19,7 +19,7 @@ export default Marionette.View.extend({
         totalHits: '#total-hits',
         search: '#search',
         emptyText: '#empty-text',
-        loader: '#loader'
+        loader: '#hits-loader'
     },
 
     events: {

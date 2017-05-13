@@ -40,10 +40,10 @@ export default Marionette.View.extend({
         const name = this.model.get('name');
         me.collection = new FacetItemCollection();
 
-        const params = this.searchChannel.request('get:params');
-        const searchParams = $.extend({
+        const searchParams = this.searchChannel.request('get:params');
+        const params = $.extend({
             name: name
-        }, params);
+        }, searchParams);
 
         const facetsString = this.searchChannel.request('get:facets');
         let facets = [];
@@ -57,7 +57,7 @@ export default Marionette.View.extend({
         }
 
         me.collection.fetch({
-            data: $.param(searchParams),
+            data: $.param(params),
             success: () => {
                 if (me.collection.length > 0 && facets.length > 0) {
                     for (let facet of facets) {
@@ -88,9 +88,9 @@ export default Marionette.View.extend({
     },
 
     afterRender: function() {
-        // Show "No options" text if there are no facet items
-        if (this.collection.length === 0) {
-            $('#' + this.id() + ' .no-facet-items').show();
+        // Hide "No options" text if there are facet items
+        if (this.collection.length !== 0) {
+            $('#' + this.id() + ' .no-facet-items').hide();
         }
 
         this.ui.itemsTop = $('#' + this.id() + ' .facet-items-top');
@@ -128,11 +128,11 @@ export default Marionette.View.extend({
     },
 
     topBtnClick: function(e) {
-        const limit = parseInt(e.target.text.split(' ')[1], 10);
+        const numItems = parseInt(e.target.text.split(' ')[1], 10);
 
         this.collection.each((item, idx) => {
             var $item = $('#facet-item-' + item.cid).closest('li');
-            if (idx < limit) {
+            if (idx < numItems) {
                 $item.toggleClass('hidden', false);
             } else {
                 $item.toggleClass('hidden', true);
@@ -140,7 +140,7 @@ export default Marionette.View.extend({
         });
     },
 
-    topAllBtnClick: function() {
+    topAllBtnClick: function(e) {
         this.collection.each((item) => {
             $('#facet-item-' + item.cid).closest('li').toggleClass('hidden', false);
         });
