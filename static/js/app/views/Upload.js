@@ -35,16 +35,10 @@ export default Marionette.View.extend({
         const $uploadButton = this.getUI('uploadButton');
         const $cancelButton = this.getUI('cancelButton');
         const $progressBar = this.getUI('progressBar');
-        // const supportedFileTypes = [
-        //     'text/tab-separated-values',
-        //     'text/csv',
-        //     'text/plain'
-        // ];
 
         if (inputFile[0].files.length === 1) {
             const file = inputFile[0].files[0];
 
-            // if (supportedFileTypes.indexOf(file.type) !== -1) {
             let data = new FormData();
             data.append('file', file);
 
@@ -94,14 +88,6 @@ export default Marionette.View.extend({
                     }
                 }
             });
-            // } else {
-            //     new Noty({
-            //         type: 'error',
-            //         text: 'This file type is not supported.'
-            //     }).show();
-            //     console.error('Supported file types:', supportedFileTypes);
-            //     console.error('Current file type:', file.type);
-            // }
         } else {
             new Noty({
                 type: 'warning',
@@ -144,7 +130,6 @@ export default Marionette.View.extend({
 
         $uploadButton.show();
         $cancelButton.hide();
-
         new Noty({ type: 'error', text: message }).show();
     },
 

@@ -1,5 +1,7 @@
 import Marionette from 'backbone.marionette';
 import Radio from 'backbone.radio';
+import Noty from 'noty';
+
 import template from '../templates/facetCard.jst';
 import FacetItemCollection from '../collections/FacetItem';
 import FacetItemsView from './FacetItems';
@@ -72,9 +74,15 @@ export default Marionette.View.extend({
                 }));
                 me.afterRender();
             },
-            // error: (model, response, options) => {
-            error: () => {
-                // debugger;
+            error: (collection, response) => {
+                const error = JSON.parse(response.responseText).message;
+                const text = 'Cannot get facets for <strong>' + name +
+                             '</strong>:<br/>' + error;
+
+                new Noty({
+                    type: 'error',
+                    text: text
+                }).show();
             }
         });
     },

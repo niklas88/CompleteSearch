@@ -65,11 +65,11 @@ def upload_file():
 
         # Don't run this code with TestingConfig
         if not app.config['TESTING']:
-            opts = "--within-field-separator=';' " + \
-                    '--full-text=%s ' % all_fields_str + \
-                    '--show=%s ' % facets_fields_str + \
-                    '--filter=%s ' % facets_fields_str + \
-                    '--facets=%s' % facets_fields_str
+            opts = '--within-field-separator=\\; ' + \
+                   '--full-text=%s ' % all_fields_str + \
+                   '--show=%s ' % facets_fields_str + \
+                   '--filter=%s ' % facets_fields_str + \
+                   '--facets=%s' % facets_fields_str
 
             command = 'make OPTIONS="%s" pclean-all process_input' % opts
 
@@ -81,9 +81,15 @@ def upload_file():
                 stderr=subprocess.PIPE,
             ).communicate()
 
-            if '[process_input] Error' in str(err, 'utf-8'):
-                app.logger.debug('[Process input]:\n%s' % str(err, 'utf-8'))
-                raise ValueError('Cannot process the uploaded file.')
+            cmd_error = str(err, 'utf-8')
+            if '[process_input] Error' in cmd_error:
+                app.logger.debug('[Process input]:\n%s' % cmd_error)
+                errors = set()
+                for err_line in cmd_error.split('\n'):
+                    if err_line != '' and not err_line.startswith('make') \
+                            and not err_line.startswith('sort'):
+                        errors.add(err_line)
+                error = '<br/>'.join(list(errors))
 
     except Exception as e:
         error = str(e)

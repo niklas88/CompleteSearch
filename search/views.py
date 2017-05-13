@@ -46,6 +46,7 @@ def get_facets_list():
 @bp.route('/get_facets/', methods=['GET'])
 def get_facets():
     """ Return all facets for a given field name. """
+    error = ''
     data = []
 
     def facet_dict(item, facet_query):
@@ -64,32 +65,30 @@ def get_facets():
     facet_name = request.args.get('name', '')
     facets = request.args.get('facets', '')
 
-    if facet_name != '':
-        facet_query = ':facet:%s:' % facet_name
+    try:
+        if facet_name != '':
+            facet_query = ':facet:%s:' % facet_name
 
-        if search_query:
-            search_query = clean_user_input(search_query)
-            search_query += ' '
+            if search_query:
+                search_query = clean_user_input(search_query)
+                search_query += ' '
 
-        facet_items = ''
-        for facet in facets.split():
-            for group in re.findall(r'^(.+?):(.+)$', facet):
-                facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
+            facet_items = ''
+            for facet in facets.split():
+                for group in re.findall(r'^(.+?):(.+)$', facet):
+                    facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
 
-        combined_query = quote(search_query + facet_items + facet_query + '*')
+            combined_query = quote(search_query + facet_items +
+                                   facet_query + '*')
 
-        url = 'http://0.0.0.0:8888/?q=%s&h=0&c=250&format=json' % \
-            combined_query
+            url = 'http://0.0.0.0:8888/?q=%s&h=0&c=250&format=json' % \
+                combined_query
 
-        try:
             response = urlopen(url)
             content = str(response.read(), 'utf-8').replace('\r\n', '')
             result = json.loads(content)['result']
             completions = result['completions']
-        except (URLError, RemoteDisconnected) as e:
-            # error = 'CompleteSearch server is not running or responding.'
-            app.logger.exception(e)
-        else:
+
             # status = result['status']['@code']  # TODO@me: check the status
             if completions and int(completions['@total']) > 0:
                 if int(completions['@total']) == 1:
@@ -99,6 +98,16 @@ def get_facets():
                         facet_dict(c, facet_query)
                         for c in completions['c']
                     ]
+
+    except Exception as e:
+        app.logger.exception(e)
+        if e.__class__ == URLError:
+            error = str(e.reason)
+        else:
+            error = str(e)
+
+    if error:
+        raise app.ServerError(error)
 
     # Get rid of empty items
     data = [x for x in data if x != {}]
