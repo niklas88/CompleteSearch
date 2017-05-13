@@ -108,10 +108,7 @@ export default Marionette.View.extend({
                     } else {
                         me.getRegion('hits').empty();
                         $emptyText.show();
-                        new Noty({
-                            type: 'warning',
-                            text: 'No hits.'
-                        }).show();
+                        // new Noty({ type: 'warning', text: 'No hits.' }).show();
                     }
 
                     // Redraw Facet cards
@@ -131,11 +128,11 @@ export default Marionette.View.extend({
             });
         } else {
             me.getRegion('hits').empty();
-            this.getUI('totalHits').text('');
+            me.getUI('totalHits').text('');
             $emptyText.show();
 
-            // Redraw FacetCardList view
-            this.getRegion('facets').currentView.render();
+            // Redraw Facet cards
+            me.getRegion('facets').currentView.render();
         }
     },
 
@@ -216,8 +213,7 @@ export default Marionette.View.extend({
                 this.params.facets += ' ' + facet;
             } else {
                 // Remove facet from the params and trim extra spaces
-                this.params.facets = this.params.facets.replace(facet, '');
-                this.params.facets = this.params.facets.trim();
+                this.params.facets = this.params.facets.replace(facet, '').trim();
 
                 // Don't store empty facet param
                 if (this.params.facets === '') {

@@ -58,7 +58,7 @@ def get_facets():
             'count': item['@oc'],
         } if value != '_' else {}
 
-    search_query = request.args.get('query', '').lower()
+    search_query = request.args.get('query', '').lower().strip()
     facet_name = request.args.get('name', '')
     facets = request.args.get('facets', '')
 
@@ -118,7 +118,7 @@ def search():
     error = ''
     data = []
 
-    search_query = request.args.get('query', '').lower()
+    search_query = request.args.get('query', '').lower().strip()
     facets = request.args.get('facets', '')
     start = request.args.get('start', 0)
     hits_per_page = request.args.get('hits_per_page', 20)
@@ -145,7 +145,7 @@ def search():
             result = json.loads(content)['result']
             hits = result['hits']
             show_fields = sorted(settings['show'])
-            if int(hits['@total']) > 0:
+            if int(hits['@sent']) > 0:
                 for hit in result['hits']['hit']:
                     fields = [
                         {
