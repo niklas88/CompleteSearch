@@ -25,20 +25,21 @@ def upload_file():
         if not allowed_file(csv_file.filename):
             raise ValueError('Wrong file type.')
 
-        # Read first three lines
-        temp_lines = ''
-        for _ in range(3):
-            temp_lines += str(csv_file.readline(), 'utf-8') + '\n'
+        # Select non-empty lines to define a delimiter
+        lines = []
+        for line in csv_file:
+            line = str(line, 'utf-8').strip()
+            if not line.startswith('#') and line != '':
+                lines.append(line)
+            if len(lines) == 50:
+                break
         csv_file.seek(0)
 
-        if temp_lines == '\n\n\n':
-            raise ValueError('The file is empty.')
+        if not any(lines):
+            raise ValueError('Cannot define a delimiter.')
 
         # Define the delimiter
-        dialect = csv.Sniffer().sniff(
-            temp_lines,
-            delimiters=',;#$|\t',
-        )
+        dialect = csv.Sniffer().sniff('\n'.join(lines), delimiters=',;#$|\t')
 
         data, facets_fields = process_csv(csv_file, dialect.delimiter)
         # facets_fields = sorted(facets_fields)
@@ -134,6 +135,9 @@ def process_csv(csv_file, delimiter):
     data = pd.read_csv(
         csv_file,
         delimiter=delimiter,
+        encoding='utf-8',
+        engine='c',
+        comment='#',
         error_bad_lines=False,
         dtype=object,
     )
