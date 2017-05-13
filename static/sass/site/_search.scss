@@ -76,6 +76,10 @@
     line-height: 1.8;
 }
 
+.facet-items li {
+    margin-bottom: 5px;
+}
+
 .facet-item {
     position: relative;
 }
@@ -93,12 +97,24 @@
     color: $main-accent-color;
 }
 
-.facet-item .facet-badge {
+.facet-item .facet-item-name {
+    line-height: 1.4;
+    width: 85%;
+}
+
+.facet-item .facet-item-badge {
     background-color: $main-accent-color;
     padding: 3px;
-    margin-left: 2px;
+    // margin-left: 2px;
+    margin-left: 5px;
     position: absolute;
-    top: -4px;
+    // top: -4px;
+}
+
+.facet-item .facet-item-label {
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .facet-items-top {

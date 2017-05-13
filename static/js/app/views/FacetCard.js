@@ -131,7 +131,7 @@ export default Marionette.View.extend({
         const limit = parseInt(e.target.text.split(' ')[1], 10);
 
         this.collection.each((item, idx) => {
-            var $item = $('#facet-item-' + item.cid).parent().parent();
+            var $item = $('#facet-item-' + item.cid).closest('li');
             if (idx < limit) {
                 $item.toggleClass('hidden', false);
             } else {
@@ -142,7 +142,7 @@ export default Marionette.View.extend({
 
     topAllBtnClick: function() {
         this.collection.each((item) => {
-            $('#facet-item-' + item.cid).parent().parent().toggleClass('hidden', false);
+            $('#facet-item-' + item.cid).closest('li').toggleClass('hidden', false);
         });
     },
 

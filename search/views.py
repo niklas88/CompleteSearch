@@ -49,15 +49,12 @@ def get_facets():
     error = ''
     data = []
 
-    def facet_dict(item, facet_query):
+    def facet_item_dict(item, facet_query):
         value = item['text'].replace(facet_query, '')
         title = remove_html(value).replace('_', ' ')
-        splitted = title[:25].split(' ')
-        short_name = ' '.join(splitted[:len(splitted)])
         return {
-            'name': short_name + '...' if short_name != title else title,
+            'name': title,
             'value': value,
-            'title': title,
             'count': item['@oc'],
         } if value != '_' else {}
 
@@ -92,10 +89,10 @@ def get_facets():
             # status = result['status']['@code']  # TODO@me: check the status
             if completions and int(completions['@total']) > 0:
                 if int(completions['@total']) == 1:
-                    data = [facet_dict(completions['c'], facet_query)]
+                    data = [facet_item_dict(completions['c'], facet_query)]
                 else:
                     data = [
-                        facet_dict(c, facet_query)
+                        facet_item_dict(c, facet_query)
                         for c in completions['c']
                     ]
 
