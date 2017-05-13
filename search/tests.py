@@ -11,11 +11,8 @@ class FacetsTest(TestCase):
     def test_get_facets_list(self):
         response = self.client.get('/get_facets_list/')
         self.assert200(response)
-
-    def test_get_facets(self):
-        response = self.client.get('/get_facets/?name=%s' % 'Title')
-        self.assert200(response)
-
-    def test_get_facets_empty(self):
-        response = self.client.get('/get_facets/')
-        self.assert200(response)
+        self.assertEquals(response.json, [
+            {'name': 'Einwohnerzahl'},
+            {'name': 'Hauptstadt'},
+            {'name': 'Land'}
+        ])

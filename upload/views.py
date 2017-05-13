@@ -64,7 +64,7 @@ def upload_file():
         )
 
         # Don't run this code with TestingConfig
-        if not app.config['TESTING']:
+        if not app.config['TESTING']:  # pragma: no cover
             opts = '--within-field-separator=\\; ' + \
                    '--full-text=%s ' % all_fields_str + \
                    '--show=%s ' % facets_fields_str + \
