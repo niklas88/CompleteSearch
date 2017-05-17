@@ -40,29 +40,19 @@ export default Marionette.View.extend({
         const name = this.model.get('name');
         me.collection = new FacetItemCollection();
 
+        const facets = this.searchChannel.request('get:facets');
         const searchParams = this.searchChannel.request('get:params');
         const params = $.extend({
             name: name
         }, searchParams);
-
-        const facetsString = this.searchChannel.request('get:facets');
-        let facets = [];
-        if (facetsString !== '') {
-            for (let facet of facetsString.split(' ')) {
-                const item = facet.split(':');
-                if (item[0] === name) {
-                    facets.push(item[1]);
-                }
-            }
-        }
 
         me.collection.fetch({
             data: $.param(params),
             success: () => {
                 if (me.collection.length > 0 && facets.length > 0) {
                     for (let facet of facets) {
-                        const facetModel = me.collection.where('name', facet);
-                        if (typeof facetModel !== 'undefined') {
+                        const facetModel = me.collection.where({ value: facet })[0];
+                        if (facetModel) {
                             facetModel.set('active', true);
                         }
                     }
@@ -149,9 +139,7 @@ export default Marionette.View.extend({
     itemClick: function(e) {
         const itemId = e.target.id.split('-')[2];
 
-        // Save selected facet
         this.searchChannel.trigger('update:facets',
-            this.model.get('name'),
             this.collection.get(itemId).get('value')
         );
     }

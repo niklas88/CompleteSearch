@@ -50,9 +50,9 @@ def upload_file():
         result = {
             'database_uploaded': True,
             'all_fields': all_fields,
-            'facets': facets_fields,
             'full_text': all_fields,
             'show': facets_fields,
+            'facets': facets_fields,
             'filter': facets_fields,
         }
 

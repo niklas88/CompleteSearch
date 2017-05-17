@@ -53,8 +53,8 @@ export default Marionette.View.extend({
         // $.material.init();
 
         // Set query input initial value
-        if (me.params.hasOwnProperty('query')) {
-            me.getUI('search').val(me.params.query);
+        if (me.params.hasOwnProperty('q')) {
+            me.getUI('search').val(me.params.q);
         }
 
         // Show all facet cards
@@ -80,7 +80,6 @@ export default Marionette.View.extend({
     search(initial) {
         const me = this;
         const query = this.getQuery();
-        const facets = this.getFacets();
         const $emptyText = this.getUI('emptyText');
         const $loader = this.getUI('loader');
         const initialLoad = false || initial;
@@ -92,7 +91,7 @@ export default Marionette.View.extend({
             hits_per_page: me.hits.hitsPerPage
         }, me.params);
 
-        if (query || facets) {
+        if (query) {
             $emptyText.hide();
             $loader.show();
             me.hits.fetch({
@@ -137,6 +136,8 @@ export default Marionette.View.extend({
                 me.getRegion('facets').currentView.render();
             }
         }
+
+        me.updateTotalHits(me.hits);
     },
 
     showMore() {
@@ -176,15 +177,15 @@ export default Marionette.View.extend({
     },
 
     getQuery() {
-        return this.params.hasOwnProperty('query') ? this.params.query : '';
+        return this.params.hasOwnProperty('q') ? this.params.q : '';
     },
 
     setQuery(query) {
         if (query !== '') {
-            this.params.query = query;
+            this.params.q = query;
         } else {
-            if (this.params.hasOwnProperty('query')) {  // eslint-disable-line
-                delete this.params.query;
+            if (this.params.hasOwnProperty('q')) {  // eslint-disable-line
+                delete this.params.q;
             }
         }
         this.setHash();
@@ -198,36 +199,36 @@ export default Marionette.View.extend({
         this.params = params;
 
         // Update search input value
-        if (params.hasOwnProperty('query')) {
-            this.getUI('search').val(params.query);
+        if (params.hasOwnProperty('q')) {
+            this.getUI('search').val(params.q);
         }
     },
 
     getFacets() {
-        return this.params.hasOwnProperty('facets') ? this.params.facets : '';
+        const query = this.getUI('search').val();
+        return query.match(/(:facet:(?:.+?):(?:.+?)(?=\s+|$))/g) || [];
     },
 
-    updateFacets(name, value) {
-        const facet = name + ':' + value;
+    updateFacets(value) {
+        const $search = this.getUI('search');
+        const query = $search.val();
+        let newValue = '';
 
-        if (this.params.hasOwnProperty('facets')) {
-            if (this.params.facets.indexOf(facet) === -1) {
-                // Add facet to the params
-                this.params.facets += ' ' + facet;
-            } else {
-                // Remove facet from the params and trim extra spaces
-                this.params.facets = this.params.facets.replace(facet, '').trim();
-
-                // Don't store empty facet param
-                if (this.params.facets === '') {
-                    delete this.params.facets;
-                }
-            }
+        if (query.indexOf(value) === -1) {
+            newValue = query + ' ' + value + ' ';
         } else {
-            this.params.facets = facet;
+            newValue = query.replace(value, '');
+        }
+        // newValue = newValue.trim();
+        newValue = newValue.replace(/  +/g, ' ');  // eslint-disable-line
+
+        // Don't leave a single whitespace in the search field
+        if (newValue === ' ') {
+            newValue = '';
         }
 
-        this.setHash();
+        $search.val(newValue);
+        this.setQuery(newValue);
     },
 
     updateTotalHits(hitCollection) {

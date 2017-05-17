@@ -2,37 +2,13 @@ import re
 import json
 import cgi
 
-# from html.parser import HTMLParser
+from urllib.parse import quote
 from urllib.request import urlopen
-from urllib.parse import quote, unquote
 from urllib.error import URLError, HTTPError
 
 from flask import Blueprint, request, current_app as app, jsonify
-# from html5lib.filters.sanitizer import allowed_elements
 
 bp = Blueprint('search', __name__)
-
-
-# class MLStripper(HTMLParser):
-#     def __init__(self):
-#         super().__init__()
-#         self.reset()
-#         self.strict = False
-#         self.convert_charrefs = True
-#         self.elements = set()
-#         self.fed = []
-
-#     def handle_endtag(self, tag):
-#         self.elements.add(tag)
-
-#     def handle_data(self, d):
-#         self.fed.append(d)
-
-#     def get_data(self):
-#         return ''.join(self.fed)
-
-#     def handle_starttag(self, tag, attrs):
-#         self.elements.add(tag)
 
 
 @bp.route('/get_facets_list/', methods=['GET'])
@@ -50,43 +26,33 @@ def get_facets():
     data = []
 
     def facet_item_dict(item, facet_query):
-        value = item['text'].replace(facet_query, '')
-        name = cgi.escape(value).replace('_', ' ') if value != '_' else value
+        value = item['text']
+        name = value.replace(facet_query[:-1], '')
+        name = cgi.escape(name).replace('_', ' ') if value != '_' else value
         return {
             'name': name,
             'value': value,
             'count': item['@oc'],
         }
 
-    search_query = request.args.get('query', '').lower().strip()
+    query = request.args.get('q', '').strip()
     facet_name = request.args.get('name', '')
-    facets = request.args.get('facets', '')
 
     try:
         if facet_name != '':
-            facet_query = ':facet:%s:' % facet_name
+            facet_query = ':facet:%s:*' % facet_name
 
-            if search_query:
-                search_query = clean_user_input(search_query)
-                search_query += ' '
-
-            facet_items = ''
-            for facet in facets.split():
-                for group in re.findall(r'^(.+?):(.+)$', facet):
-                    facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
-
-            combined_query = quote(search_query + facet_items +
-                                   facet_query + '*')
+            query = process_user_input(query) + ' ' + facet_query if query \
+                else facet_query
 
             url = 'http://0.0.0.0:8888/?q=%s&h=0&c=250&format=json' % \
-                combined_query
+                quote(query)
 
             response = urlopen(url)
             content = str(response.read(), 'utf-8').replace('\r\n', '')
             result = json.loads(content)['result']
             completions = result['completions']
 
-            # status = result['status']['@code']  # TODO@me: check the status
             if completions and int(completions['@sent']) > 0:
                 if int(completions['@sent']) == 1:
                     data = [facet_item_dict(completions['c'], facet_query)]
@@ -98,11 +64,12 @@ def get_facets():
 
     except Exception as e:
         app.logger.exception(e)
+        app.logger.error('SEARCH QUERY: %s' % query)
+        app.logger.error('SEARCH URL: %s' % url)
         if e.__class__ == URLError:
             error = str(e.reason)
         elif e.__class__ == HTTPError:
             error = str(e.reason)
-            app.logger.error('URL: "%s"' % unquote(url))
         else:
             error = str(e)
 
@@ -121,33 +88,23 @@ def search():
     error = ''
     data = []
 
-    search_query = request.args.get('query', '').lower().strip()
-    facets = request.args.get('facets', '')
+    query = request.args.get('q', '').strip()
     start = request.args.get('start', 0)
     hits_per_page = request.args.get('hits_per_page', 20)
 
     try:
-        if search_query != '' or facets != '':
-            if search_query:
-                search_query = clean_user_input(search_query)
+        if query != '':
+            query = process_user_input(query)
 
-            facet_items = ''
-            for facet in facets.split():
-                for group in re.findall(r'^(.+?):(.+)$', facet):
-                    facet_items += ':facet:%s:"%s" ' % (group[0], group[1])
-
-            if facet_items:
-                search_query += ' '
-
-            combined_query = quote(search_query + facet_items)
             url = 'http://0.0.0.0:8888/?q=%s&f=%s&h=%s&format=json' % (
-                combined_query, start, hits_per_page)
+                quote(query), start, hits_per_page)
 
             response = urlopen(url)
             content = str(response.read(), 'utf-8').replace('\r\n', '')
             result = json.loads(content)['result']
             hits = result['hits']
             show_fields = sorted(settings['show'])
+
             if int(hits['@sent']) > 0:
                 for hit in result['hits']['hit']:
                     fields = [
@@ -171,11 +128,12 @@ def search():
 
     except Exception as e:
         app.logger.exception(e)
+        app.logger.error('SEARCH QUERY: %s' % query)
+        app.logger.error('SEARCH URL: %s' % url)
         if e.__class__ == URLError:
             error = str(e.reason)
         elif e.__class__ == HTTPError:
             error = str(e.reason)
-            app.logger.error('URL: "%s"' % unquote(url))
         else:
             error = str(e)
 
@@ -185,17 +143,76 @@ def search():
     return jsonify(data)
 
 
-# def remove_html(html):
-#     """ Remove all html tags in a given text. """
-#     elements = set([x[1] for x in allowed_elements])
-#     s = MLStripper()
-#     s.feed(html)
+def process_user_input(query):
+    """ Process the user input by stripping extra whitespaces, ensuring prefix
+    search by appending asterisks to each search term, and escaping commas and
+    semicolons.
 
-#     if s.elements.intersection(elements):  # html document
-#         result = s.get_data()
-#     else:
-#         result = html.replace('<', '').replace('>', '')
-#     return result
+    >>> process_user_input('')
+    ''
+
+    >>> process_user_input('antonio vivaldi')
+    'antonio* vivaldi*'
+
+    >>> process_user_input('vivaldi, antonio')
+    'vivaldi","* antonio*'
+
+    >>> process_user_input('The . Beatles$')
+    'The*.Beatles$'
+
+    >>> process_user_input(':facet:Preis:* :facet:Preis:2.40')
+    ':facet:Preis:* :facet:Preis:"2.40"'
+
+    >>> process_user_input('magic :facet:Preis:* :facet:Preis:2.40')
+    ':facet:Preis:* :facet:Preis:"2.40" magic*'
+
+    >>> process_user_input('ge :facet:Autor:* mo*   vi$ | fr | neur.netw')
+    ':facet:Autor:* ge* mo* vi$|fr*|neur*.netw*'
+
+    >>> process_user_input('mo| fr | ge .tu')
+    'mo*|fr*|ge*.tu*'
+    """
+    search_query = query
+    facets = []
+    filters = []
+
+    # Find facets
+    facet_pattern = r'(:facet:(.+?):(.+?)(?=\s+|$))'
+    for match in re.findall(facet_pattern, query):
+        facet_item = '"%s"' % match[2] if match[2] != '*' else match[2]
+        facet = ':facet:%s:%s' % (match[1], facet_item)
+        facets.append(facet)
+        search_query = search_query.replace(match[0], '')
+
+    # Find filters
+    filter_pattern = r'(:filter:(.+?):(.+?)(?=\s+|$))'
+    for match in re.findall(filter_pattern, query):
+        filter_item = '"%s"' % match[2] if match[2] != '*' else match[2]
+        filter_ = ':filter:%s:%s' % (match[1], filter_item)
+        filters.append(filter_)
+        search_query = search_query.replace(match[0], '')
+
+    for match in re.findall(r'[^.| ]+', search_query):
+        term = match
+        if term[-1] not in '*$':
+            term += '*'
+        search_query = search_query.replace(match, term)
+
+    # Substitute multiple whitespaces with a single one
+    search_query = ' '.join(search_query.split())
+
+    # Remove whitespaces around . and |
+    search_query = re.sub(r'(\s*\.\s*)', '.', search_query)
+    search_query = re.sub(r'(\s*\|\s*)', '|', search_query)
+
+    # # Escape commas and semicolons
+    search_query = search_query.replace(',', '","').replace(';', '";"')
+
+    # Combine everything
+    search_query = [search_query] if search_query else []
+    result = ' '.join(facets + filters + search_query)
+
+    return result
 
 
 def clean_user_input(query):
