@@ -8,6 +8,7 @@ export default Marionette.View.extend({
 
     ui: {
         inputFile: '#input-file',
+        useFirstRow: '#use_first_row',
         uploadButton: '#upload-button',
         cancelButton: '#cancel-button',
         progressBar: '#progressBar'
@@ -32,6 +33,7 @@ export default Marionette.View.extend({
     upload() {
         const me = this;
         const inputFile = this.getUI('inputFile');
+        const useFirstRow = this.getUI('useFirstRow').prop('checked');
         const $uploadButton = this.getUI('uploadButton');
         const $cancelButton = this.getUI('cancelButton');
         const $progressBar = this.getUI('progressBar');
@@ -41,6 +43,7 @@ export default Marionette.View.extend({
 
             let data = new FormData();
             data.append('file', file);
+            data.append('use_first_row', useFirstRow);
 
             $uploadButton.hide();
             $cancelButton.show();

@@ -2,6 +2,8 @@ import csv
 import pandas as pd
 import subprocess
 import json
+import io
+import re
 
 from flask import Blueprint, request, current_app as app, jsonify
 
@@ -13,9 +15,29 @@ def upload_file():
     """
     Upload a file, validate and process it, and "feed" it to CompleteSearch.
     """
+    num_cols = 40
     dialect = None
     result = {}
     error = ''
+
+    header_row = True if request.form.get('use_first_row', 'true') == 'true' \
+        else False
+
+    def create_header(cols):
+        return ['Column' + str(i + 1) for i in range(cols)] \
+            if not header_row else None
+
+    def create_dataframe(file, delimiter, names):
+        return pd.read_csv(
+            file,
+            delimiter=delimiter,
+            encoding='utf-8',
+            engine='c',
+            comment='#',
+            error_bad_lines=False,
+            dtype=object,
+            names=names,
+        )
 
     try:
         if 'file' not in request.files:
@@ -41,7 +63,42 @@ def upload_file():
         # Define the delimiter
         dialect = csv.Sniffer().sniff('\n'.join(lines), delimiters=',;#$|\t')
 
-        data, facets_fields = process_csv(csv_file, dialect.delimiter)
+        # Create a list with column names
+        header = create_header(num_cols)
+
+        csv_file_string = str(csv_file.read(), 'utf-8')
+        data = create_dataframe(io.StringIO(csv_file_string),
+                                dialect.delimiter, header)
+
+        # Extend the number of columns and re-create the DataFrame
+        if list(data.isnull().all()).count(True) == 0:
+            num_cols += 20
+            header = create_header(num_cols)
+            # data = create_dataframe(new_file, dialect.delimiter, header)
+            data = create_dataframe(io.StringIO(csv_file_string),
+                                    dialect.delimiter, header)
+
+        # Remove extra columns with all empty rows
+        data = data.dropna(axis=1, how='all')
+
+        if data.empty:
+            raise ValueError('The filtered dataset is empty. '
+                             'Please make sure the first row contains data '
+                             'in all columns if you selected to use it as a '
+                             'header.')
+        if header_row:
+            header = data.columns
+            cleaned_header = list(map(lambda x: re.sub(r'\W+', '', x), header))
+            if cleaned_header.count('') == 0:
+                data.columns = cleaned_header
+            else:
+                raise ValueError('Cannot process the uploaded file. Make sure '
+                                 'the header row doesn\'t contain special '
+                                 'characters only and try to re-upload the '
+                                 'file.')
+
+        # data, facets_fields = process_csv(csv_file, dialect.delimiter)
+        facets_fields = define_facets(data)
         # facets_fields = sorted(facets_fields)
         facets_fields_str = ','.join(facets_fields)
         all_fields = data.columns.values.tolist()
@@ -130,18 +187,7 @@ def allowed_file(filename):
         filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 
-def process_csv(csv_file, delimiter):
-    """ Check the uploaded file (skip bad rows) and define facets. """
-    data = pd.read_csv(
-        csv_file,
-        delimiter=delimiter,
-        encoding='utf-8',
-        engine='c',
-        comment='#',
-        error_bad_lines=False,
-        dtype=object,
-    )
-
+def define_facets(data):
     # Number of non-NaN rows in each column
     non_nan_rows = data.count()
 
@@ -156,4 +202,33 @@ def process_csv(csv_file, delimiter):
     ]
     facets = [x['name'] for x in sorted(facets, key=lambda x: x['count'])[:5]]
 
-    return data, facets
+    return facets
+
+
+# def process_csv(csv_file, delimiter):
+#     """ Check the uploaded file (skip bad rows) and define facets. """
+#     data = pd.read_csv(
+#         csv_file,
+#         delimiter=delimiter,
+#         encoding='utf-8',
+#         engine='c',
+#         comment='#',
+#         error_bad_lines=False,
+#         dtype=object,
+#     )
+
+#     # Number of non-NaN rows in each column
+#     non_nan_rows = data.count()
+
+#     # Define good facets (columns which have more than one occurrence)
+#     facets = [
+#         {
+#             'name': column,
+#             'count': data[column].value_counts().size
+#         }
+#         for column in data
+#         if data[column].value_counts().size < non_nan_rows[column]
+#     ]
+#     facets = [x['name'] for x in sorted(facets, key=lambda x: x['count'])[:5]]
+
+#     return data, facets

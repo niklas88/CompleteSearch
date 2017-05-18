@@ -64,8 +64,8 @@ def get_facets():
 
     except Exception as e:
         app.logger.exception(e)
-        app.logger.error('SEARCH QUERY: %s' % query)
-        app.logger.error('SEARCH URL: %s' % url)
+        app.logger.error('SEARCH QUERY: "%s"' % query)
+        app.logger.error('SEARCH URL: "%s"' % url)
         if e.__class__ == URLError:
             error = str(e.reason)
         elif e.__class__ == HTTPError:
@@ -128,8 +128,8 @@ def search():
 
     except Exception as e:
         app.logger.exception(e)
-        app.logger.error('SEARCH QUERY: %s' % query)
-        app.logger.error('SEARCH URL: %s' % url)
+        app.logger.error('SEARCH QUERY: "%s"' % query)
+        app.logger.error('SEARCH URL: "%s"' % url)
         if e.__class__ == URLError:
             error = str(e.reason)
         elif e.__class__ == HTTPError:

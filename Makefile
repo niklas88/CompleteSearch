@@ -34,5 +34,9 @@ DEFAULT_PARSER_OPTIONS = \
 	--normalize-words
 	# --no-show-prefix=\"*\"
 
+start::
+	@sleep 3
+	@curl -s "http://0.0.0.0:$(PORT)/?q=" | head -1
+
 process_input:
 	$(MAKE) PARSER_OPTIONS="$(DEFAULT_PARSER_OPTIONS) ${OPTIONS}" pclean-all pall
