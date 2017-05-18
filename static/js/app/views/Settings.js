@@ -107,10 +107,12 @@ export default Marionette.View.extend({
 
     save() {
         const $saveBtn = this.getUI('saveBtn');
+        const $deleteDatasetBtn = this.getUI('deleteDatasetBtn');
         const values = this.getFormValues();
 
         if (this.checkValues(values)) {
             $saveBtn.attr('disabled', true);
+            $deleteDatasetBtn.attr('disabled', true);
             $.post({
                 url: 'configure_dataset/',
                 contentType: false,
@@ -139,6 +141,7 @@ export default Marionette.View.extend({
                 error: (jqXHR, textStatus, errorThrown) => {
                     new Noty({ type: 'error', text: errorThrown }).show();
                     $saveBtn.attr('disabled', false);
+                    $deleteDatasetBtn.attr('disabled', false);
                 }
             });
         }
@@ -199,7 +202,7 @@ export default Marionette.View.extend({
     },
 
     deleteDataset() {
-        // TODO@me: disable the Save button too
+        this.getUI('saveBtn').prop('disabled', true);
         this.getUI('deleteDatasetBtn').prop('disabled', true);
 
         $.post('delete_dataset/', () => {
