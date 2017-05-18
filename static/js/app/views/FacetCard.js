@@ -130,7 +130,7 @@ export default Marionette.View.extend({
         });
     },
 
-    topAllBtnClick: function(e) {
+    topAllBtnClick: function() {
         this.collection.each((item) => {
             $('#facet-item-' + item.cid).closest('li').toggleClass('hidden', false);
         });

@@ -127,8 +127,9 @@ export default Marionette.View.extend({
                 }
             });
         } else {
-            me.getRegion('hits').empty();
+            me.getUI('search').val('');
             me.getUI('totalHits').text('');
+            me.getRegion('hits').empty();
             $emptyText.show();
 
             // Redraw Facet cards
