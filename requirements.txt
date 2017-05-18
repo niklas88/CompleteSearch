@@ -5,6 +5,7 @@ Flask-Testing
 blinker
 
 # Miscellaneous
+requests
 numpy
 pandas
 html5lib

@@ -1,12 +1,13 @@
 import re
-import json
+# import json
 import cgi
 
-from urllib.parse import quote
-from urllib.request import urlopen
-from urllib.error import URLError, HTTPError
+# from urllib.parse import quote
+# from urllib.request import urlopen
+# from urllib.error import URLError, HTTPError
 
 from flask import Blueprint, request, current_app as app, jsonify
+import requests
 
 bp = Blueprint('search', __name__)
 
@@ -45,13 +46,22 @@ def get_facets():
             query = process_user_input(query) + ' ' + facet_query if query \
                 else facet_query
 
-            url = 'http://0.0.0.0:8888/?q=%s&h=0&c=250&format=json' % \
-                quote(query)
+            # url = 'http://0.0.0.0:8888/?q=%s&h=0&c=250&format=json' % \
+            #     quote(query)
 
-            response = urlopen(url)
-            content = str(response.read(), 'utf-8').replace('\r\n', '')
-            result = json.loads(content)['result']
-            completions = result['completions']
+            # response = urlopen(url)
+            # content = str(response.read(), 'utf-8').replace('\r\n', '')
+            # result = json.loads(content)['result']
+            # completions = result['completions']
+
+            response = requests.get('http://0.0.0.0:8888/', params={
+                'q': query,
+                'h': 0,
+                'c': 250,
+                'format': 'json',
+            })
+
+            completions = response.json()['result']['completions']
 
             if completions and int(completions['@sent']) > 0:
                 if int(completions['@sent']) == 1:
@@ -65,11 +75,15 @@ def get_facets():
     except Exception as e:
         app.logger.exception(e)
         app.logger.error('SEARCH QUERY: "%s"' % query)
-        app.logger.error('SEARCH URL: "%s"' % url)
-        if e.__class__ == URLError:
-            error = str(e.reason)
-        elif e.__class__ == HTTPError:
-            error = str(e.reason)
+        # app.logger.error('SEARCH URL: "%s"' % url)
+        # if e.__class__ == URLError:
+        #     error = str(e.reason)
+        # elif e.__class__ == HTTPError:
+        #     error = str(e.reason)
+        # else:
+        #     error = str(e)
+        if e.__class__ == requests.exceptions.ConnectionError:
+            error = 'CompleteSearch server is not responding.'
         else:
             error = str(e)
 
@@ -96,17 +110,25 @@ def search():
         if query != '':
             query = process_user_input(query)
 
-            url = 'http://0.0.0.0:8888/?q=%s&f=%s&h=%s&format=json' % (
-                quote(query), start, hits_per_page)
+            # url = 'http://0.0.0.0:8888/?q=%s&f=%s&h=%s&format=json' % (
+            #     quote(query), start, hits_per_page)
 
-            response = urlopen(url)
-            content = str(response.read(), 'utf-8').replace('\r\n', '')
-            result = json.loads(content)['result']
-            hits = result['hits']
+            # response = urlopen(url)
+            # content = str(response.read(), 'utf-8').replace('\r\n', '')
+            # result = json.loads(content)['result']
+
+            response = requests.get('http://0.0.0.0:8888/', params={
+                'q': query,
+                'f': start,
+                'h': hits_per_page,
+                'format': 'json',
+            })
+
+            hits = response.json()['result']['hits']
             show_fields = sorted(settings['show'])
 
             if int(hits['@sent']) > 0:
-                for hit in result['hits']['hit']:
+                for hit in hits['hit']:
                     fields = [
                         {
                             'name': field,
@@ -129,11 +151,15 @@ def search():
     except Exception as e:
         app.logger.exception(e)
         app.logger.error('SEARCH QUERY: "%s"' % query)
-        app.logger.error('SEARCH URL: "%s"' % url)
-        if e.__class__ == URLError:
-            error = str(e.reason)
-        elif e.__class__ == HTTPError:
-            error = str(e.reason)
+        # app.logger.error('SEARCH URL: "%s"' % url)
+        # if e.__class__ == URLError:
+        #     error = str(e.reason)
+        # elif e.__class__ == HTTPError:
+        #     error = str(e.reason)
+        # else:
+        #     error = str(e)
+        if e.__class__ == requests.exceptions.ConnectionError:
+            error = 'CompleteSearch server is not responding.'
         else:
             error = str(e)
 
@@ -215,60 +241,60 @@ def process_user_input(query):
     return result
 
 
-def clean_user_input(query):
-    """ Clean user input, preserving search operators like |, $, and *.
+# def clean_user_input(query):
+#     """ Clean user input, preserving search operators like |, $, and *.
 
-    >>> clean_user_input('   antonio  vivaldi | mozart.bach    ')
-    'antonio* vivaldi*|mozart*.bach*'
+#     >>> clean_user_input('   antonio  vivaldi | mozart.bach    ')
+#     'antonio* vivaldi*|mozart*.bach*'
 
-    >>> clean_user_input('mo* | bach$')
-    'mo*|bach$'
+#     >>> clean_user_input('mo* | bach$')
+#     'mo*|bach$'
 
-    >>> clean_user_input('mozart')
-    'mozart*'
+#     >>> clean_user_input('mozart')
+#     'mozart*'
 
-    >>> clean_user_input('@#johann*$ bach$')
-    'johann* bach$'
+#     >>> clean_user_input('@#johann*$ bach$')
+#     'johann* bach$'
 
-    >>> clean_user_input('@#johann$* bach$')
-    'johann$ bach$'
+#     >>> clean_user_input('@#johann$* bach$')
+#     'johann$ bach$'
 
-    >>> clean_user_input('^&stravinsky!?')
-    'stravinsky*'
+#     >>> clean_user_input('^&stravinsky!?')
+#     'stravinsky*'
 
-    >>> clean_user_input('bach$')
-    'bach$'
+#     >>> clean_user_input('bach$')
+#     'bach$'
 
-    >>> clean_user_input('!!!')
-    '!!!'
-    """
-    def clean_terms(st):
-        terms = []
-        for term in st.split(' '):
-            if term != '':
-                # If not only special characters
-                if not re.match(r'^[_\W]+$', term):
-                    # Remove all special characters
-                    cleaned_term = re.sub(r'\W+', '', term)
-                    index = term.find(cleaned_term)
-                    try:
-                        char = term[index + len(cleaned_term)]
-                        if char == '*' or char == '$':
-                            terms.append(cleaned_term + char)
-                        else:
-                            terms.append(cleaned_term + '*')
-                    except IndexError:
-                        terms.append(cleaned_term + '*')
-                else:
-                    return term
-        return ' '.join(terms)
+#     >>> clean_user_input('!!!')
+#     '!!!'
+#     """
+#     def clean_terms(st):
+#         terms = []
+#         for term in st.split(' '):
+#             if term != '':
+#                 # If not only special characters
+#                 if not re.match(r'^[_\W]+$', term):
+#                     # Remove all special characters
+#                     cleaned_term = re.sub(r'\W+', '', term)
+#                     index = term.find(cleaned_term)
+#                     try:
+#                         char = term[index + len(cleaned_term)]
+#                         if char == '*' or char == '$':
+#                             terms.append(cleaned_term + char)
+#                         else:
+#                             terms.append(cleaned_term + '*')
+#                     except IndexError:
+#                         terms.append(cleaned_term + '*')
+#                 else:
+#                     return term
+#         return ' '.join(terms)
 
-    if '.' in query or '|' in query:
-        new_query = query
-        for match in re.findall(r'[^.|]+', query):
-            cleaned_terms = clean_terms(match)
-            new_query = new_query.replace(match, cleaned_terms)
-    else:
-        new_query = clean_terms(query)
+#     if '.' in query or '|' in query:
+#         new_query = query
+#         for match in re.findall(r'[^.|]+', query):
+#             cleaned_terms = clean_terms(match)
+#             new_query = new_query.replace(match, cleaned_terms)
+#     else:
+#         new_query = clean_terms(query)
 
-    return new_query
+#     return new_query
