@@ -124,24 +124,28 @@ export default Marionette.View.extend({
                             type: 'success',
                             text: 'Dataset has been configured!',
                             timeout: 1000
-                        }).on('afterClose', () => {
-                            // Redirect to the main page
-                            window.location.replace('.');
                         }).show();
+
+                        setTimeout(() => {
+                            window.location.replace('.');
+                        }, 1000);
                     } else {
                         new Noty({
                             type: 'error',
-                            text: obj.error
-                        }).on('afterClose', () => {
-                            // Redirect to the main page
-                            window.location.replace('.');
+                            text: obj.error,
+                            timeout: 1000
                         }).show();
+
+                        setTimeout(() => {
+                            window.location.replace('.');
+                        }, 1000);
                     }
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     new Noty({ type: 'error', text: errorThrown }).show();
                     $saveBtn.attr('disabled', false);
                     $deleteDatasetBtn.attr('disabled', false);
+                    console.error(jqXHR);
                 }
             });
         }
@@ -209,11 +213,12 @@ export default Marionette.View.extend({
             new Noty({
                 type: 'success',
                 text: 'Dataset has been deleted!',
-                timeout: 1000
-            }).on('afterClose', () => {
-                // Redirect to the main page
-                window.location.replace('.');
+                timeout: false
             }).show();
+
+            setTimeout(() => {
+                window.location.replace('.');
+            }, 1000);
         });
     }
 });

@@ -59,7 +59,7 @@ def get_facets():
                 'h': 0,
                 'c': 250,
                 'format': 'json',
-            })
+            }, timeout=10)
 
             completions = response.json()['result']['completions']
 
@@ -84,6 +84,9 @@ def get_facets():
         #     error = str(e)
         if e.__class__ == requests.exceptions.ConnectionError:
             error = 'CompleteSearch server is not responding.'
+        elif e.__class__ == requests.exceptions.ReadTimeout:
+            error = 'Looks like the CompleteSearch server is taking too ' + \
+                    'long to respond.'
         else:
             error = str(e)
 
@@ -122,7 +125,7 @@ def search():
                 'f': start,
                 'h': hits_per_page,
                 'format': 'json',
-            })
+            }, timeout=15)
 
             hits = response.json()['result']['hits']
             show_fields = sorted(settings['show'])
@@ -160,6 +163,9 @@ def search():
         #     error = str(e)
         if e.__class__ == requests.exceptions.ConnectionError:
             error = 'CompleteSearch server is not responding.'
+        elif e.__class__ == requests.exceptions.ReadTimeout:
+            error = 'Looks like the CompleteSearch server is taking too ' + \
+                    'long to respond.'
         else:
             error = str(e)
 

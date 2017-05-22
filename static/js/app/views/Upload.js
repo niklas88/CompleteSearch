@@ -81,7 +81,6 @@ export default Marionette.View.extend({
                         me.saveDataset(obj.data);
                     } else {
                         me.showErrorMessage(obj.error);
-                        console.error(obj.error);
                     }
                 },
                 error: (jqXHR, textStatus) => {
@@ -111,14 +110,15 @@ export default Marionette.View.extend({
                     new Noty({
                         type: 'success',
                         text: 'File has been uploaded!',
-                        timeout: 1000
-                    }).on('afterClose', () => {
+                        timeout: false
+                    }).show();
+
+                    setTimeout(() => {
                         // Change the view (UploadView -> SearchView)
                         window.location.replace('.');
-                    }).show();
+                    }, 1000);
                 } else {
                     me.showErrorMessage(obj.error);
-                    console.error(obj.error);
                 }
             },
             error: (jqXHR, textStatus, errorThrown) => {

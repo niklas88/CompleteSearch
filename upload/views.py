@@ -82,20 +82,22 @@ def upload_file():
         data = data.dropna(axis=1, how='all')
 
         if data.empty:
-            raise ValueError('The filtered dataset is empty. '
-                             'Please make sure the first row contains data '
-                             'in all columns if you selected to use it as a '
-                             'header.')
+            raise ValueError('Cannot process the uploaded file. '
+                             'Please make sure the header row contains data '
+                             'in all columns (fields) if you selected to use '
+                             'the first row as the header.')
         if header_row:
-            header = data.columns
-            cleaned_header = list(map(lambda x: re.sub(r'\W+', '', x), header))
-            if cleaned_header.count('') == 0:
-                data.columns = cleaned_header
-            else:
-                raise ValueError('Cannot process the uploaded file. Make sure '
-                                 'the header row doesn\'t contain special '
-                                 'characters only and try to re-upload the '
-                                 'file.')
+            # Remove all spaces in the columns
+            header = {c: re.sub(r'\s+', '', c) for c in data.columns}
+            data = data.rename(columns=header)
+
+            for field in header:
+                if field == '' or field.lower().startswith('xml') \
+                        or not field[0].isalpha():
+                    raise ValueError('Cannot process the uploaded file. '
+                                     'Please make sure each column (field) '
+                                     'in the header row starts with a letter '
+                                     'and doesn\'t start with "xml".')
 
         # data, facets_fields = process_csv(csv_file, dialect.delimiter)
         facets_fields = define_facets(data)
@@ -132,12 +134,9 @@ def upload_file():
             command = 'make OPTIONS="%s" pclean-all process_input' % opts
 
             # Process the input
-            out, err = subprocess.Popen(
-                [command],
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            ).communicate()
+            out, err = subprocess.Popen([command], shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, ).communicate()
 
             cmd_error = str(err, 'utf-8')
             if '[process_input] Error' in cmd_error:
