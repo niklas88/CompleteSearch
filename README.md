@@ -1,6 +1,6 @@
 # CompleteSearch
 
-[![Build Status](https://travis-ci.org/anatskiy/CompleteSearch.svg?branch=develop)](https://travis-ci.org/anatskiy/CompleteSearch)
+[![Build Status](https://travis-ci.org/anatskiy/CompleteSearch.svg?branch=develop)](https://travis-ci.org/anatskiy/CompleteSearch) [![Documentation Status](https://readthedocs.org/projects/completesearch/badge/?version=latest)](http://completesearch.readthedocs.io/?badge=latest)
 
 ## Description
 

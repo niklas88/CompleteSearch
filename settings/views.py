@@ -8,7 +8,15 @@ bp = Blueprint('settings', __name__)
 
 @bp.route('/get_settings/', methods=['GET'])
 def get_settings():
-    """ Get a dictionary with all dataset settings. """
+    """
+    GET /get_settings/
+        Get a dictionary with all dataset settings.
+
+    :returns: dictionary with dataset settings, e.g. facet/filter fields,
+        which fields to use for the full-text search, etc.
+
+    :rtype: JSON response
+    """
     settings = app.settings.to_dict()
 
     data = {
@@ -27,7 +35,30 @@ def get_settings():
 
 @bp.route('/configure_dataset/', methods=['POST'])
 def configure_dataset():
-    """ Change dataset parameters. """
+    """
+    POST /configure_dataset/
+        Change dataset parameters and regenerate CompleteSearch's indices.
+
+    :param title_field: which field to use as a hit's title
+
+    :param allow_multiple_items: fields containing multiple terms per column,
+        e.g. several authors per one document
+
+    :param within_field_separator: a delimiter which is used in
+        ``allow_multiple_items``
+
+    :param full_text: which columns should be searched
+
+    :param show: which fields should be returned on a hit
+
+    :param filter: search in a specific column
+
+    :param facets: restrict the search to specific columns and phrases
+
+    :returns: dictionary with the ``success`` property and an ``error`` message
+
+    :rtype: JSON response
+    """
     settings = app.settings.to_dict()
     error = ''
 
@@ -94,7 +125,15 @@ def configure_dataset():
 
 @bp.route('/delete_dataset/', methods=['POST'])
 def delete_dataset():
-    """ Delete the uploaded dataset. """
+    """
+    POST /delete_dataset/
+        Reset app's settings, delete the uploaded dataset and stop the
+        CompleteSearch server.
+
+    :returns: dictionary with the ``success`` property
+
+    :rtype: JSON response
+    """
     app.settings.reset()
     subprocess.Popen(['make stop pclean-all'], shell=True).communicate()
     return jsonify(success=True)

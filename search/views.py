@@ -14,7 +14,14 @@ bp = Blueprint('search', __name__)
 
 @bp.route('/get_facets_list/', methods=['GET'])
 def get_facets_list():
-    """ Return the list of facets. """
+    """
+    GET /get_facets_list/
+        Get the list of facet fields.
+
+    :returns: list of all facet fields
+
+    :rtype: JSON response
+    """
     settings = app.settings.to_dict()
     facets_list = [{'name': facet} for facet in sorted(settings['facets'])]
     return jsonify(facets_list)
@@ -22,7 +29,18 @@ def get_facets_list():
 
 @bp.route('/get_facets/', methods=['GET'])
 def get_facets():
-    """ Return all facets for a given field name. """
+    """
+    GET /get_facets/?name={name}&q={query}
+        Return all facets for a given field name and a search query.
+
+    :param name: facet field name
+
+    :param q: search query
+
+    :returns: list of facet items for the given field
+
+    :rtype: JSON response
+    """
     error = ''
     data = []
 
@@ -100,7 +118,20 @@ def get_facets():
 
 @bp.route('/search/', methods=['GET'])
 def search():
-    """ Perform search using CompleteSearch. """
+    """
+    GET /search/?q={query}&start={start}&hits_per_page={hits_per_page}
+        Perform search using CompleteSearch.
+
+    :param q: search query
+
+    :param start: send hits starting from this one
+
+    :param hits_per_page: how many hits return per page
+
+    :returns: list of search hits
+
+    :rtype: JSON response
+    """
     settings = app.settings.to_dict()
     error = ''
     data = []
@@ -176,9 +207,18 @@ def search():
 
 
 def process_user_input(query):
-    """ Process the user input by stripping extra whitespaces, ensuring prefix
+    """
+    Process the user input by stripping extra whitespaces, ensuring prefix
     search by appending asterisks to each search term, and escaping commas and
     semicolons.
+
+    :param query: search query
+
+    :return: processed query
+
+    :rtype: string
+
+    Doctests:
 
     >>> process_user_input('')
     ''

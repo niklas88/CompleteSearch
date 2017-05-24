@@ -16,3 +16,8 @@ coverage
 
 # Production
 gunicorn
+
+# Documentation
+Sphinx
+sphinx-autobuild
+sphinx-rtd-theme
