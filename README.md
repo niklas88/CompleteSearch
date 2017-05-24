@@ -1,2 +1,0 @@
-# CompleteSearch
-CompleteSearch Web Application
