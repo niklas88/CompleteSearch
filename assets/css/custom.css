@@ -1,0 +1,36 @@
+#modules {
+    padding-top: 70px;
+    overflow: hidden;
+}
+
+#modules .section {
+    padding-top: 0;
+}
+
+.landing-page .image-right .image-container {
+    height: 500px;
+    position: relative;
+}
+.landing-page .image-right .image-container img {
+    width: auto;
+    left: 0;
+    top: 0;
+    height: 100%;
+    position: absolute;
+}
+
+.landing-page .image-left .image-container {
+  position: relative;
+  height: 500px;
+}
+.landing-page .image-left .image-container img {
+  width: auto;
+  right: 0;
+  top: 0;
+  height: 100%;
+  position: absolute;
+}
+
+.landing-page .image-center .image-container img {
+    width: 100%;
+}

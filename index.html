@@ -4,9 +4,199 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <title>CompleteSearch</title>
+
+    <!-- favicon  -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="assets/img/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="assets/img/manifest.json">
+    <link rel="mask-icon" href="assets/img/safari-pinned-tab.svg" color="#9c27b0">
+    <meta name="theme-color" content="#fafafa">
+
+    <!-- Fonts and icons -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+
+    <!-- CSS Files -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/material-kit.css" rel="stylesheet"/>
+    <link href="assets/css/custom.css" rel="stylesheet"/>
 </head>
-<body>
-    <h1>test</h1>
+<body class="landing-page">
+    <nav class="navbar navbar-danger navbar-transparent navbar-absolute">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href=".">CompleteSearch</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#features"><i class="fa fa-wrench" aria-hidden="true"></i> Features</a></li>
+                    <li><a href="#modules"><i class="fa fa-th" aria-hidden="true"></i> Modules</a></li>
+                    <li><a href="https://completesearch.readthedocs.io" target="_blank"><i class="fa fa-book" aria-hidden="true"></i> Documentation</a></li>
+                    <li><a href="https://github.com/anatskiy/CompleteSearch" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header header-filter" data-parallax="true" style="background-image: url('assets/img/intro.jpg');">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1 class="title">CompleteSearch</h1>
+                    <h4>An ultra-fast search engine.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main main-raised">
+        <div class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h5 class="description text-center">
+                            This project is my Master Project at the <a href="https://www.uni-freiburg.de/">University of Freiburg</a>.
+                        </h5>
+                        <h5 class="description text-center">
+                            The main goal was to create an easy-to-use web application, which would
+                            take a dataset (CSV, TSV), automatically determine a separator, validate
+                            the data (remove rows with a wrong syntax), define search facets, and save
+                            the file (pre-processing). Then, use the saved file as an input for the search
+                            engine <a href="http://ad-wiki.informatik.uni-freiburg.de/completesearch/FrontPage">CompleteSearch</a>,
+                            which generates indices (post-processing).
+                        </h5>
+                        <h5 class="description text-center">
+                            CompleteSearch does all the work on performing the search in the uploaded dataset.
+                            The web application (this project) serves as a middle layer, which processes and
+                            corrects the user input, and sends it to a separate local CompleteSearch server.
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="features">
+            <div class="section">
+                <div class="row">
+                    <div class="container">
+                        <div class="col-md-8 col-md-offset-2">
+                            <h2 class="title text-center">Features</h2>
+                            <h5 class="description">
+                                <ul>
+                                    <li>search as you type</li>
+                                    <li>case-insensitive prefix search by default, e.g. <kbd>sto</kbd> matches <i>storm</i> as well as <i>STOCK</i></li>
+                                    <li>exact word search, e.g. <kbd>graph$</kbd> matches <i>graph</i> but not <i>graphics</i></li>
+                                    <li>phrase search, e.g. <kbd>deep.learn.neural.netw</kbd></li>
+                                    <li>boolean AND, e.g. <kbd>antonio vivaldi</kbd></li>
+                                    <li>boolean OR, e.g. <kbd>apple | microsoft</kbd></li>
+                                    <li>facets: hits with exact field values, e.g. <kbd>:facet:field_name:field_value</kbd></li>
+                                    <li>filters: search for something in a particular field, e.g. <kbd>:filter:field_name:value</kbd></li>
+                                </ul>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modules">
+            <h2 class="title text-center">Modules</h2>
+            <div class="section image-left">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="image-container">
+                                <img src="assets/img/upload.png" alt="" />
+                            </div>
+                        </div>
+                        <div class="col-md-5 col-md-offset-1">
+                            <h3 class="title">Upload</h2>
+                            <h5 class="description">
+                                <p>The module proceeds as follows:</p>
+                                <ul>
+                                    <li>check the file format (only CSV, TSV, and TXT are accepted)</li>
+                                    <li>determine a separator from a list of accepted delimiters</li>
+                                    <li>try to load the data into a DataFrame, ignoring lines with errors and comments</li>
+                                    <li>generate a header row (e.g. Column1, Column2, etc.) if the input dataset doesn't have it</li>
+                                    <li>extend the number of columns if it's not equal for every row</li>
+                                    <li>determine facet fields (those fields whose values occur more frequent than others')</li>
+                                    <li>save the filtered dataset</li>
+                                </ul>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section image-right">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="title">Search</h2>
+                            <h5 class="description">
+                                <p>The module handles everything related to a search. It provides the following:</p>
+                                <ul>
+                                    <li>search query parsing: trim/strip the query, replace multiple whitespaces with a single one, remove all whitespaces around search operators like <kbd>.</kbd> and <kbd>|</kbd></li>
+                                    <li>escape special characters</li>
+                                    <li>facets: hits with exact field values, e.g. <kbd>:facet:field_name:field_value</kbd></li>
+                                    <li>filters: search for something in a particular field, e.g. <kbd>:filter:field_name:value</kbd></li>
+                                </ul>
+                            </h5>
+                        </div>
+                        <div class="col-md-6 col-md-offset-1">
+                            <div class="image-container">
+                                <img src="assets/img/search.png" alt="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section image-center text-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <h3 class="title">Settings</h2>
+                            <h5 class="description">
+                                The module allows the user to change the dataset configuration,
+                                i.e. search fields, facets and filters, and so on. After saving the
+                                settings, CompleteSearch will regenerate indices and other files.
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <div class="image-container">
+                                <img src="assets/img/settings.png" alt="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <ul class="pull-center">
+                <li><a href="http://ad-wiki.informatik.uni-freiburg.de/completesearch/QuickIntro" target="_blank">CompleteSearch</a></li>
+                <li><a href="https://github.com/anatskiy/CompleteSearch" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </footer>
 </body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="assets/js/material.min.js"></script>
+<script src="assets/js/material-kit.js"></script>
+<script src="assets/js/custom.js"></script>
 </html>
