@@ -3,11 +3,12 @@ Installation
 
 The easiest way to install the app is to use CompleteSearch the Docker image (below). Otherwise, all installation steps can be seen here_.
 
+
 Requirements
 ------------
 
 * Docker_ for Linux/macOS/Windows
-* `Docker Compose`_
+
 
 Installation steps
 ------------------
@@ -15,7 +16,7 @@ Installation steps
 Step 0
 ~~~~~~
 
-Install Docker and Docker Compose.
+Install Docker.
 
 Step 1
 ~~~~~~
@@ -27,9 +28,13 @@ Clone the repository:
    git clone https://github.com/anatskiy/docker-completesearch.git
    cd docker-completesearch
 
-Build the images::
+Build the image::
 
-   SVN_USERNAME="username" SVN_PASSWORD="password" docker-compose build
+   docker build \
+     -t completesearch \
+     --build-arg SVN_USERNAME="username" \
+     --build-arg SVN_PASSWORD="password" \
+     .
 
 Where ``SVN_USERNAME`` and ``SVN_PASSWORD`` are your credentials for the CompleteSearch svn repository. `More information`_.
 
@@ -38,9 +43,15 @@ Where ``SVN_USERNAME`` and ``SVN_PASSWORD`` are your credentials for the Complet
 Step 2
 ~~~~~~
 
-Start the services::
+Run the container::
 
-   docker-compose up -d
+   docker run -d \
+     --name completesearch \
+     -p 8000:8000 \
+     -p 8888:8888 \
+     completesearch \
+     python3 manage.py runserver -h 0.0.0.0 -p 8000
+
 
 Usage
 -----
@@ -51,25 +62,29 @@ Open CompleteSearch at ``http://localhost:8000/``
 
 Enter the container::
 
-   docker exec -it dockercompletesearch_app_1 /bin/bash
+   docker exec -it completesearch /bin/bash
 
 Run a command inside of the container::
 
-   docker exec -t dockercompletesearch_app_1 <command>
+   docker exec -d completesearch <command>
 
 See the app logs::
 
-    docker exec -t dockercompletesearch_app_1 cat app.log
+    docker exec -t completesearch cat app.log
 
 or::
 
-   docker logs dockercompletesearch_app_1
+   docker logs --tail 100 completesearch
 
-Restart the CompleteSearch server::
 
-   docker exec -t dockercompletesearch_app_1 make stop start
+Troubleshooting
+---------------
 
-.. _here: https://github.com/anatskiy/docker-completesearch/blob/master/app/Dockerfile
+If you see the error ``Cannot get facets for ... CompleteSearch server is not responding.``, try to restart the server::
+
+   docker exec -d completesearch make stop start
+
+
+.. _here: https://github.com/anatskiy/docker-completesearch/blob/master/Dockerfile
 .. _Docker: https://docs.docker.com/engine/installation/
-.. _`Docker Compose`: https://docs.docker.com/compose/install/
 .. _`More information`: http://ad-wiki.informatik.uni-freiburg.de/completesearch
