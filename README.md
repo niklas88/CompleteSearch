@@ -25,4 +25,4 @@ The main goal was to create an easy-to-use web application, which would take a d
 
 ## Installation
 
-The easiest way to install the app is to use CompleteSearch the [Docker image](https://github.com/anatskiy/docker-completesearch). Otherwise, all installation steps can be seen [here](https://github.com/anatskiy/docker-completesearch/blob/master/app/Dockerfile).
+The easiest way to install the app is to use CompleteSearch the [Docker image](https://github.com/anatskiy/docker-completesearch). Otherwise, all installation steps can be seen [here](https://github.com/anatskiy/docker-completesearch/blob/master/Dockerfile).
