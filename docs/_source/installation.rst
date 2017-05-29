@@ -29,7 +29,7 @@ Clone the repository:
 
 Build the images::
 
-   SVN_USERNAME="username" SVN_USERNAME="password" docker-compose build
+   SVN_USERNAME="username" SVN_PASSWORD="password" docker-compose build
 
 Where ``SVN_USERNAME`` and ``SVN_PASSWORD`` are your credentials for the CompleteSearch svn repository. `More information`_.
 
