@@ -16,7 +16,7 @@ Installation steps
 Step 0
 ~~~~~~
 
-Install Docker.
+Install Docker_.
 
 Step 1
 ~~~~~~

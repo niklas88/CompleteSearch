@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'CompleteSearch'
+project = 'CompleteSearch web app'
 copyright = str(datetime.datetime.now().year) + ', Evgeny Anatskiy'
 author = 'Evgeny Anatskiy'
 
