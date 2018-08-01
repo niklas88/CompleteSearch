@@ -20,4 +20,4 @@ gunicorn==19.9.0
 # Documentation
 Sphinx==1.7.6
 sphinx-autobuild==0.7.1
-sphinx-rtd-themeA==0.4.1
+sphinx-rtd-theme==0.4.1
